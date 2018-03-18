@@ -1,0 +1,147 @@
+#include "Matrix.h"
+#include "mbed.h"
+#include <string>
+// #include <iostream>
+
+
+
+void MatrixDimentionMissmatchError(Shape s1, Shape s2, string context)
+{
+  printf("Matrix Dimension Mismatch Exception! Operation on matrices of shape: %d:%d and %d:%d in context: %s\n", s1.width, s1.height, s2.width, s2.height, context.c_str());
+  while(1){
+
+  }
+}
+
+Matrix::Matrix(){
+  matrix_type m(0, vector<double>(0));
+  this->Setup(m);
+}
+Matrix::Matrix(Shape shape){
+  matrix_type m(shape.width, vector<double>(shape.height));
+  this->Setup(m);
+}
+Matrix::Matrix(int width, int height){
+  matrix_type m(width, vector<double>(height));
+  this->Setup(m);
+}
+Matrix::Matrix(matrix_type m){
+  this->Setup(m);
+}
+
+void Matrix::Setup(matrix_type m){
+  int width = m.size();
+  int height = width == 0 ? 0 : m[0].size();
+  Shape temp_shape = {width, height};
+  this->shape = temp_shape;
+  this->_matrix = m;
+}
+
+void Matrix::print_matrix(){
+  string buffer = "[\n";
+  for(int j = 0; j < this->shape.height; j++){
+    for(int i = 0; i < this->shape.width; i++){
+      char b[1024];
+      sprintf(b, "%s\t%.3f%s", buffer.c_str(), this->get(i, j), (i + 1 < this->shape.width ? "" : "\n"));
+      string str(b);
+      buffer = str;
+    }
+  }
+  printf("%s\n]\n", buffer.c_str());
+}
+
+void Matrix::set(int w, int h, double v){
+  this->_matrix[w][h] = v;
+}
+
+double Matrix::get(int w, int h){
+  return this->_matrix[w][h];
+}
+
+Matrix Matrix::transpose(){
+  Matrix m(this->shape.height, this->shape.width);
+  for(int i = 0; i < m.shape.width; i++){
+    for(int j = 0; j < m.shape.height; j++){
+      m.set(i, j, this->get(j, i));
+    }
+  }
+  return m;
+}
+
+Matrix Matrix::operator+(Matrix p){
+  if(this->shape.width != p.shape.width || this->shape.height != p.shape.height){
+    MatrixDimentionMissmatchError(this->shape, p.shape, "Addition");
+    return Matrix();
+  }
+  matrix_type m(p.shape.width, vector<double>(p.shape.height));
+  for(int i = 0; i < p.shape.width; i++){
+    for(int j = 0; j < p.shape.height; j++){
+      m[i][j] = this->get(i, j) + p.get(i, j);
+    }
+  }
+  return m;
+}
+
+Matrix Matrix::operator-(){
+  Matrix m(this->shape);
+  for(int i = 0; i < m.shape.width; i++){
+    for(int j = 0; j < m.shape.height; j++){
+      m.set(i, j, -this->get(i, j));
+    }
+  }
+  return m;
+}
+
+Matrix Matrix::operator-(Matrix p){
+  if(this->shape.width != p.shape.width || this->shape.height != p.shape.height){
+    MatrixDimentionMissmatchError(this->shape, p.shape, "Subtraction");
+    return Matrix();
+  }
+  matrix_type m(p.shape.width, vector<double>(p.shape.height));
+  for(int i = 0; i < p.shape.width; i++){
+    for(int j = 0; j < p.shape.height; j++){
+      m[i][j] = this->get(i, j) - p.get(i, j);
+    }
+  }
+  return Matrix(m);
+}
+Matrix Matrix::operator*(Matrix p){
+  if(this->shape.width != p.shape.height){
+    MatrixDimentionMissmatchError(this->shape, p.shape, "Multiplication");
+    return Matrix();
+  }
+  int n_width = p.shape.width;
+  int n_height = this->shape.height;
+  int n = p.shape.height;
+  matrix_type m(n_width, vector<double>(n_height));
+  for(int i = 0; i < n_width; i++){
+    for(int j = 0; j < n_height; j++){
+      double sum = 0;
+      for(int k = 0; k < n; k++){
+        sum += this->get(k, j) * p.get(i, k);
+      }
+      m[i][j] = sum;
+    }
+  }
+  return Matrix(m);
+}
+
+Matrix Matrix::operator*(double x){
+  Matrix m(this->shape);
+  for(int i = 0; i < m.shape.width; i++){
+    for(int j = 0; j < m.shape.height; j++){
+      m.set(i, j, this->_matrix[i][j] * x);
+    }
+  }
+  return m;
+}
+
+Matrix Matrix::operator/(double x){
+  Matrix m(this->shape);
+  for(int i = 0; i < m.shape.width; i++){
+    for(int j = 0; j < m.shape.height; j++){
+      m.set(i, j, this->_matrix[i][j] / x);
+    }
+  }
+  return m;
+}
