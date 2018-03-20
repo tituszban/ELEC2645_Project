@@ -19,7 +19,7 @@ public:
   Matrix(matrix_type m);
   Matrix(Shape shape);
   Matrix(int width, int height);
-  // Matrix(double* m);
+  Matrix(int width, int height, double* m);
   //~Matrix();
 
   Shape shape;

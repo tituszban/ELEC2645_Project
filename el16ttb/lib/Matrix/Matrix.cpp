@@ -28,6 +28,15 @@ Matrix::Matrix(int width, int height){
 Matrix::Matrix(matrix_type m){
   this->Setup(m);
 }
+Matrix::Matrix(int width, int height, double* m){
+  matrix_type tempM(width, vector<double>(height));
+  for(int i = 0; i < width; i++){
+    for (int j = 0; j < height; j++) {
+      tempM[i][j] = m[i + width * j];
+    }
+  }
+  this->Setup(tempM);
+}
 
 void Matrix::Setup(matrix_type m){
   int width = m.size();

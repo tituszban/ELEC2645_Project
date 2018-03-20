@@ -3,6 +3,8 @@ using namespace std;
 #include "mbed.h"
 #include "UnitTester.h"
 #include <Matrix.h>
+#include <Camera.h>
+#include <math.h>
 
 
 bool UnitTester::MatrixCreationTest(){
@@ -28,25 +30,30 @@ bool UnitTester::MatrixCreationTest(){
   Matrix m4 = Matrix(1, 2);
   printf("M4 shape: %d:%d\n", m4.shape.width, m4.shape.height);
   m4.print_matrix();
+
+  printf("Testing M5\n");
+  double tempM5[] = {
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
+    9, 0, 1
+  };
+  Matrix m5 = Matrix(3, 4, (double*) tempM5);
+  printf("M5 shape: %d:%d\n", m5.shape.width, m5.shape.height);
+  m5.print_matrix();
   printf("Test completed\n");
   return true;
 }
 
 bool UnitTester::MatrixReadWriteTest(){
   printf("Starting Matrix Read-Write Test\n");
-  double temp[4][3] = {
-    {0, 1, 2},
-    {3, 4, 5},
-    {6, 7, 8},
-    {9, 0, 1}
+  double temp[] = {
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
+    9, 0, 1
   };
-  matrix_type tempM(3, vector<double>(4));
-  for(int i = 0; i < 3; i++){
-    for (int j = 0; j < 4; j++) {
-      tempM[i][j] = temp[j][i];
-    }
-  }
-  Matrix m1 = Matrix(tempM);
+  Matrix m1 = Matrix(3, 4, temp);
   m1.print_matrix();
   printf("Read value at (0, 0): %f\n", m1.get(0, 0));
   printf("Read value at (1, 1): %f\n", m1.get(1, 1));
@@ -63,26 +70,18 @@ bool UnitTester::MatrixReadWriteTest(){
 
 bool UnitTester::MatrixOperationsTest(){
   printf("Starting Matrix Operations Test\n");
-  double temp1[3][3] = {
-    {0, 1, 2},
-    {3, 4, 5},
-    {6, 7, 8}
+  double temp1[] = {
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8
   };
-  double temp2[3][3] = {
-    {8, 7, 6},
-    {5, 4, 3},
-    {2, 1, 0}
+  double temp2[] = {
+    8, 7, 6,
+    5, 4, 3,
+    2, 1, 0
   };
-  matrix_type tempM1(3, vector<double>(3));
-  matrix_type tempM2(3, vector<double>(3));
-  for(int i = 0; i < 3; i++){
-    for (int j = 0; j < 3; j++) {
-      tempM1[i][j] = temp1[j][i];
-      tempM2[i][j] = temp2[j][i];
-    }
-  }
-  Matrix m1 = Matrix(tempM1);
-  Matrix m2 = Matrix(tempM2);
+  Matrix m1 = Matrix(3, 3, temp1);
+  Matrix m2 = Matrix(3, 3, temp2);
   printf("M1:\n");
   m1.print_matrix();
   printf("M2:\n");
@@ -128,30 +127,17 @@ bool UnitTester::MatrixOperationsTest(){
 
 bool UnitTester::MatrixErrorTest(){
   printf("Starting Matrix Error Test\n");
-  double temp1[3][3] = {
-    {0, 1, 2},
-    {3, 4, 5},
-    {6, 7, 8}
+  double temp1[] = {
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8
   };
-  double temp2[2][3] = {
-    {8, 7, 6},
-    {5, 4, 3}
+  double temp2[] = {
+    8, 7, 6,
+    5, 4, 3
   };
-  matrix_type tempM1(3, vector<double>(3));
-  matrix_type tempM2(3, vector<double>(2));
-  for(int i = 0; i < 3; i++){
-    for (int j = 0; j < 3; j++) {
-      tempM1[i][j] = temp1[j][i];
-    }
-  }
-  for(int i = 0; i < 3; i++){
-    for (int j = 0; j < 2; j++) {
-      tempM2[i][j] = temp2[j][i];
-    }
-  }
-
-  Matrix m1 = Matrix(tempM1);
-  Matrix m2 = Matrix(tempM2);
+  Matrix m1 = Matrix(3, 3, temp1);
+  Matrix m2 = Matrix(3, 2, temp2);
   printf("M1:\n");
   m1.print_matrix();
   printf("M2:\n");
@@ -162,5 +148,88 @@ bool UnitTester::MatrixErrorTest(){
   Matrix mm = m1 * m2;
   printf("Test completed\n");
 
+  return true;
+}
+
+bool UnitTester::CameraValueTest(){
+  Camera cam;
+  cam.init();
+  cam.SetPosition(0, 0, 6);
+  double p[] = {1, 1, -1, 1};
+  Matrix point = Matrix(1, 4, p);
+  Matrix screenPoint = cam.GetScreenPosition(point);
+  screenPoint.print_matrix();
+  //double v =
+  screenPoint = screenPoint / screenPoint.get(0, 2);
+  screenPoint.print_matrix();
+  return true;
+}
+
+bool UnitTester::CameraScaleTest(Gamepad &pad, N5110 &lcd){
+
+  double posX = 0.5;
+  double posZ = 0.5;
+
+  double rotX = 0;
+  double rotZ = 0;
+
+  double points[8][4] = {
+    {1, 1, 0, 1},
+    {0, 1, 0, 1},
+    {1, 0, 0, 1},
+    {0, 0, 0, 1},
+    {1, 1, 1, 1},
+    {0, 1, 1, 1},
+    {1, 0, 1, 1},
+    {0, 0, 1, 1}
+  };
+  Camera cam;
+  cam.init();
+  while(1){
+    lcd.clear();
+    posX += pad.get_coord().x * 0.3;
+    //printf("Joystick: X:%.3f, Y:%.3f\n", pad.get_coord().x, pad.get_coord().y);
+    if(pad.check_event(A_PRESSED)){
+      rotX += 0.1;
+    }
+    if(pad.check_event(Y_PRESSED)){
+      rotX -= 0.1;
+    }
+    if(pad.check_event(X_PRESSED)){
+      rotZ += 0.1;
+    }
+    if(pad.check_event(B_PRESSED)){
+      rotZ -= 0.1;
+    }
+
+    // printf("Position: X:%.3f, Z:%.3f\n", posX, posZ);
+    printf("Rotation: X:%.3f, Z:%.3f\n", rotX, rotZ);
+
+    cam.SetPosition(posX, 2.8, posZ);
+    cam.SetRotation(rotX, rotZ);
+    // wait(1);
+    for(int i = -12; i <= 12; i++){
+      for(int j = -12; j <= 12; j++){
+        for(int k = 0; k < 1; k++){
+          if(sqrt(pow(i, 2) + pow(j, 2)) < 12){
+            double p[] = {i, k, j, 1};
+            Matrix point = Matrix(1, 4, p);
+            Matrix screenPoint = cam.GetScreenPosition(point);
+            if(screenPoint.get(0, 2) > 0){
+              screenPoint = screenPoint / screenPoint.get(0, 2);
+            //screenPoint.print_matrix();
+              if(screenPoint.get(0, 0) > 0 && screenPoint.get(0, 0) < 84 && screenPoint.get(0, 1) > 0 && screenPoint.get(0, 1) < 48){
+                lcd.setPixel((int)screenPoint.get(0, 0),(int)screenPoint.get(0, 1),true);
+              }
+            }
+          }
+        }
+      }
+
+
+    }
+
+    lcd.refresh();
+  }
   return true;
 }

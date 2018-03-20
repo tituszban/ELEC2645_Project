@@ -42,17 +42,6 @@ struct Polar {
     float angle; /**< float for angle (in degrees) */
 };
 
-/** Gamepad Class
- * @brief Library for interfacing with ELEC2645 Gamepad PCB, University of Leeds
- * @author Dr Craig A. Evans
- * @author Dr Alex Valavanis
- */
-class Gamepad
-{
-public:
-/** Gamepad events
- * @brief List of events that can be registered on the gamepad
- */
 enum GamepadEvent {
     A_PRESSED,     ///< Button A has been pressed
     B_PRESSED,     ///< Button B has been pressed
@@ -65,6 +54,19 @@ enum GamepadEvent {
     JOY_PRESSED,   ///< Joystick button has been pressed
     N_EVENTS       ///< A dummy flag that marks the end of the list
 };
+
+/** Gamepad Class
+ * @brief Library for interfacing with ELEC2645 Gamepad PCB, University of Leeds
+ * @author Dr Craig A. Evans
+ * @author Dr Alex Valavanis
+ */
+class Gamepad
+{
+public:
+/** Gamepad events
+ * @brief List of events that can be registered on the gamepad
+ */
+
 
 private:
     mbed::PwmOut *_led1;
