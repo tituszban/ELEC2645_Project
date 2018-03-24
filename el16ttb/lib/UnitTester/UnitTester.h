@@ -1,8 +1,7 @@
 #ifndef UT
 #define  UT
 
-#include <N5110.h>
-#include <Gamepad.h>
+#include <Controller.h>
 
 class UnitTester{
 
@@ -12,7 +11,7 @@ public:
   static bool MatrixOperationsTest();
   static bool MatrixErrorTest();
   static bool CameraValueTest();
-  static bool CameraScaleTest(Gamepad &pad, N5110 &lcd);
+  static bool CameraScaleTest(Controller &cont);
 };
 
 #endif

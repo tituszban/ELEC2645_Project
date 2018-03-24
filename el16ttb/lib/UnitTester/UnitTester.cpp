@@ -165,7 +165,7 @@ bool UnitTester::CameraValueTest(){
   return true;
 }
 
-bool UnitTester::CameraScaleTest(Gamepad &pad, N5110 &lcd){
+bool UnitTester::CameraScaleTest(Controller &cont){
 
   double posX = 0.5;
   double posZ = 0.5;
@@ -173,63 +173,40 @@ bool UnitTester::CameraScaleTest(Gamepad &pad, N5110 &lcd){
   double rotX = 0;
   double rotZ = 0;
 
-  double points[8][4] = {
-    {1, 1, 0, 1},
-    {0, 1, 0, 1},
-    {1, 0, 0, 1},
-    {0, 0, 0, 1},
-    {1, 1, 1, 1},
-    {0, 1, 1, 1},
-    {1, 0, 1, 1},
-    {0, 0, 1, 1}
-  };
   Camera cam;
   cam.init();
   while(1){
-    lcd.clear();
-    posX += pad.get_coord().x * 0.3;
-    //printf("Joystick: X:%.3f, Y:%.3f\n", pad.get_coord().x, pad.get_coord().y);
-    if(pad.check_event(A_PRESSED)){
-      rotX += 0.1;
-    }
-    if(pad.check_event(Y_PRESSED)){
-      rotX -= 0.1;
-    }
-    if(pad.check_event(X_PRESSED)){
-      rotZ += 0.1;
-    }
-    if(pad.check_event(B_PRESSED)){
-      rotZ -= 0.1;
-    }
+    cont.lcdClear();
+    rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
+    rotX += pow(cont.joystickCoord().y, 3) * -0.15;
 
-    // printf("Position: X:%.3f, Z:%.3f\n", posX, posZ);
-    printf("Rotation: X:%.3f, Z:%.3f\n", rotX, rotZ);
+    double moveX = (cont.buttonDown(A) ? -1 : 0) + (cont.buttonDown(Y) ? 1 : 0);
+    double moveZ = (cont.buttonDown(X) ? -1 : 0) + (cont.buttonDown(B) ? 1 : 0);
 
-    cam.SetPosition(posX, 2.8, posZ);
+    posZ += (moveX * cos(-rotZ) + moveZ * sin(-rotZ)) * 0.3;
+    posX += (moveX * sin(-rotZ) + moveZ * cos(-rotZ)) * 0.3;
+
+    cam.SetPosition(posX, 1.8, posZ);
     cam.SetRotation(rotX, rotZ);
     // wait(1);
     for(int i = -12; i <= 12; i++){
       for(int j = -12; j <= 12; j++){
         for(int k = 0; k < 1; k++){
           if(sqrt(pow(i, 2) + pow(j, 2)) < 12){
-            double p[] = {i, k, j, 1};
+            double p[] = {(double)i, (double)k, (double)j, 1};
             Matrix point = Matrix(1, 4, p);
             Matrix screenPoint = cam.GetScreenPosition(point);
             if(screenPoint.get(0, 2) > 0){
               screenPoint = screenPoint / screenPoint.get(0, 2);
-            //screenPoint.print_matrix();
               if(screenPoint.get(0, 0) > 0 && screenPoint.get(0, 0) < 84 && screenPoint.get(0, 1) > 0 && screenPoint.get(0, 1) < 48){
-                lcd.setPixel((int)screenPoint.get(0, 0),(int)screenPoint.get(0, 1),true);
+                cont.lcdSetPixel((int)screenPoint.get(0, 0),(int)screenPoint.get(0, 1),true);
               }
             }
           }
         }
       }
-
-
     }
-
-    lcd.refresh();
+    cont.lcdRefresh();
   }
   return true;
 }

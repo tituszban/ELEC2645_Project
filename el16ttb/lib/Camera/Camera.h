@@ -19,7 +19,7 @@ public:
   void init();
   void SetPosition(double x, double y, double z);
   void SetRotation(double x, double z);
-  void SetFocalLength(double f);
+
   Matrix GetScreenPosition(Matrix p);
 
 private:
@@ -39,6 +39,8 @@ private:
   Matrix cameraTransformation;
 
   Matrix RotationMatrix(Matrix u, double theta);
+
+  void SetFocalLength(double f);
 
   void UpdateRotationMatrix();
   void UpdateCalibrationMatrix();
