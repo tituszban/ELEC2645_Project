@@ -12,6 +12,7 @@ public:
   static bool MatrixErrorTest();
   static bool CameraValueTest();
   static bool CameraScaleTest(Controller &cont);
+  static bool RendererDisplayTest(Controller &cont);
 };
 
 #endif

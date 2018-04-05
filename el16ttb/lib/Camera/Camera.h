@@ -45,6 +45,8 @@ private:
   void UpdateRotationMatrix();
   void UpdateCalibrationMatrix();
   void UpdateTransformationMatrix();
+
+  Matrix NormalisePoint(Matrix p);
 };
 
 

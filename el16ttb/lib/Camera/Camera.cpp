@@ -95,11 +95,17 @@ void Camera::UpdateTransformationMatrix()
   this->cameraTransformation = Matrix(4, 4, RT);
 }
 
+Matrix Camera::NormalisePoint(Matrix p){
+  p.set(0, 0, p.get(0, 0) / p.get(0, 2));
+  p.set(0, 1, p.get(0, 1) / p.get(0, 2));
+  return p;
+}
+
 Matrix Camera::GetScreenPosition(Matrix p)
 {
   if(p.shape.width != 1 || p.shape.height != 4){
     return Matrix(1, 3);
   }
   p = p - this->homogPosition;
-  return this->calibrationMatrix * this->projectionMatrix * this->cameraTransformation * p;
+  return this->NormalisePoint(this->calibrationMatrix * this->projectionMatrix * this->cameraTransformation * p);
 }

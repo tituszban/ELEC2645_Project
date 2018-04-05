@@ -5,6 +5,7 @@ using namespace std;
 #include <Matrix.h>
 #include <Camera.h>
 #include <math.h>
+#include <Renderer.h>
 
 
 bool UnitTester::MatrixCreationTest(){
@@ -166,17 +167,17 @@ bool UnitTester::CameraValueTest(){
 }
 
 bool UnitTester::CameraScaleTest(Controller &cont){
-
   double posX = 0.5;
   double posZ = 0.5;
 
   double rotX = 0;
   double rotZ = 0;
-
   Camera cam;
   cam.init();
+
   while(1){
     cont.lcdClear();
+
     rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
     rotX += pow(cont.joystickCoord().y, 3) * -0.15;
 
@@ -188,18 +189,31 @@ bool UnitTester::CameraScaleTest(Controller &cont){
 
     cam.SetPosition(posX, 1.8, posZ);
     cam.SetRotation(rotX, rotZ);
-    // wait(1);
-    for(int i = -12; i <= 12; i++){
-      for(int j = -12; j <= 12; j++){
+
+    bool doPrint = cont.buttonPressed(BACK);
+    for(int i = -10; i <= 10; i++){
+      for(int j = -10; j <= 10; j++){
         for(int k = 0; k < 1; k++){
-          if(sqrt(pow(i, 2) + pow(j, 2)) < 12){
+          if(sqrt(pow(i, 2) + pow(j, 2)) < 10){
             double p[] = {(double)i, (double)k, (double)j, 1};
             Matrix point = Matrix(1, 4, p);
             Matrix screenPoint = cam.GetScreenPosition(point);
+            // printf("draw point %d,%d,%d\n", i, k, j);
+            // printf("Adding point\n");
+            //ren.addPoint(screenPoint, 1);
+            // prePoint.print_matrix();
+            // screenPoint.print_matrix();
+            // printf("Point added\n");
+
             if(screenPoint.get(0, 2) > 0){
-              screenPoint = screenPoint / screenPoint.get(0, 2);
+              //screenPoint = screenPoint / screenPoint.get(0, 2);
               if(screenPoint.get(0, 0) > 0 && screenPoint.get(0, 0) < 84 && screenPoint.get(0, 1) > 0 && screenPoint.get(0, 1) < 48){
                 cont.lcdSetPixel((int)screenPoint.get(0, 0),(int)screenPoint.get(0, 1),true);
+              }
+              // double dist = sqrt(pow(posZ - j, 2) + pow(posX - i, 2) + pow(1.8 - k, 2));
+              if(doPrint && i == 0){
+                screenPoint.print_matrix();
+                //printf("actual distance: %.4f, depth: %.4f\n", dist, screenPoint.get(0, 2));
               }
             }
           }
@@ -207,6 +221,57 @@ bool UnitTester::CameraScaleTest(Controller &cont){
       }
     }
     cont.lcdRefresh();
+  }
+  return true;
+}
+
+bool UnitTester::RendererDisplayTest(Controller &cont){
+  double points_d[][3] = {
+    {0, 0, 0},
+    {10, 10, 0},
+    {30, 10, 5},
+    {10, 20, 15},
+    {40, 40, 0},
+    {10, 40, 0}
+  };
+  Matrix points[6];
+  for(int i = 0; i < 6; i++){
+    points[i] = Matrix(1, 3, points_d[i]);
+  }
+  Renderer renderer;
+
+  int pattern[][9] = {
+    {1, 1, 0, 1, 1, 0, 1, 1, 0},
+    {0, 1, 1, 0, 1, 1, 0, 1, 1},
+    {1, 0, 1, 1, 0, 1, 1, 0, 1},
+    {1, 1, 0, 1, 1, 0, 1, 1, 0},
+    {0, 1, 1, 0, 1, 1, 0, 1, 1},
+    {1, 0, 1, 1, 0, 1, 1, 0, 1},
+    {1, 1, 0, 1, 1, 0, 1, 1, 0},
+    {0, 1, 1, 0, 1, 1, 0, 1, 1},
+    {1, 0, 1, 1, 0, 1, 1, 0, 1}
+  };
+  int indexer = 0;
+  while(1){
+    cont.lcdClear();
+    renderer.clearBuffer();
+
+    for(int i = 0; i < 6; i++){
+      renderer.addPoint(points[i], 1);
+    }
+    renderer.addLine(points[0], points[1], 1);
+    renderer.addLine(points[1], points[2], 1);
+    renderer.addLine(points[1], points[3], 1);
+
+    vector<int> patt(pattern[indexer], pattern[indexer] + sizeof(pattern[indexer]) / sizeof(int));
+
+    renderer.addPatternLine(points[1], points[4], patt);
+    renderer.addPatternLine(points[3], points[5], patt);
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+
+    indexer = (indexer + 1) % 9;
   }
   return true;
 }

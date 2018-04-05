@@ -31,7 +31,7 @@ int main() {
   // lcd.refresh();
   // lcd.printString("Test start", 0, 1);
   // lcd.refresh();
-  UnitTester::CameraScaleTest(cont);
+  UnitTester::RendererDisplayTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();
