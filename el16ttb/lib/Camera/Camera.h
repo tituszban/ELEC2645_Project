@@ -20,6 +20,8 @@ public:
   void SetPosition(double x, double y, double z);
   void SetRotation(double x, double z);
 
+  Matrix GetFacing();
+  Matrix GetPosition();
   Matrix GetScreenPosition(Matrix p);
 
 private:

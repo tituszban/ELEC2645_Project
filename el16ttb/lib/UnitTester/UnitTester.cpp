@@ -6,6 +6,9 @@ using namespace std;
 #include <Camera.h>
 #include <math.h>
 #include <Renderer.h>
+#include <Block.h>
+#include <Util.h>
+#include <Face.h>
 
 
 bool UnitTester::MatrixCreationTest(){
@@ -187,7 +190,7 @@ bool UnitTester::CameraScaleTest(Controller &cont){
     posZ += (moveX * cos(-rotZ) + moveZ * sin(-rotZ)) * 0.3;
     posX += (moveX * sin(-rotZ) + moveZ * cos(-rotZ)) * 0.3;
 
-    cam.SetPosition(posX, 1.8, posZ);
+    cam.SetPosition(posX, 1.6, posZ);
     cam.SetRotation(rotX, rotZ);
 
     bool doPrint = cont.buttonPressed(BACK);
@@ -273,5 +276,40 @@ bool UnitTester::RendererDisplayTest(Controller &cont){
 
     indexer = (indexer + 1) % 9;
   }
+  return true;
+}
+
+bool UnitTester::FaceRenderTest(Controller &cont){
+  printf("Start Test\n\n");
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+
+  double pos[][3] = {
+    {1.5, 1.5, 2},
+    {1.5, 2, 2.5},
+    {1, 1.5, 2.5},
+    {1, 2, 3.5}
+  };
+
+  double fac[][3] = {
+    {0, 0, -1},
+    {0, 1, 0},
+    {-1, 0, 0},
+    {0, 0, -1}
+  };
+  for(int i = 0; i < 4; i++){
+    Matrix face_pos = Matrix(1, 3, pos[i]);
+    Matrix face_fac = Matrix(1, 3, fac[i]);
+    Face face = Face(face_pos, face_fac);
+
+    cam.SetPosition(0.5, 2.6, 0);
+    cam.SetRotation(0, 0);
+
+    face.render(cam, renderer);
+  }
+  renderer.render(cont);
+  cont.lcdRefresh();
+  printf("Test completed\n\n");
   return true;
 }

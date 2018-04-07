@@ -3,6 +3,7 @@
 
 using namespace std;
 #include <vector>
+#include <math.h>
 
 typedef std::vector<std::vector<double> > matrix_type;
 
@@ -30,8 +31,10 @@ public:
   double get(int w, int h);
 
   Matrix transpose();
-
-
+  double dot(Matrix other);
+  double distance(Matrix other);
+  double homogDistance(Matrix other);
+  Matrix copy();
 
   //std::vector<double> operator[](int index); // getter only, not setter
   Matrix operator+(Matrix p);
@@ -40,8 +43,6 @@ public:
   Matrix operator*(Matrix p);
   Matrix operator*(double x);
   Matrix operator/(double x);
-
-
 private:
   void Setup(matrix_type m);
   matrix_type _matrix;

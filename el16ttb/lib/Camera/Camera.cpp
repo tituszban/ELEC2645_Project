@@ -109,3 +109,14 @@ Matrix Camera::GetScreenPosition(Matrix p)
   p = p - this->homogPosition;
   return this->NormalisePoint(this->calibrationMatrix * this->projectionMatrix * this->cameraTransformation * p);
 }
+
+Matrix Camera::GetFacing()
+{
+  Matrix R = this->rotationZ * this->rotationX;
+  double forw[] = {0, 0, 1};
+  Matrix forward = Matrix(1, 3, forw);
+  return R * forward;
+}
+Matrix Camera::GetPosition(){
+  return this->position.copy();
+}

@@ -77,6 +77,66 @@ Matrix Matrix::transpose(){
   return m;
 }
 
+double Matrix::dot(Matrix other){
+  if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
+  (this->shape.width != 1 && this->shape.height != 1)){
+    MatrixDimentionMissmatchError(this->shape, other.shape, "Dot product");
+    return -1;
+  }
+  double sum = 0;
+  if(this->shape.width == 1){
+    for(int i = 0; i < this->shape.height; i++){
+      sum += this->get(0, i) * other.get(0, i);
+    }
+  }
+  else{
+    for(int i = 0; i < this->shape.width; i++){
+      sum += this->get(i, 0) * other.get(i, 0);
+    }
+  }
+  return sum;
+}
+
+double Matrix::distance(Matrix other){
+  if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
+  (this->shape.width != 1 && this->shape.height != 1)){
+    MatrixDimentionMissmatchError(this->shape, other.shape, "distance");
+    return -1;
+  }
+  double sum = 0;
+  if(this->shape.width == 1){
+    for(int i = 0; i < this->shape.height; i++){
+      sum += pow(this->get(0, i) - other.get(0, i), 2);
+    }
+  }
+  else{
+    for(int i = 0; i < this->shape.width; i++){
+      sum += pow(this->get(i, 0) - other.get(i, 0), 2);
+    }
+  }
+  return sqrt(sum);
+}
+
+double Matrix::homogDistance(Matrix other){
+  if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
+  (this->shape.width != 1 && this->shape.height != 1)){
+    MatrixDimentionMissmatchError(this->shape, other.shape, "homogenious distance");
+    return -1;
+  }
+  double sum = 0;
+  if(this->shape.width == 1){
+    for(int i = 0; i < this->shape.height - 1; i++){
+      sum += pow(this->get(0, i) - other.get(0, i), 2);
+    }
+  }
+  else{
+    for(int i = 0; i < this->shape.width - 1; i++){
+      sum += pow(this->get(i, 0) - other.get(i, 0), 2);
+    }
+  }
+  return sqrt(sum);
+}
+
 Matrix Matrix::operator+(Matrix p){
   if(this->shape.width != p.shape.width || this->shape.height != p.shape.height){
     MatrixDimentionMissmatchError(this->shape, p.shape, "Addition");
@@ -152,5 +212,9 @@ Matrix Matrix::operator/(double x){
       m.set(i, j, this->_matrix[i][j] / x);
     }
   }
+  return m;
+}
+Matrix Matrix::copy(){
+  Matrix m = Matrix(this->_matrix);
   return m;
 }

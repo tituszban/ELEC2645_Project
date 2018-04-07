@@ -13,6 +13,7 @@ public:
   static bool CameraValueTest();
   static bool CameraScaleTest(Controller &cont);
   static bool RendererDisplayTest(Controller &cont);
+  static bool FaceRenderTest(Controller &cont);
 };
 
 #endif

@@ -1,5 +1,5 @@
 #include <Renderer.h>
-#include <math.h>
+
 
 Renderer::Renderer()
 {
@@ -25,6 +25,8 @@ void Renderer::render(Controller &cont){
   for(int x = 0; x < WIDTH; x++){
     for(int y = 0; y < HEIGHT; y++){
       int v = this->_buffer[x][y].first;
+      // if(v == 1)
+      //   printf("v=1: %d, %d\n", x, y);
       cont.lcdSetPixel(x, y, v);
     }
   }
@@ -50,11 +52,13 @@ void Renderer::addPoint(int x, int y, double d, int value)
 }
 
 void Renderer::addLine(Matrix point1, Matrix point2, int value){
-  int distance = ceil(sqrt(pow(point1.get(0, 0) - point2.get(0, 0), 2) +
-                           pow(point1.get(0, 1) - point2.get(0, 1), 2)));
-  vector<double> lX = this->lerp(point1.get(0, 0), point2.get(0, 0), distance);
-  vector<double> lY = this->lerp(point1.get(0, 1), point2.get(0, 1), distance);
-  vector<double> lZ = this->lerp(point1.get(0, 2), point2.get(0, 2), distance);
+  int distance = ceil(point1.homogDistance(point2));
+   // sqrt(pow(point1.get(0, 0) - point2.get(0, 0), 2) +
+   //                         pow(point1.get(0, 1) - point2.get(0, 1), 2)));
+  vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
+  vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
+  vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
+
 
   for(int i = 0; i < distance; i++){
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
@@ -62,25 +66,16 @@ void Renderer::addLine(Matrix point1, Matrix point2, int value){
 }
 
 void Renderer::addPatternLine(Matrix point1, Matrix point2, vector<int> pattern){
-  int distance = ceil(sqrt(pow(point1.get(0, 0) - point2.get(0, 0), 2) +
-                           pow(point1.get(0, 1) - point2.get(0, 1), 2)));
-  vector<double> lX = this->lerp(point1.get(0, 0), point2.get(0, 0), distance);
-  vector<double> lY = this->lerp(point1.get(0, 1), point2.get(0, 1), distance);
-  vector<double> lZ = this->lerp(point1.get(0, 2), point2.get(0, 2), distance);
+  int distance = ceil(point1.homogDistance(point2));
+   // sqrt(pow(point1.get(0, 0) - point2.get(0, 0), 2) +
+   //                         pow(point1.get(0, 1) - point2.get(0, 1), 2)));
+  vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
+  vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
+  vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
 
   for(int i = 0; i < distance; i++){
-    int scaled_indexer = floor((double) i / ((double) distance + 0.01) * pattern.size());
+    int scaled_indexer = floor((double) i / (double) distance * pattern.size());
     int value = pattern[scaled_indexer];
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
   }
-}
-
-vector<double> Renderer::lerp(double a, double b, int length)
-{
-  vector<double> data(length);
-  double step = (b - a) / (double)length;
-  for(int i = 0; i < length; i++){
-    data[i] = a + step * i;
-  }
-  return data;
 }

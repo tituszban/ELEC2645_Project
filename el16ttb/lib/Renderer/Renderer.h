@@ -5,13 +5,14 @@
 #define HEIGHT 48
 #define RENDER_DISTANCE 10.0
 
+using namespace std;
+
 #include <Controller.h>
 #include <Matrix.h>
-
-
-using namespace std;
 #include <vector>
 #include <utility>
+#include <math.h>
+#include <Util.h>
 
 
 class Renderer{
@@ -26,8 +27,7 @@ public:
 
 private:
   vector< vector< pair<int, double> > > _buffer;
-  vector<double> lerp(double a, double b, int length);
   vector<int> map(vector<int> pattern, int length);
 };
 
-#endif RENDERER
+#endif

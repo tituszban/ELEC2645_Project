@@ -19,8 +19,6 @@ using namespace std;
 
 Controller cont;
 
-// typedef Gamepad::GamepadEvent GEvent;
-
 void DrawPoints();
 
 int main() {
@@ -31,7 +29,7 @@ int main() {
   // lcd.refresh();
   // lcd.printString("Test start", 0, 1);
   // lcd.refresh();
-  UnitTester::RendererDisplayTest(cont);
+  UnitTester::FaceRenderTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();
