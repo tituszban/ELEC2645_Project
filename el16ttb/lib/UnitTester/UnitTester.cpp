@@ -9,6 +9,9 @@ using namespace std;
 #include <Block.h>
 #include <Util.h>
 #include <Face.h>
+#include <Block.h>
+
+#include <ctime>
 
 
 bool UnitTester::MatrixCreationTest(){
@@ -310,6 +313,53 @@ bool UnitTester::FaceRenderTest(Controller &cont){
   }
   renderer.render(cont);
   cont.lcdRefresh();
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool UnitTester::BlockRenderTest(Controller &cont){
+  printf("Start Test\n");
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+
+  vector<vector<int> > textu(1, vector<int>(1, 0));
+  Texture empty = {1, 1, textu};
+  vector<vector<int> > textuFull(1, vector<int>(1, 1));
+  Texture full = {1, 1, textuFull};
+  BlockTexture emptyBlock = {full, empty, empty, empty, empty, empty};
+
+  double pos[][3] = {
+    {0, 1, 3},
+    {1, 1, 3},
+    {1, 1, 2},
+    {-1, 2, 2},
+    {0, 0, 2},
+    {-1, 0, 2},
+    {-1, 0, 3},
+    {0, 1, 1},
+    {0, 2, 4},
+    {1, 2, 4},
+    {-2, 0, 2},
+    {-2, 0, 3},
+    {-1, 3, 2}
+  };
+
+  cam.SetPosition(0.5, 2.6, 0);
+  cam.SetRotation(0, 0);
+
+  for(int i = 0; i < 13; i++){
+    Matrix block_pos = Matrix(1, 3, pos[i]);
+
+    Block block = Block(block_pos, BlockFacing(-cam.GetFacing()), emptyBlock);
+
+    block.render(cam, renderer);
+  }
+
+  renderer.render(cont);
+  cont.lcdRefresh();
+
+
   printf("Test completed\n\n");
   return true;
 }

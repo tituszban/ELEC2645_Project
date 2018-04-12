@@ -1,5 +1,9 @@
 #include "Face.h"
 
+Face::Face(){
+
+}
+
 Face::Face(Matrix position, Matrix facing){
   this->position = position;
   this->facing = facing;
@@ -21,7 +25,6 @@ void Face::render(Camera &cam, Renderer &renderer){
   Matrix rel = this->position - cam.GetPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
   double facing_angle = this->facing.dot(rel);
-  printf("facing_angle: %.3f\n", facing_angle);
   if(facing_angle > 0)
     return;
   Matrix cAT = cam.GetScreenPosition(this->corners.first.first);
@@ -31,7 +34,6 @@ void Face::render(Camera &cam, Renderer &renderer){
   double distA = cAT.homogDistance(cAB);
   double distB = cBT.homogDistance(cBB);
   int mDist = ceil(max(distA, distB));
-  printf("mDist: %d\n", mDist);
   vector<double> lXA = lerp(cAT.get(0, 0), cAB.get(0, 0), mDist);
   vector<double> lYA = lerp(cAT.get(0, 1), cAB.get(0, 1), mDist);
   vector<double> lZA = lerp(cAT.get(0, 2), cAB.get(0, 2), mDist);
@@ -48,9 +50,9 @@ void Face::render(Camera &cam, Renderer &renderer){
     // vector<int> texture(this->texture.texture.begin() + pT * this->texture.width,
     //                     this->texture.texture.begin() + (pT + 1) * this->texture.width);
     vector<int> line_texture = this->texture.texture[pT];
-    double cAn[] = {lXA[i], lYA[i], lZA[i]+0.3};
+    double cAn[] = {lXA[i], lYA[i], lZA[i] + 0.1};
     Matrix cA = Matrix(1, 3, cAn);
-    double cBn[] = {lXB[i], lYA[i], lZA[i]+0.3};
+    double cBn[] = {lXB[i], lYA[i], lZA[i] + 0.1};
     Matrix cB = Matrix(1, 3, cBn);
     renderer.addPatternLine(cA, cB, line_texture);
   }

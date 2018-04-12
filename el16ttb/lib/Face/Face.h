@@ -23,6 +23,7 @@ struct Texture{
 class Face{
 
 public:
+  Face();
   Face(Matrix position, Matrix facing);
   void setTexture(Texture texture);
   void render(Camera &cam, Renderer &renderer);

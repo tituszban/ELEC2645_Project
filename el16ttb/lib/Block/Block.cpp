@@ -1,48 +1,82 @@
 #include "Block.h"
 
-Block::Block(Matrix pos){
-  double block_corners[][3] = {
-    {0, 0, 0},
-    {0, 0, 1},
-    {0, 1, 0},
-    {0, 1, 1},
-    {1, 0, 0},
-    {1, 0, 1},
-    {1, 1, 0},
-    {1, 1, 1}
-  };
-  this->position = pos;
-  for(int i = 0; i < CORNER_N; i++){
-    this->_corners[i] = Matrix(1, 3, block_corners[i]) + pos;
+BlockFacing::BlockFacing(){
+  this->facing = No;
+}
+BlockFacing::BlockFacing(Facing facing){
+  this->facing = facing;
+}
+BlockFacing::BlockFacing(Matrix heading){
+  if(abs(heading.get(0, 0)) > abs(heading.get(0, 2))){
+    if(heading.get(0, 0) > 0){
+      this->facing = We;
+    }
+    else{
+      this->facing = Ea;
+    }
+  }
+  else{
+    if(heading.get(0, 2) > 0){
+      this->facing = No;
+    }
+    else{
+      this->facing = So;
+    }
   }
 }
-
-vector< vector<Matrix> > Block::getEdges(){
-  vector< vector<Matrix> > outp;
-  double block_pairs[][2] = {
-    {0, 1},
-    {0, 2},
-    {0, 4},
-    {3, 1},
-    {3, 2},
-    {3, 7},
-    {5, 1},
-    {5, 4},
-    {5, 7},
-    {6, 2},
-    {6, 4},
-    {6, 7}
-  };
-
-  for(int i = 0; i < EDGE_N; i++){
-    vector<Matrix> edge;
-    int p1 = block_pairs[i][0];
-    int p2 = block_pairs[i][1];
-    edge.push_back(this->_corners[p1]);
-    edge.push_back(this->_corners[p2]);
-    this->_corners[p1].print_matrix();
-    this->_corners[p2].print_matrix();
-    outp.push_back(edge);
+Matrix BlockFacing::left(){
+  double temp[3] = {0, 0, 0};
+  switch(this->facing){
+    case No: temp[0] = 1; break;
+    case We: temp[2] = -1; break;
+    case So: temp[0] = -1; break;
+    case Ea: temp[2] = 1; break;
   }
-  return outp;
+  return Matrix(1, 3, temp);
+}
+Matrix BlockFacing::up(){
+  double temp[] = {0, 1, 0};
+  return Matrix(1, 3, temp);
+}
+Matrix BlockFacing::forward(){
+  double temp[3] = {0, 0, 0};
+  switch(this->facing){
+    case No: temp[2] = 1; break;
+    case We: temp[0] = 1; break;
+    case So: temp[2] = -1; break;
+    case Ea: temp[0] = -1; break;
+  }
+  return Matrix(1, 3, temp);
+}
+
+Block::Block(Matrix pos, BlockFacing facing, BlockTexture texture){
+  this->position = pos;
+  double offsetTemp[] = {0.5, 0.5, 0.5};
+  this->centrePosition = pos + Matrix(1, 3, offsetTemp);
+  this->facing = facing;
+  this->texture = texture;
+
+  this->top = Face(this->centrePosition + facing.up() / 2, facing.up());
+  this->front = Face(this->centrePosition + facing.forward() / 2, facing.forward());
+  this->sideL = Face(this->centrePosition + facing.left() / 2, facing.left());
+  this->bottom = Face(this->centrePosition - facing.up() / 2, -facing.up());
+  this->back = Face(this->centrePosition - facing.forward() / 2, -facing.forward());
+  this->sideR = Face(this->centrePosition - facing.left() / 2, -facing.left());
+
+  this->top.setTexture(texture.top);
+  this->front.setTexture(texture.front);
+  this->sideL.setTexture(texture.sideL);
+  this->bottom.setTexture(texture.bottom);
+  this->back.setTexture(texture.back);
+  this->sideR.setTexture(texture.sideR);
+}
+
+void Block::render(Camera &cam, Renderer &renderer)
+{
+  this->top.render(cam, renderer);
+  this->front.render(cam, renderer);
+  this->sideL.render(cam, renderer);
+  this->bottom.render(cam, renderer);
+  this->back.render(cam, renderer);
+  this->sideR.render(cam, renderer);
 }

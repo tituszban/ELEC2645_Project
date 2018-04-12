@@ -14,6 +14,7 @@ public:
   static bool CameraScaleTest(Controller &cont);
   static bool RendererDisplayTest(Controller &cont);
   static bool FaceRenderTest(Controller &cont);
+  static bool BlockRenderTest(Controller &cont);
 };
 
 #endif
