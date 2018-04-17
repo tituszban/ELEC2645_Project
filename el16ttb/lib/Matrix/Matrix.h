@@ -32,6 +32,7 @@ public:
 
   Matrix transpose();
   double dot(Matrix other);
+  Matrix cross(Matrix other);
   double distance(Matrix other);
   double homogDistance(Matrix other);
   Matrix copy();

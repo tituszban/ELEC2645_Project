@@ -56,8 +56,6 @@ private:
   void UpdateTransformationMatrix();
 
   Matrix NormalisePoint(Matrix p);
-
-  void GenerateRotationMatrices();
 };
 
 

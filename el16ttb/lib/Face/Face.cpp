@@ -4,27 +4,38 @@ Face::Face(){
 
 }
 
-Face::Face(Matrix position, Matrix facing){
-  this->position = position;
-  this->facing = facing;
+void Face::setTexture(Texture texture){
+  this->texture = texture;
+}
+
+void Face::updateCorners(){
   this->texture = this->getEmptyTexture();
-  pair<Matrix, Matrix> perpVectors = getPerpVectors(facing);
+  // pair<Matrix, Matrix> perpVectors = getPerpVectors(facing);
+  // replace with cross product
   Matrix c1 = pos2homogPos(position + perpVectors.first * 0.5 + perpVectors.second * 0.5);
   Matrix c2 = pos2homogPos(position + perpVectors.first * 0.5 + perpVectors.second * -0.5);
   Matrix c3 = pos2homogPos(position + perpVectors.first * -0.5 + perpVectors.second * 0.5);
   Matrix c4 = pos2homogPos(position + perpVectors.first * -0.5 + perpVectors.second * -0.5);
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > c(pair<Matrix, Matrix>(c1, c2), pair<Matrix, Matrix>(c3, c4));
   this->corners = c;
+  this->faceChanged = false;
 }
 
-void Face::setTexture(Texture texture){
-  this->texture = texture;
+void Face::setDirection(Matrix normal, Matrix up){
+  this->normal = normal;
+  this->up = up;
+  this->faceChanged = true;
+}
+
+void Face::setPosition(Matrix position){
+  this->position = position;
+  this->faceChanged = true;
 }
 
 void Face::render(Camera &cam, Renderer &renderer){
   Matrix rel = this->position - cam.GetPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
-  double facing_angle = this->facing.dot(rel);
+  double facing_angle = this->normal.dot(rel);
   if(facing_angle > 0)
     return;
   Matrix cAT = cam.GetScreenPosition(this->corners.first.first);

@@ -22,15 +22,20 @@ class Face{
 
 public:
   Face();
-  Face(Matrix position, Matrix facing);
   void setTexture(Texture texture);
+  void setDirection(Matrix normal, Matrix up);
+  void setPosition(Matrix position);
   void render(Camera &cam, Renderer &renderer);
 
 private:
   Matrix position;
-  Matrix facing;
+  Matrix normal;
+  Matrix up;
   Texture texture;
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > corners;
+  bool faceChanged;
+
+  void updateCorners();
 
   Texture getEmptyTexture();
 };

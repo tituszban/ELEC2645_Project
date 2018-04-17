@@ -97,6 +97,18 @@ double Matrix::dot(Matrix other){
   return sum;
 }
 
+Matrix Matrix::cross(Matrix other){
+  if(this->shape.width != 1 || this->shape.height != 3 || other.shape.width != 1 || other.shape.height != 3){
+    MatrixDimentionMissmatchError(this->shape, other.shape, "Cross product");
+    return Matrix();
+  }
+  Matrix m = Matrix(1, 3);
+  m.set(0, 0, this->get(0, 1) * other.get(0, 2) - this->get(0, 2) * other.get(0, 1));
+  m.set(0, 1, this->get(0, 2) * other.get(0, 0) - this->get(0, 0) * other.get(0, 2));
+  m.set(0, 2, this->get(0, 0) * other.get(0, 1) - this->get(0, 1) * other.get(0, 0));
+  return m;
+}
+
 double Matrix::distance(Matrix other){
   if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
   (this->shape.width != 1 && this->shape.height != 1)){
