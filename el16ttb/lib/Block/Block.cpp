@@ -70,13 +70,19 @@ Block::Block(Matrix pos, BlockFacing facing, BlockTexture texture){
   this->back.setTexture(texture.back);
   this->sideR.setTexture(texture.sideR);
 }
+Block::Block(){
+
+}
+
 
 void Block::render(Camera &cam, Renderer &renderer)
 {
+  // printf("Starting rendering\n");
   this->top.render(cam, renderer);
   this->front.render(cam, renderer);
   this->sideL.render(cam, renderer);
   this->bottom.render(cam, renderer);
   this->back.render(cam, renderer);
   this->sideR.render(cam, renderer);
+  // printf("finished rendering\n");
 }

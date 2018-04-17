@@ -42,7 +42,7 @@ void Renderer::addPoint(int x, int y, double d, int value)
     return;
   if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
     return;
-  if(d <= this->_buffer[x][y].second){
+  if(d < this->_buffer[x][y].second || (d <= this->_buffer[x][y].second && value == 1)){
     this->_buffer[x][y].first = value;
     this->_buffer[x][y].second = d;
   }
@@ -50,15 +50,22 @@ void Renderer::addPoint(int x, int y, double d, int value)
 
 void Renderer::addLine(Matrix point1, Matrix point2, int value){
   int distance = ceil(point1.homogDistance(point2));
+  // printf("distance found: %d\n", distance);
+  if(distance > 100){
+    return;
+  }
+
   vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
   vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
   vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
-
+  // printf("lerped\n");
   for(int i = 0; i < distance; i++){
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
   }
+  // printf("line added\n");
   this->addPoint(round(point1.get(0, 0)), round(point1.get(0, 1)), point1.get(0, 2), value);
   this->addPoint(round(point2.get(0, 0)), round(point2.get(0, 1)), point2.get(0, 2), value);
+  // printf("ends added\n");
 }
 
 void Renderer::addPatternLine(Matrix point1, Matrix point2, vector<int> pattern){

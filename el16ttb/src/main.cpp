@@ -21,14 +21,25 @@ Controller cont;
 
 void DrawPoints();
 
+float led = 0;
+void alive(){
+  led = 1 - led;
+  cont.led(1, led);
+}
+
+Ticker t;
+
 int main() {
   cont.init();
-  cont.ledsOn();
+  // cont.ledsOn();
   cont.lcdContrast(0.5);
+  t.attach(&alive, 1.0);
   // lcd.printString("Matrix test", 0, 0);
   // lcd.refresh();
   // lcd.printString("Test start", 0, 1);
   // lcd.refresh();
+
+
   UnitTester::BlockRenderTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();

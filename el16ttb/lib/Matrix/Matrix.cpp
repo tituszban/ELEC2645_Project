@@ -51,7 +51,7 @@ void Matrix::print_matrix(){
   for(int j = 0; j < this->shape.height; j++){
     for(int i = 0; i < this->shape.width; i++){
       char b[1024];
-      sprintf(b, "%s\t%.3f%s", buffer.c_str(), this->get(i, j), (i + 1 < this->shape.width ? "" : "\n"));
+      sprintf(b, "%s\t%f%s", buffer.c_str(), this->get(i, j), (i + 1 < this->shape.width ? "" : "\n"));
       string str(b);
       buffer = str;
     }

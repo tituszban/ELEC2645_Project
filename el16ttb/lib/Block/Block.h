@@ -43,6 +43,7 @@ public:
 class Block{
 public:
   Block(Matrix pos, BlockFacing facing, BlockTexture texture);
+  Block();
   void render(Camera &cam, Renderer &renderer);
 
 private:

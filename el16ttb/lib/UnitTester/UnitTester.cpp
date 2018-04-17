@@ -317,12 +317,37 @@ bool UnitTester::FaceRenderTest(Controller &cont){
   return true;
 }
 
+void memoryBenchmark(char* id){
+  return;
+  // perform free memory check
+  // printf("%s\n", id);
+  int blockSize = 16;
+  int i = 1;
+  // printf("Checking memory with blocksize %d char ...\n", blockSize);
+  while (true) {
+      char *p = (char *) malloc(i * blockSize);
+      if (p == NULL)
+          break;
+      free(p);
+      ++i;
+  }
+  printf("id: %s\tmemory left: %d char\n", id, (i - 1) * blockSize);
+  // printf(id);
+  // printf("%s:\tA: %p, A2: %p, B: %p\tA - B: %d\n", id, a, a2, b, (a - b)/1024);
+  // delete b;
+  // printf("B - A: %d\n", (a - b) / 1024);
+}
+
 bool UnitTester::BlockRenderTest(Controller &cont){
-  printf("Start Test\n");
+  printf("\nStart Test\n");
+
+  memoryBenchmark("Start");
   Renderer renderer;
+  memoryBenchmark("Renderer");
   Camera cam;
   cam.init();
-
+  memoryBenchmark("Camera");
+  // printf("Camera inited\n");
   vector<vector<int> > textu(1, vector<int>(1, 0));
   Texture empty = {1, 1, textu};
   vector<vector<int> > textuFull(1, vector<int>(1, 1));
@@ -344,21 +369,67 @@ bool UnitTester::BlockRenderTest(Controller &cont){
     {-2, 0, 3},
     {-1, 3, 2}
   };
+  memoryBenchmark("Textures");
+  // Block blocks[10];
+  // printf("vector created\n");
+  // for(int i = 0; i < 10; i++){
+  //   Matrix block_pos = Matrix(1, 3, pos[i]);
+  //
+  //   Block block = Block(block_pos, BlockFacing(-cam.GetFacing()), emptyBlock);
+  //   printf("Block created\n");
+  //   blocks[i] = block;
+  //
+  //   printf("Block pushed\n");
+  // }
+  // printf("vector filled\n");
 
-  cam.SetPosition(0.5, 2.6, 0);
-  cam.SetRotation(0, 0);
+  double posX = 0.5;
+  double posZ = 0.5;
 
-  for(int i = 0; i < 13; i++){
-    Matrix block_pos = Matrix(1, 3, pos[i]);
+  double rotX = 0;
+  double rotZ = 0;
+  while(1){
+    cont.lcdClear();
+    renderer.clearBuffer();
+    printf("Start frame\n");
 
-    Block block = Block(block_pos, BlockFacing(-cam.GetFacing()), emptyBlock);
+    // int n = 0;
+    // int *a = &n;
+    // int *b = new int();
+    // printf("A: %p, B: %p\n", a, b);
+    // printf("B - A: %d\n", (b - a) / 1024);
+    memoryBenchmark("Runtime1");
+    memoryBenchmark("Runtime2");
 
-    block.render(cam, renderer);
+    rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
+    rotX += pow(cont.joystickCoord().y, 3) * -0.15;
+
+    double moveX = (cont.buttonDown(A) ? -1 : 0) + (cont.buttonDown(Y) ? 1 : 0);
+    double moveZ = (cont.buttonDown(X) ? -1 : 0) + (cont.buttonDown(B) ? 1 : 0);
+
+    posZ += (moveX * cos(rotZ) + moveZ * sin(rotZ)) * 0.3;
+    posX += (moveX * sin(-rotZ) + moveZ * cos(rotZ)) * 0.3;
+
+    cam.SetPosition(posX, 2.6, posZ);
+    cam.SetRotation(rotX, rotZ);
+    // cam.SetPosition(0.5, 2.6, 0);
+    // cam.SetRotation(0, 0);
+    for(int i = 0; i < 3; i++){
+      // printf("Rendering block: %d\n", i);
+      Matrix block_pos = Matrix(1, 3, pos[i]);
+
+      Block block = Block(block_pos, BlockFacing(-cam.GetFacing()), emptyBlock);
+      //printf("size: %d\n", sizeof(block));
+      block.render(cam, renderer);
+      // printf("Block rendererd\n");
+      // error("Something went wrong\n");
+    }
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+    printf("End frame\n");
+    wait(0.1);
   }
-
-  renderer.render(cont);
-  cont.lcdRefresh();
-
 
   printf("Test completed\n\n");
   return true;
