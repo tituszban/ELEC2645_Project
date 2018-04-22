@@ -42,30 +42,42 @@ void Renderer::addPoint(int x, int y, double d, int value)
     return;
   if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
     return;
+  if(value == -1)
+    return;
   if(d < this->_buffer[x][y].second || (d <= this->_buffer[x][y].second && value == 1)){
     this->_buffer[x][y].first = value;
     this->_buffer[x][y].second = d;
   }
 }
 
+void Renderer::addUIPoint(Matrix point, int value){
+  int x = round(point.get(0, 0));
+  int y = round(point.get(0, 1));
+  this->addUIPoint(x, y, value);
+}
+
+void Renderer::addUIPoint(int x, int y, int value){
+  if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+    return;
+  if(value == -1)
+    return;
+  this->_buffer[x][y].first = value;
+  this->_buffer[x][y].second = 0;
+}
+
 void Renderer::addLine(Matrix point1, Matrix point2, int value){
   int distance = ceil(point1.homogDistance(point2));
-  // printf("distance found: %d\n", distance);
   if(distance > 100){
     return;
   }
-
   vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
   vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
   vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
-  // printf("lerped\n");
   for(int i = 0; i < distance; i++){
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
   }
-  // printf("line added\n");
   this->addPoint(round(point1.get(0, 0)), round(point1.get(0, 1)), point1.get(0, 2), value);
   this->addPoint(round(point2.get(0, 0)), round(point2.get(0, 1)), point2.get(0, 2), value);
-  // printf("ends added\n");
 }
 
 void Renderer::addPatternLine(Matrix point1, Matrix point2, vector<int> pattern){
@@ -81,4 +93,14 @@ void Renderer::addPatternLine(Matrix point1, Matrix point2, vector<int> pattern)
   }
   this->addPoint(round(point1.get(0, 0)), round(point1.get(0, 1)), point1.get(0, 2), pattern[0]);
   this->addPoint(round(point2.get(0, 0)), round(point2.get(0, 1)), point2.get(0, 2), pattern[pattern.size() - 1]);
+}
+
+void Renderer::addUISprite(Matrix point, Texture sprite){
+  int x = round(point.get(0, 0));
+  int y = round(point.get(0, 1));
+  for(int i = 0; i < sprite.width; i++){
+    for(int j = 0; j < sprite.height; j++){
+      this->addUIPoint(x + i, y + j, sprite.texture[j][i]);
+    }
+  }
 }

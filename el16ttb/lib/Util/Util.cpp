@@ -51,3 +51,50 @@ pair<Matrix, Matrix> getPerpVectors(Matrix fwd)
   }
   return p;
 }
+
+void memoryBenchmark(string id){
+  return;
+  // perform free memory check
+  // printf("%s\n", id);
+  int blockSize = 16;
+  int i = 1;
+  // printf("Checking memory with blocksize %d char ...\n", blockSize);
+  while (true) {
+      char *p = (char *) malloc(i * blockSize);
+      if (p == NULL)
+          break;
+      free(p);
+      ++i;
+  }
+  printf("id: %s\tmemory left: %d char\n", id.c_str(), (i - 1) * blockSize);
+  // printf(id);
+  // printf("%s:\tA: %p, A2: %p, B: %p\tA - B: %d\n", id, a, a2, b, (a - b)/1024);
+  // delete b;
+  // printf("B - A: %d\n", (a - b) / 1024);
+}
+
+// Texture arrayToTexture(int width, int height, int* array){
+//   vector<vector<int> > textu;
+//   for(int h = 0; h < height; h++){
+//     vector<int> line;
+//     for(int w = 0; w < width; w++){
+//       line.push_back(array[h * width + w]);
+//     }
+//     textu.push_back(line);
+//   }
+//   Texture texture = {width, height, textu};
+//   return texture;
+// }
+
+Texture arrayToTexture(int width, int height, const int* array){
+  vector<vector<int> > textu;
+  for(int h = 0; h < height; h++){
+    vector<int> line;
+    for(int w = 0; w < width; w++){
+      line.push_back(array[h * width + w]);
+    }
+    textu.push_back(line);
+  }
+  Texture texture = {width, height, textu};
+  return texture;
+}

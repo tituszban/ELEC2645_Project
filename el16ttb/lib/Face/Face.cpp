@@ -9,13 +9,11 @@ void Face::setTexture(Texture texture){
 }
 
 void Face::updateCorners(){
-  this->texture = this->getEmptyTexture();
-  // pair<Matrix, Matrix> perpVectors = getPerpVectors(facing);
-  // replace with cross product
-  Matrix c1 = pos2homogPos(position + perpVectors.first * 0.5 + perpVectors.second * 0.5);
-  Matrix c2 = pos2homogPos(position + perpVectors.first * 0.5 + perpVectors.second * -0.5);
-  Matrix c3 = pos2homogPos(position + perpVectors.first * -0.5 + perpVectors.second * 0.5);
-  Matrix c4 = pos2homogPos(position + perpVectors.first * -0.5 + perpVectors.second * -0.5);
+  // this->texture = this->getEmptyTexture();
+  Matrix c1 = pos2homogPos(position + this->left * this->halfWidth + this->up * this->halfHeight);
+  Matrix c2 = pos2homogPos(position + this->left * this->halfWidth + this->up * -this->halfHeight);
+  Matrix c3 = pos2homogPos(position + this->left * -this->halfWidth + this->up * this->halfHeight);
+  Matrix c4 = pos2homogPos(position + this->left * -this->halfWidth + this->up * -this->halfHeight);
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > c(pair<Matrix, Matrix>(c1, c2), pair<Matrix, Matrix>(c3, c4));
   this->corners = c;
   this->faceChanged = false;
@@ -24,6 +22,7 @@ void Face::updateCorners(){
 void Face::setDirection(Matrix normal, Matrix up){
   this->normal = normal;
   this->up = up;
+  this->left = normal.cross(up);
   this->faceChanged = true;
 }
 
@@ -32,7 +31,16 @@ void Face::setPosition(Matrix position){
   this->faceChanged = true;
 }
 
+void Face::setSize(double width, double height){
+  this->halfWidth = width * 0.5;
+  this->halfHeight = height * 0.5;
+  this->faceChanged = true;
+}
+
 void Face::render(Camera &cam, Renderer &renderer){
+  if(this->faceChanged)
+    this->updateCorners();
+
   Matrix rel = this->position - cam.GetPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
   double facing_angle = this->normal.dot(rel);
@@ -45,7 +53,6 @@ void Face::render(Camera &cam, Renderer &renderer){
   double distA = cAT.homogDistance(cAB);
   double distB = cBT.homogDistance(cBB);
   int mDist = ceil(max(distA, distB));
-  // printf("mDist found: %d\n", mDist);
   if(mDist > 100){
     return;
   }
@@ -55,12 +62,10 @@ void Face::render(Camera &cam, Renderer &renderer){
   vector<double> lXB = lerp(cBT.get(0, 0), cBB.get(0, 0), mDist);
   vector<double> lYB = lerp(cBT.get(0, 1), cBB.get(0, 1), mDist);
   vector<double> lZB = lerp(cBT.get(0, 2), cBB.get(0, 2), mDist);
-  // printf("edges found\n");
-  renderer.addLine(cAT, cAB, 1);
-  renderer.addLine(cAT, cBT, 1);
-  renderer.addLine(cAB, cBB, 1);
-  renderer.addLine(cBT, cBB, 1);
-  // printf("edges drawn\n");
+  // renderer.addLine(cAT, cAB, 1);
+  // renderer.addLine(cAT, cBT, 1);
+  // renderer.addLine(cAB, cBB, 1);
+  // renderer.addLine(cBT, cBB, 1);
   for(int i = 0; i < mDist; i++)
   {
     double p = (double)i / (double)mDist;

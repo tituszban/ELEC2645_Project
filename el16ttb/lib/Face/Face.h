@@ -12,12 +12,6 @@ using namespace std;
 #include <Util.h>
 #include <math.h>
 
-struct Texture{
-  int width;
-  int height;
-  vector<vector<int> > texture;
-};
-
 class Face{
 
 public:
@@ -26,12 +20,16 @@ public:
   void setDirection(Matrix normal, Matrix up);
   void setPosition(Matrix position);
   void render(Camera &cam, Renderer &renderer);
+  void setSize(double width, double height);
 
 private:
   Matrix position;
   Matrix normal;
   Matrix up;
+  Matrix left;
   Texture texture;
+  double halfWidth;
+  double halfHeight;
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > corners;
   bool faceChanged;
 
