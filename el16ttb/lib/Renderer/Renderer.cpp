@@ -104,3 +104,11 @@ void Renderer::addUISprite(Matrix point, Texture sprite){
     }
   }
 }
+
+void Renderer::addUISprite(int x, int y, Texture sprite){
+  for(int i = 0; i < sprite.width; i++){
+    for(int j = 0; j < sprite.height; j++){
+      this->addUIPoint(x + i, y + j, sprite.texture[j][i]);
+    }
+  }
+}

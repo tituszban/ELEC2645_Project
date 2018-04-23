@@ -27,6 +27,7 @@ public:
   void addLine(Matrix point1, Matrix point2, int value);
   void addPatternLine(Matrix point1, Matrix point2, vector<int> pattern);
   void addUISprite(Matrix point, Texture sprite);
+  void addUISprite(int x, int y, Texture sprite);
 
 private:
   vector< vector< pair<int, double> > > _buffer;
