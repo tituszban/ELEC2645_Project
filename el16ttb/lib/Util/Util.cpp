@@ -53,7 +53,6 @@ pair<Matrix, Matrix> getPerpVectors(Matrix fwd)
 }
 
 void memoryBenchmark(string id){
-  return;
   // perform free memory check
   // printf("%s\n", id);
   int blockSize = 16;
@@ -67,24 +66,8 @@ void memoryBenchmark(string id){
       ++i;
   }
   printf("id: %s\tmemory left: %d char\n", id.c_str(), (i - 1) * blockSize);
-  // printf(id);
-  // printf("%s:\tA: %p, A2: %p, B: %p\tA - B: %d\n", id, a, a2, b, (a - b)/1024);
-  // delete b;
-  // printf("B - A: %d\n", (a - b) / 1024);
 }
 
-// Texture arrayToTexture(int width, int height, int* array){
-//   vector<vector<int> > textu;
-//   for(int h = 0; h < height; h++){
-//     vector<int> line;
-//     for(int w = 0; w < width; w++){
-//       line.push_back(array[h * width + w]);
-//     }
-//     textu.push_back(line);
-//   }
-//   Texture texture = {width, height, textu};
-//   return texture;
-// }
 
 Texture arrayToTexture(int width, int height, const int* array){
   vector<vector<int> > textu;
@@ -97,4 +80,30 @@ Texture arrayToTexture(int width, int height, const int* array){
   }
   Texture texture = {width, height, textu};
   return texture;
+}
+
+Texture flipTexture(Texture tx, int d){
+  if(d == 0){
+    for(int w = 0; w < tx.width / 2; w++){
+      for(int h = 0; h < tx.height; h++){
+        int temp = tx.texture[h][w];
+        tx.texture[h][w] = tx.texture[h][tx.width - w - 1];
+        tx.texture[h][tx.width - w - 1] = temp;
+      }
+    }
+  }
+  else if(d == 1){
+    for(int h = 0; h < tx.height / 2; h++){
+      for(int w = 0; w < tx.width; w++){
+        int temp = tx.texture[h][w];
+        tx.texture[h][w] = tx.texture[tx.height - h - 1][w];
+        tx.texture[tx.height - h - 1][w] = temp;
+      }
+    }
+  }
+  else if(d == 2)
+  {
+    return flipTexture(flipTexture(tx, 0), 1);
+  }
+  return tx;
 }

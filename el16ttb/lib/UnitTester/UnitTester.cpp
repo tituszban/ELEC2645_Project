@@ -10,6 +10,7 @@ using namespace std;
 #include "Face.h"
 #include "Controller.h"
 #include "TieFighter.h"
+#include "ImperialShuttle.h"
 #include "UI.h"
 
 
@@ -345,7 +346,8 @@ bool FaceRenderTest(Controller &cont){
 #define FLYBY
 
 bool TieFighterRenderTest(Controller &cont){
-  printf("Start Test\n\n");
+  printf("Start Test!\n\n");
+  memoryBenchmark("Start");
   Renderer renderer;
   Camera cam;
   cam.init();
@@ -354,36 +356,67 @@ bool TieFighterRenderTest(Controller &cont){
   int index = 0;
   int indexTick = 0;
 
-  cam.SetPosition(1, 3, 1);
+  cam.SetPosition(1, 3, 0);
   cam.SetRotation(0, 0);
-
+  memoryBenchmark("Create camera and renderer");
   double dir[] = {-0.5, 0, -0.866};
 #ifdef FLYBY
-  double pos[] = {9.5, 3, 21};
+  double shPos[] = {9.5, 3, 21};
+  double tf1Pos[] = {12.21, 3, 21.73};
+  double tf2Pos[] = {8.77, 3, 23.71};
+  Matrix tf1Position = Matrix(1, 3, tf1Pos);
+  Matrix tf2Position = Matrix(1, 3, tf2Pos);
 #else
-  double pos[] = {1, 3, 3};
+  double shPos[] = {1, 3, 3};
 #endif
-  Matrix position = Matrix(1, 3, pos);
+  Matrix shPosition = Matrix(1, 3, shPos);
   Matrix direction = Matrix(1, 3, dir);
-  TieFighter tf = TieFighter();
+  // TieFighter tf = TieFighter();
+  memoryBenchmark("Create data");
+  ImperialShuttle sh = ImperialShuttle();
+  memoryBenchmark("create shuttle");
+#ifdef FLYBY
+  TieFighter tf1 = TieFighter();
+  TieFighter tf2 = TieFighter();
+  memoryBenchmark("Create tie fighters");
+#endif
+
   double rot = PI * 5.0 / 6.0;
   while(1){
     cont.lcdClear();
     renderer.clearBuffer();
     // renderer.addUISprite(Matrix(1, 2), sprite);
-    tf.setPosition(position);
-    tf.setRotation(rot);
+    sh.setPosition(shPosition);
+    sh.setRotation(rot);
 #ifdef FLYBY
-    position = position + direction * 0.12;
-    if(position.get(0, 2) < 2){
-      position.set(0, 0, 9.5);
-      position.set(0, 2, 21);
+    tf1.setPosition(tf1Position);
+    tf2.setPosition(tf2Position);
+    tf1.setRotation(rot);
+    tf2.setRotation(rot);
+    printf("Set all tie fighter positions\n");
+    shPosition = shPosition + direction * 0.12;
+    tf1Position = tf1Position + direction * 0.12;
+    tf2Position = tf2Position + direction * 0.12;
+    if(shPosition.get(0, 2) < 1){
+      shPosition.set(0, 0, 9.5);
+      shPosition.set(0, 2, 21);
     }
 #else
     rot += 0.05;
 #endif
-    tf.render(cam, renderer);
+    printf("Start render\n");
+    sh.render(cam, renderer);
+    printf("Mark1\n");
+#ifdef FLYBY
+    tf1.render(cam, renderer);
+    printf("Mark2\n");
+    tf2.render(cam, renderer);
+    printf("Mark3\n");
+#endif
+    memoryBenchmark("Before ui");
     ui.render(index, renderer);
+    memoryBenchmark("After ui");
+    printf("Render finished\n");
     if(indexTick++ % 10 == 0)
       index++;
 

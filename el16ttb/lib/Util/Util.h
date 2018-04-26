@@ -21,6 +21,8 @@ struct Texture{
 Matrix pos2homogPos(Matrix pos);
 vector<double> lerp(double a, double b, int length);
 pair<Matrix, Matrix> getPerpVectors(Matrix fwd);
+void memoryBenchmark(string id);
 Texture arrayToTexture(int width, int height, const int* array);
+Texture flipTexture(Texture tx, int d);
 
 #endif
