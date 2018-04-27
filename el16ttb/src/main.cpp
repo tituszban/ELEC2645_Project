@@ -55,8 +55,10 @@ int main() {
   // lcd.refresh();
 
 
-  SpriteDrawTest(cont);
+  LivesTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();
+
+  cont.lcdSetBrightness(0);
 }

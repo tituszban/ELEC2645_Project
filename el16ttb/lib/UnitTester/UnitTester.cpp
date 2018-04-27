@@ -13,6 +13,7 @@ using namespace std;
 #include "ImperialShuttle.h"
 #include "UI.h"
 #include "Skybox.h"
+#include "Lives.h"
 
 
 #include <ctime>
@@ -528,6 +529,21 @@ bool SkyboxTest(Controller &cont){
     renderer.render(cont);
     cont.lcdRefresh();
   }
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool LivesTest(Controller &cont){
+  printf("Start Test!\n\n");
+  Lives lives = Lives(cont);
+
+  while(!lives.isGameOver()){
+    if(cont.buttonPressed(A)){
+      printf("Button pressed\n");
+      lives.damage(10);
+    }
+  }
+
   printf("Test completed\n\n");
   return true;
 }
