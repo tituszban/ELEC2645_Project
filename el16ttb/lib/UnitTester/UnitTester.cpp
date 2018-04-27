@@ -12,6 +12,7 @@ using namespace std;
 #include "TieFighter.h"
 #include "ImperialShuttle.h"
 #include "UI.h"
+#include "Skybox.h"
 
 
 #include <ctime>
@@ -343,7 +344,7 @@ bool FaceRenderTest(Controller &cont){
   return true;
 }
 
-// #define FLYBY
+#define FLYBY
 
 bool TieFighterRenderTest(Controller &cont){
   printf("Start Test!\n\n");
@@ -351,6 +352,7 @@ bool TieFighterRenderTest(Controller &cont){
   Renderer renderer;
   Camera cam;
   cam.init();
+  Skybox skybox;
 
   UI ui = UI();
   int index = 0;
@@ -367,7 +369,7 @@ bool TieFighterRenderTest(Controller &cont){
   Matrix tf1Position = Matrix(1, 3, tf1Pos);
   Matrix tf2Position = Matrix(1, 3, tf2Pos);
 #else
-  double shPos[] = {1, 3, 35};
+  double shPos[] = {1, 3, 15};
 #endif
   Matrix shPosition = Matrix(1, 3, shPos);
   Matrix direction = Matrix(1, 3, dir);
@@ -412,6 +414,7 @@ bool TieFighterRenderTest(Controller &cont){
 #else
     rot += 0.05;
 #endif
+  skybox.render(cam, renderer);
     // printf("Start render\n");
     sh.render(cam, renderer);
     // printf("Mark1\n");
@@ -425,7 +428,6 @@ bool TieFighterRenderTest(Controller &cont){
     // printf("Render finished\n");
     if(indexTick++ % 10 == 0)
       index++;
-
 
     renderer.render(cont);
     cont.lcdRefresh();
@@ -497,6 +499,35 @@ bool SpriteDrawTest(Controller &cont){
 
 
 
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool SkyboxTest(Controller &cont){
+  printf("Start Test!\n\n");
+  Renderer renderer;
+  double rotX = 0;
+  double rotZ = 0;
+  Camera cam;
+  cam.init();
+
+  Skybox skybox;
+
+  while(1){
+    cont.lcdClear();
+    renderer.clearBuffer();
+
+    rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
+    rotX += pow(cont.joystickCoord().y, 3) * -0.15;
+
+    cam.SetPosition(0, 1, 0);
+    cam.SetRotation(rotX, rotZ);
+
+    skybox.render(cam, renderer);
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+  }
   printf("Test completed\n\n");
   return true;
 }

@@ -55,7 +55,7 @@ int main() {
   // lcd.refresh();
 
 
-  TieFighterRenderTest(cont);
+  SpriteDrawTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();

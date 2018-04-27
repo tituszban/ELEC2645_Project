@@ -65,6 +65,23 @@ void Renderer::addUIPoint(int x, int y, int value){
   this->_buffer[x][y].second = 0;
 }
 
+void Renderer::addSkyboxPoint(Matrix point, int value){
+  int x = round(point.get(0, 0));
+  int y = round(point.get(0, 1));
+  this->addSkyboxPoint(x, y, value);
+}
+
+void Renderer::addSkyboxPoint(int x, int y, int value){
+  if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+    return;
+  if(value == -1)
+    return;
+  if(this->_buffer[x][y].second < RENDER_DISTANCE)
+    return;
+  this->_buffer[x][y].first = value;
+  this->_buffer[x][y].second = RENDER_DISTANCE;
+}
+
 void Renderer::addLine(Matrix point1, Matrix point2, int value){
   int distance = ceil(point1.homogDistance(point2));
   if(distance > 100){

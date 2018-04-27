@@ -24,6 +24,8 @@ public:
   void addPoint(int x, int y, double d, int value);
   void addUIPoint(Matrix point, int value);
   void addUIPoint(int x, int y, int value);
+  void addSkyboxPoint(Matrix point, int value);
+  void addSkyboxPoint(int x, int y, int value);
   void addLine(Matrix point1, Matrix point2, int value);
   void addPatternLine(Matrix point1, Matrix point2, vector<int> pattern);
   void addUISprite(Matrix point, Texture sprite);
