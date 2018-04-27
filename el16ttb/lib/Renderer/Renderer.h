@@ -3,7 +3,7 @@
 
 #define WIDTH 84
 #define HEIGHT 48
-#define RENDER_DISTANCE 10.0
+#define RENDER_DISTANCE 30.0
 
 using namespace std;
 
@@ -28,6 +28,7 @@ public:
   void addPatternLine(Matrix point1, Matrix point2, vector<int> pattern);
   void addUISprite(Matrix point, Texture sprite);
   void addUISprite(int x, int y, Texture sprite);
+  void addUISprite(int x, int y, int w, int h, const int* texture);
 
 private:
   vector< vector< pair<int, double> > > _buffer;

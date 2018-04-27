@@ -112,3 +112,12 @@ void Renderer::addUISprite(int x, int y, Texture sprite){
     }
   }
 }
+
+void Renderer::addUISprite(int x, int y, int w, int h, const int* texture){
+  for(int i = 0; i < h; i++){
+    for(int j = 0; j < w; j++){
+      // printf("x: %d, y: %d, x+i: %d, y+j: %d, j*h + i: %d, t: %d\n", x, y, x+j, y+h, i*w + j, texture[i * w + j]);
+      this->addUIPoint(x + j, y + i, texture[i * w + j]);
+    }
+  }
+}

@@ -17,34 +17,22 @@ void UI::setFire(int left, int right){
 }
 
 void UI::render(int index, Renderer &renderer){
-  memoryBenchmark("before UI");
-  Texture cockpit = arrayToTexture(84, 48, cockpitSprite);
-  renderer.addUISprite(0, 0, cockpit);
-  Texture topBar = arrayToTexture(16, 1, topBarSprites[index % 19]);
-  renderer.addUISprite(34, 30, topBar);
-  Texture leftBottom = arrayToTexture(6, 3, leftBottomSprites[index % 3]);
-  renderer.addUISprite(9, 44, leftBottom);
-  Texture rightBottom = arrayToTexture(6, 3, rightBottomSprites[index % 4]);
-  renderer.addUISprite(69, 44, rightBottom);
-  Texture ticker = arrayToTexture(7, 2, tickerSprites[index % 6]);
-  renderer.addUISprite(23, 45, ticker);
-  Texture rightIndicator = arrayToTexture(6, 1, rightIndicatorSprites[index % 21]);
-  renderer.addUISprite(59, 38, rightIndicator);
-  Texture rightBlinker = arrayToTexture(2, 5, rightBlinkerSprites[index % 5]);
-  renderer.addUISprite(53, 36, rightBlinker);
-  Texture leftBlinker = arrayToTexture(2, 5, leftBlinkerSprites[index % 7]);
-  renderer.addUISprite(29, 36, leftBlinker);
-  Texture leftBar = arrayToTexture(1, 5, barSprites[this->leftBar]);
-  renderer.addUISprite(55, 43, leftBar);
-  Texture rightBar = arrayToTexture(1, 5, barSprites[this->rightBar]);
-  renderer.addUISprite(59, 43, rightBar);
-  Texture leftFire = arrayToTexture(4, 3, leftBigIndicatorSprite[this->leftFire]);
-  renderer.addUISprite(8, 40, leftFire);
-  Texture rightFire = arrayToTexture(4, 3, rightBigIndicatorSprite[this->rightFire]);
-  renderer.addUISprite(72, 40, rightFire);
-  Texture dir = arrayToTexture(3, 3, dirSprites[this->dir]);
-  renderer.addUISprite(23, 38, dir);
-  memoryBenchmark("After UI");
+  // memoryBenchmark("before UI");
+  // Texture cockpit = arrayToTexture(84, 48, cockpitSprite);
+  renderer.addUISprite(0, 0, 84, 48, cockpitSprite);
+  renderer.addUISprite(34, 30, 16, 1, topBarSprites[index % 19]);
+  renderer.addUISprite(9, 44, 6, 3, leftBottomSprites[index % 3]);
+  renderer.addUISprite(69, 44, 6, 3, rightBottomSprites[index % 4]);
+  renderer.addUISprite(23, 45, 7, 2, tickerSprites[index % 6]);
+  renderer.addUISprite(59, 38, 6, 1, rightIndicatorSprites[index % 21]);
+  renderer.addUISprite(53, 36, 2, 5, rightBlinkerSprites[index % 5]);
+  renderer.addUISprite(29, 36, 2, 5, leftBlinkerSprites[index % 7]);
+  renderer.addUISprite(55, 43, 1, 5, barSprites[leftBar]);
+  renderer.addUISprite(59, 43, 1, 5, barSprites[rightBar]);
+  renderer.addUISprite(8, 40, 4, 3, leftBigIndicatorSprite[leftFire]);
+  renderer.addUISprite(72, 40, 4, 3, rightBigIndicatorSprite[rightFire]);
+  renderer.addUISprite(23, 38, 3, 3, dirSprites[dir]);
+  // memoryBenchmark("After UI");
 }
 
 UI::UI(){

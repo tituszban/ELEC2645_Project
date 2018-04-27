@@ -343,7 +343,7 @@ bool FaceRenderTest(Controller &cont){
   return true;
 }
 
-#define FLYBY
+// #define FLYBY
 
 bool TieFighterRenderTest(Controller &cont){
   printf("Start Test!\n\n");
@@ -359,15 +359,15 @@ bool TieFighterRenderTest(Controller &cont){
   cam.SetPosition(1, 3, 0);
   cam.SetRotation(0, 0);
   memoryBenchmark("Create camera and renderer");
-  double dir[] = {-0.5, 0, -0.866};
+  double dir[] = {-0.766, 0, -0.642};
 #ifdef FLYBY
-  double shPos[] = {9.5, 3, 21};
-  double tf1Pos[] = {12.21, 3, 21.73};
-  double tf2Pos[] = {8.77, 3, 23.71};
+  double shPos[] = {9.5, 3, 15};
+  double tf1Pos[] = {10.5, 3.5, 16.7};
+  double tf2Pos[] = {7.2, 2.5, 14.6};
   Matrix tf1Position = Matrix(1, 3, tf1Pos);
   Matrix tf2Position = Matrix(1, 3, tf2Pos);
 #else
-  double shPos[] = {1, 3, 3};
+  double shPos[] = {1, 3, 35};
 #endif
   Matrix shPosition = Matrix(1, 3, shPos);
   Matrix direction = Matrix(1, 3, dir);
@@ -381,7 +381,7 @@ bool TieFighterRenderTest(Controller &cont){
   memoryBenchmark("Create tie fighters");
 #endif
 
-  double rot = PI * 5.0 / 6.0;
+  double rot = PI * 11.0 / 9.0;
   while(1){
     cont.lcdClear();
     renderer.clearBuffer();
@@ -393,30 +393,36 @@ bool TieFighterRenderTest(Controller &cont){
     tf2.setPosition(tf2Position);
     tf1.setRotation(rot);
     tf2.setRotation(rot);
-    printf("Set all tie fighter positions\n");
+    // printf("Set all tie fighter positions\n");
     shPosition = shPosition + direction * 0.12;
     tf1Position = tf1Position + direction * 0.12;
     tf2Position = tf2Position + direction * 0.12;
-    if(shPosition.get(0, 2) < 1){
+    if(shPosition.get(0, 0) < -5){
       shPosition.set(0, 0, 9.5);
-      shPosition.set(0, 2, 21);
+      shPosition.set(0, 2, 15);
+    }
+    if(tf1Position.get(0, 0) < -5){
+      tf1Position.set(0, 0, 10.5);
+      tf1Position.set(0, 2, 16.7);
+    }
+    if(tf2Position.get(0, 0) < -5){
+      tf2Position.set(0, 0, 7.2);
+      tf2Position.set(0, 2, 14.6);
     }
 #else
     rot += 0.05;
 #endif
-    printf("Start render\n");
+    // printf("Start render\n");
     sh.render(cam, renderer);
-    printf("Mark1\n");
+    // printf("Mark1\n");
 #ifdef FLYBY
     tf1.render(cam, renderer);
-    printf("Mark2\n");
+    // printf("Mark2\n");
     tf2.render(cam, renderer);
-    printf("Mark3\n");
+    // printf("Mark3\n");
 #endif
-    memoryBenchmark("Before ui");
     ui.render(index, renderer);
-    memoryBenchmark("After ui");
-    printf("Render finished\n");
+    // printf("Render finished\n");
     if(indexTick++ % 10 == 0)
       index++;
 
