@@ -16,7 +16,7 @@ using namespace std;
 #include "Skybox.h"
 #include "Lives.h"
 #include "Laser.h"
-
+#include "Explosion.h"
 
 #include <ctime>
 
@@ -340,7 +340,7 @@ bool FaceRenderTest(Controller &cont){
   return true;
 }
 
-// #define FLYBY
+#define FLYBY
 
 bool TieFighterRenderTest(Controller &cont){
   printf("Start Test!\n\n");
@@ -487,13 +487,15 @@ bool SkyboxandLaserTest(Controller &cont){
 
   Skybox skybox;
 
-  vector<Laser> lasers1;
-  vector<Laser> lasers2;
+  vector<Laser> lasers;
+  vector<Explosion> explosions;
 
   double l[] = {0.2, -0.2, 0.4};
   double r[] = {-0.2, -0.2, 0.2};
   Matrix left = Matrix(1, 3, l);
   Matrix right = Matrix(1, 3, r);
+  double x[] = {0, 1, 5};
+  Matrix explosionPos = Matrix(1, 3, x);
 
   while(1){
     cont.lcdClear();
@@ -506,58 +508,54 @@ bool SkyboxandLaserTest(Controller &cont){
     cam.setRotation(rotX, rotZ);
 
     skybox.render(cam, renderer);
-    printf("Try and create new projectile\n");
     if(cont.buttonPressed(R)){
       Laser lLaser = Laser();
       lLaser.setPosition(left);
       lLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
-      printf("Create 1\n");
+
       Laser rLaser = Laser();
       rLaser.setPosition(right);
       rLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
-      printf("Create 2\n");
-      if(lasers1.size() < 8){
-        lasers1.push_back(rLaser);
-        lasers1.push_back(lLaser);
-        printf("Push 1\n");
-      }
-      else{
-        lasers2.push_back(rLaser);
-        lasers2.push_back(lLaser);
-        printf("Push 2\n");
-      }
-      printf("FIRE!\n");
+      lasers.push_back(rLaser);
+      lasers.push_back(lLaser);
+
     }
-    printf("Laser count: %d\n", lasers1.size() + lasers2.size());
-    memoryBenchmark("lasers");
+
     int i = 0;
-    while(i < lasers1.size()){
+    while(i < lasers.size()){
       // printf("remove?: %d\n", lasers[i].toBeRemoved);
-      if(lasers1[i].toBeRemoved){
-        lasers1.erase(lasers1.begin() + i);
+      if(lasers[i].toBeRemoved){
+        lasers.erase(lasers.begin() + i);
       }
       else{
-        lasers1[i].update(0.1);
-        lasers1[i].render(cam, renderer);
-        i++;
-      }
-    }
-    i = 0;
-    while(i < lasers2.size()){
-      // printf("remove?: %d\n", lasers[i].toBeRemoved);
-      if(lasers2[i].toBeRemoved){
-        lasers2.erase(lasers2.begin() + i);
-      }
-      else{
-        lasers2[i].update(0.1);
-        lasers2[i].render(cam, renderer);
+        lasers[i].update(0.05);
+        lasers[i].render(cam, renderer);
         i++;
       }
     }
 
+    if(cont.buttonPressed(L)){
+      Explosion explosion = Explosion();
+      explosion.setPosition(explosionPos);
+      explosion.setSize(2.5);
+      explosions.push_back(explosion);
+    }
+    int j = 0;
+    while(j < explosions.size()){
+      if(explosions[j].toBeRemoved){
+        explosions.erase(explosions.begin() + j);
+      }
+      else{
+        explosions[j].update(0.05);
+        explosions[j].render(cam, renderer);
+        j++;
+      }
+    }
+
+
     renderer.render(cont);
     cont.lcdRefresh();
-    wait(0.1);
+    wait(0.05);
   }
   printf("Test completed\n\n");
   return true;

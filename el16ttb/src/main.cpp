@@ -38,25 +38,10 @@ int main() {
   // cont.lcdDrawCircle(20, 20, 10, FILL_TRANSPARENT);
   // cont.lcdRefresh();
   t.attach(&alive, 0.5);
-  // cont.lcdSetBrightness(0.5);
-  // while(1){
-  //   if(cont.buttonPressed(R))
-  //   {
-  //     cont.lcdSetBrightness(1);
-  //     wait(0.02);
-  //     cont.lcdSetBrightness(0.5);
-  //   }
-  // }
-  //wait(0.2);
 
 
-  // lcd.printString("Matrix test", 0, 0);
-  // lcd.refresh();
-  // lcd.printString("Test start", 0, 1);
-  // lcd.refresh();
 
-
-  SpriteDrawTest(cont);
+  SkyboxandLaserTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();

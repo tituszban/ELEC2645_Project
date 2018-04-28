@@ -46,6 +46,8 @@ void Face::render(Camera &cam, Renderer &renderer){
   double facing_angle = this->normal.dot(rel);
   if(facing_angle > 0)
     return;
+  if(cam.getFacing().dot(position) < 0.5)
+    return;
   Matrix cAT = cam.getScreenPosition(this->corners.first.first);
   Matrix cAB = cam.getScreenPosition(this->corners.first.second);
   Matrix cBT = cam.getScreenPosition(this->corners.second.first);
