@@ -9,7 +9,7 @@ using namespace std;
 #include <math.h>
 #include <Util.h>
 
-#define MAX_LASER_DISTANCE 5
+#define MAX_LASER_DISTANCE 15
 
 class Laser{
 public:
@@ -22,6 +22,7 @@ public:
 private:
   double width;
   double length;
+  double speed;
   Matrix position;
   Matrix origin;
   Matrix velocity;

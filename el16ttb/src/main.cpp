@@ -41,7 +41,7 @@ int main() {
 
 
 
-  SkyboxandLaserTest(cont);
+  TieFighterControlTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();

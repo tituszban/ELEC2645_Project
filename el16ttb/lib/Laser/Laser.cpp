@@ -1,8 +1,9 @@
 #include "Laser.h"
 
 Laser::Laser(){
-  width = 0.02;
-  length = 0.3;
+  width = 0.1;
+  length = 0.5;
+  speed = 10;
   toBeRemoved = false;
 
   Texture laserTexture = arrayToTexture(1, 1, laserSprite);
@@ -18,7 +19,7 @@ void Laser::setPosition(Matrix position){
 }
 
 void Laser::setVelocity(Matrix velocity, Matrix up){
-  this->velocity = velocity;
+  this->velocity = velocity * speed;
   this->up = up;
   forward = velocity / velocity.distance(Matrix(1, 3));
 }

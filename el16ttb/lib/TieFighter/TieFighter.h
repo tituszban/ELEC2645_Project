@@ -6,8 +6,12 @@ using namespace std;
 #include <Matrix.h>
 #include "mbed.h"
 #include <Renderer.h>
-#include <math.h>
 #include <Util.h>
+#include <math.h>
+#include <algorithm>
+#include <vector>
+#include <Laser.h>
+#include <Explosion.h>
 
 
 class TieFighter{
@@ -15,7 +19,12 @@ public:
   TieFighter();
   void setPosition(Matrix position);
   void setRotation(double rotation);
+  bool detectCollision(Matrix projectile);
   void render(Camera &cam, Renderer &renderer);
+  void update(double dt, double steering, double elevation, bool fire);
+  Matrix getPosition();
+  double getRotation();
+  bool toBeRemoved;
 
 private:
   Matrix position;
@@ -36,6 +45,19 @@ private:
   double wingWidth;
   double wingHeight;
 
+  double steeringAngle;
+  double elevationSpeed;
+  double speed;
+  double fireCooldown;
+  double fireTimer;
+
+  bool destroyed;
+  double outerHitboxRadius;
+  double innerHitboxRadius;
+
+  Explosion explosion;
+
+  vector<Laser> lasers;
 
   void update();
 };

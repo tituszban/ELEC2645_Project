@@ -494,10 +494,10 @@ bool SkyboxandLaserTest(Controller &cont){
   double r[] = {-0.2, -0.2, 0.2};
   Matrix left = Matrix(1, 3, l);
   Matrix right = Matrix(1, 3, r);
-  double x[] = {0, 1, 5};
+  double x[] = {0, 0, 5};
   Matrix explosionPos = Matrix(1, 3, x);
 
-  while(1){
+  while(!cont.buttonPressed(START)){
     cont.lcdClear();
     renderer.clearBuffer();
 
@@ -511,17 +511,17 @@ bool SkyboxandLaserTest(Controller &cont){
     if(cont.buttonPressed(R)){
       Laser lLaser = Laser();
       lLaser.setPosition(left);
-      lLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
+      lLaser.setVelocity(cam.getFacing(), cam.getUp());
 
       Laser rLaser = Laser();
       rLaser.setPosition(right);
-      rLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
+      rLaser.setVelocity(cam.getFacing() * 3, cam.getUp());
       lasers.push_back(rLaser);
       lasers.push_back(lLaser);
 
     }
 
-    int i = 0;
+    unsigned int i = 0;
     while(i < lasers.size()){
       // printf("remove?: %d\n", lasers[i].toBeRemoved);
       if(lasers[i].toBeRemoved){
@@ -540,7 +540,7 @@ bool SkyboxandLaserTest(Controller &cont){
       explosion.setSize(2.5);
       explosions.push_back(explosion);
     }
-    int j = 0;
+    unsigned int j = 0;
     while(j < explosions.size()){
       if(explosions[j].toBeRemoved){
         explosions.erase(explosions.begin() + j);
@@ -572,6 +572,49 @@ bool LivesTest(Controller &cont){
     }
   }
 
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool TieFighterControlTest(Controller &cont){
+  printf("Start Test!\n\n");
+  memoryBenchmark("Start");
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+
+
+  cam.setPosition(0, 3, 0);
+  cam.setRotation(0, 0);
+
+  double tfPos[] = {0, 0, 3};
+  Matrix tfPosition = Matrix(1, 3, tfPos);
+
+  TieFighter tf = TieFighter();
+  tf.setPosition(tfPosition);
+  tf.setRotation(0);
+
+  while(!cont.buttonPressed(START)){
+    cont.lcdClear();
+    renderer.clearBuffer();
+    skybox.render(cam, renderer);
+
+    double steer = pow(cont.joystickCoord().x, 3);
+    double elev = pow(cont.joystickCoord().y, 3);
+
+
+    if(cont.buttonPressed(B)){
+      tf.detectCollision(tf.getPosition() + cam.getFacing() * 0.9);
+    }
+    tf.update(0.05, steer, elev, cont.buttonPressed(A));
+
+    tf.render(cam, renderer);
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
+  }
   printf("Test completed\n\n");
   return true;
 }

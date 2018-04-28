@@ -38,9 +38,6 @@ void Face::setSize(double width, double height){
 }
 
 void Face::render(Camera &cam, Renderer &renderer){
-  if(this->faceChanged)
-    this->updateCorners();
-
   Matrix rel = this->position - cam.getPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
   double facing_angle = this->normal.dot(rel);
@@ -48,6 +45,8 @@ void Face::render(Camera &cam, Renderer &renderer){
     return;
   if(cam.getFacing().dot(position) < 0.5)
     return;
+  if(this->faceChanged)
+    this->updateCorners();
   Matrix cAT = cam.getScreenPosition(this->corners.first.first);
   Matrix cAB = cam.getScreenPosition(this->corners.first.second);
   Matrix cBT = cam.getScreenPosition(this->corners.second.first);
@@ -64,10 +63,6 @@ void Face::render(Camera &cam, Renderer &renderer){
   vector<double> lXB = lerp(cBT.get(0, 0), cBB.get(0, 0), mDist);
   vector<double> lYB = lerp(cBT.get(0, 1), cBB.get(0, 1), mDist);
   vector<double> lZB = lerp(cBT.get(0, 2), cBB.get(0, 2), mDist);
-  // renderer.addLine(cAT, cAB, 1);
-  // renderer.addLine(cAT, cBT, 1);
-  // renderer.addLine(cAB, cBB, 1);
-  // renderer.addLine(cBT, cBB, 1);
   for(int i = 0; i < mDist; i++)
   {
     double p = (double)i / (double)mDist;
