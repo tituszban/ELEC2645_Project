@@ -1,5 +1,6 @@
 using namespace std;
 #include <vector>
+#include <algorithm>
 #include "mbed.h"
 // #include "UnitTester.h"
 #include "Matrix.h"
@@ -14,6 +15,7 @@ using namespace std;
 #include "UI.h"
 #include "Skybox.h"
 #include "Lives.h"
+#include "Laser.h"
 
 
 #include <ctime>
@@ -166,10 +168,10 @@ bool MatrixErrorTest(){
 bool CameraValueTest(){
   Camera cam;
   cam.init();
-  cam.SetPosition(0, 0, 6);
+  cam.setPosition(0, 0, 6);
   double p[] = {1, 1, -1, 1};
   Matrix point = Matrix(1, 4, p);
-  Matrix screenPoint = cam.GetScreenPosition(point);
+  Matrix screenPoint = cam.getScreenPosition(point);
   screenPoint.print_matrix();
   //double v =
   screenPoint = screenPoint / screenPoint.get(0, 2);
@@ -186,7 +188,7 @@ bool CameraScaleTest(Controller &cont){
   Camera cam;
   cam.init();
 
-  while(1){
+  while(!cont.buttonPressed(START)){
     cont.lcdClear();
 
     rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
@@ -198,8 +200,8 @@ bool CameraScaleTest(Controller &cont){
     posZ += (moveX * cos(-rotZ) + moveZ * sin(-rotZ)) * 0.3;
     posX += (moveX * sin(-rotZ) + moveZ * cos(-rotZ)) * 0.3;
 
-    cam.SetPosition(posX, 1.6, posZ);
-    cam.SetRotation(rotX, rotZ);
+    cam.setPosition(posX, 1.6, posZ);
+    cam.setRotation(rotX, rotZ);
 
     bool doPrint = cont.buttonPressed(BACK);
     for(int i = -10; i <= 10; i++){
@@ -208,14 +210,7 @@ bool CameraScaleTest(Controller &cont){
           if(sqrt(pow(i, 2) + pow(j, 2)) < 10){
             double p[] = {(double)i, (double)k, (double)j, 1};
             Matrix point = Matrix(1, 4, p);
-            Matrix screenPoint = cam.GetScreenPosition(point);
-            // printf("draw point %d,%d,%d\n", i, k, j);
-            // printf("Adding point\n");
-            //ren.addPoint(screenPoint, 1);
-            // prePoint.print_matrix();
-            // screenPoint.print_matrix();
-            // printf("Point added\n");
-
+            Matrix screenPoint = cam.getScreenPosition(point);
             if(screenPoint.get(0, 2) > 0){
               //screenPoint = screenPoint / screenPoint.get(0, 2);
               if(screenPoint.get(0, 0) > 0 && screenPoint.get(0, 0) < 84 && screenPoint.get(0, 1) > 0 && screenPoint.get(0, 1) < 48){
@@ -263,7 +258,7 @@ bool RendererDisplayTest(Controller &cont){
     {1, 0, 1, 1, 0, 1, 1, 0, 1}
   };
   int indexer = 0;
-  while(1){
+  while(!cont.buttonPressed(START)){
     cont.lcdClear();
     renderer.clearBuffer();
 
@@ -334,8 +329,8 @@ bool FaceRenderTest(Controller &cont){
     face.setSize(size[i][0], size[i][1]);
     face.setTexture(full);
 
-    cam.SetPosition(1, 3, 1);
-    cam.SetRotation(0, 0);
+    cam.setPosition(1, 3, 1);
+    cam.setRotation(0, 0);
 
     face.render(cam, renderer);
   }
@@ -345,7 +340,7 @@ bool FaceRenderTest(Controller &cont){
   return true;
 }
 
-#define FLYBY
+// #define FLYBY
 
 bool TieFighterRenderTest(Controller &cont){
   printf("Start Test!\n\n");
@@ -359,8 +354,8 @@ bool TieFighterRenderTest(Controller &cont){
   int index = 0;
   int indexTick = 0;
 
-  cam.SetPosition(1, 3, 0);
-  cam.SetRotation(0, 0);
+  cam.setPosition(1, 3, 0);
+  cam.setRotation(0, 0);
   memoryBenchmark("Create camera and renderer");
   double dir[] = {-0.766, 0, -0.642};
 #ifdef FLYBY
@@ -385,7 +380,7 @@ bool TieFighterRenderTest(Controller &cont){
 #endif
 
   double rot = PI * 11.0 / 9.0;
-  while(1){
+  while(!cont.buttonPressed(START)){
     cont.lcdClear();
     renderer.clearBuffer();
     // renderer.addUISprite(Matrix(1, 2), sprite);
@@ -447,64 +442,42 @@ bool SpriteDrawTest(Controller &cont){
   int index = 0;
   int indexTick = 0;
 
-  int fireTick = 13;
+  double speed = 0;
 
-  int bombTick = 38;
+  int fireTick = 11;
 
-  while(1){
-    if(cont.buttonDown(R) && fireTick > 13){
+  while(!cont.buttonPressed(START)){
+    speed = min(max(speed + (cont.buttonDown(Y) ? 0.05 : 0) + (cont.buttonDown(A) ? -0.05 : 0), 0.0), 1.0);
+    int bar = int(5.0 * speed);
+    ui.setBars(bar, bar);
+
+    if(cont.buttonDown(R) && fireTick > 11){
       fireTick = 0;
     }
     switch(fireTick){
-      case 0: ui.setBars(5, 0); cont.lcdSetBrightness(1); break;
+      case 0: ui.setFire(1, 0); cont.lcdSetBrightness(1); break;
       case 1: cont.lcdSetBrightness(0.5); break;
-      case 2: ui.setBars(0, 0); cont.lcdSetBrightness(1); break;
-      case 3: cont.lcdSetBrightness(0.5); break;
-      case 4: ui.setBars(0, 1); break;
-      case 5: ui.setBars(1, 1); break;
-      case 6: ui.setBars(1, 2); break;
-      case 7: ui.setBars(2, 2); break;
-      case 8: ui.setBars(2, 3); break;
-      case 9: ui.setBars(3, 3); break;
-      case 10: ui.setBars(3, 4); break;
-      case 11: ui.setBars(4, 4); break;
-      case 12: ui.setBars(4, 5); break;
-      case 13: ui.setBars(5, 5); break;
+      case 3: ui.setFire(0, 0); cont.lcdSetBrightness(1); break;
+      case 4: cont.lcdSetBrightness(0.5); break;
+      case 8: ui.setFire(0, 1); break;
+      case 11: ui.setFire(1, 1); break;
     }
     fireTick++;
-
-    if(cont.buttonDown(L) && bombTick > 38){
-      bombTick = 0;
-    }
-    switch(bombTick){
-      case 0: ui.setFire(1, 0); cont.lcdSetBrightness(1); break;
-      case 3: cont.lcdSetBrightness(0.5); break;
-      case 8: ui.setFire(0, 0); cont.lcdSetBrightness(1); break;
-      case 11: cont.lcdSetBrightness(0.5); break;
-      case 30: ui.setFire(0, 1); break;
-      case 38: ui.setFire(1, 1); break;
-    }
-    bombTick++;
 
     ui.setDir(index);
 
     ui.render(index, renderer);
     if(indexTick++ % 10 == 0)
       index++;
-
-
     renderer.render(cont);
     cont.lcdRefresh();
     wait(0.05);
   }
-
-
-
   printf("Test completed\n\n");
   return true;
 }
 
-bool SkyboxTest(Controller &cont){
+bool SkyboxandLaserTest(Controller &cont){
   printf("Start Test!\n\n");
   Renderer renderer;
   double rotX = 0;
@@ -514,6 +487,14 @@ bool SkyboxTest(Controller &cont){
 
   Skybox skybox;
 
+  vector<Laser> lasers1;
+  vector<Laser> lasers2;
+
+  double l[] = {0.2, -0.2, 0.4};
+  double r[] = {-0.2, -0.2, 0.2};
+  Matrix left = Matrix(1, 3, l);
+  Matrix right = Matrix(1, 3, r);
+
   while(1){
     cont.lcdClear();
     renderer.clearBuffer();
@@ -521,13 +502,62 @@ bool SkyboxTest(Controller &cont){
     rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
     rotX += pow(cont.joystickCoord().y, 3) * -0.15;
 
-    cam.SetPosition(0, 1, 0);
-    cam.SetRotation(rotX, rotZ);
+    cam.setPosition(0, 0, 0);
+    cam.setRotation(rotX, rotZ);
 
     skybox.render(cam, renderer);
+    printf("Try and create new projectile\n");
+    if(cont.buttonPressed(R)){
+      Laser lLaser = Laser();
+      lLaser.setPosition(left);
+      lLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
+      printf("Create 1\n");
+      Laser rLaser = Laser();
+      rLaser.setPosition(right);
+      rLaser.setVelocity(cam.getFacing() * 2, cam.getUp());
+      printf("Create 2\n");
+      if(lasers1.size() < 8){
+        lasers1.push_back(rLaser);
+        lasers1.push_back(lLaser);
+        printf("Push 1\n");
+      }
+      else{
+        lasers2.push_back(rLaser);
+        lasers2.push_back(lLaser);
+        printf("Push 2\n");
+      }
+      printf("FIRE!\n");
+    }
+    printf("Laser count: %d\n", lasers1.size() + lasers2.size());
+    memoryBenchmark("lasers");
+    int i = 0;
+    while(i < lasers1.size()){
+      // printf("remove?: %d\n", lasers[i].toBeRemoved);
+      if(lasers1[i].toBeRemoved){
+        lasers1.erase(lasers1.begin() + i);
+      }
+      else{
+        lasers1[i].update(0.1);
+        lasers1[i].render(cam, renderer);
+        i++;
+      }
+    }
+    i = 0;
+    while(i < lasers2.size()){
+      // printf("remove?: %d\n", lasers[i].toBeRemoved);
+      if(lasers2[i].toBeRemoved){
+        lasers2.erase(lasers2.begin() + i);
+      }
+      else{
+        lasers2[i].update(0.1);
+        lasers2[i].render(cam, renderer);
+        i++;
+      }
+    }
 
     renderer.render(cont);
     cont.lcdRefresh();
+    wait(0.1);
   }
   printf("Test completed\n\n");
   return true;

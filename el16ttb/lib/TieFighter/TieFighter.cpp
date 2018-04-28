@@ -1,34 +1,34 @@
 #include <TieFighter.h>
 
 TieFighter::TieFighter(){
-  this->wingSpan = 0.425;
-  this->cockpitThickness = 0.2;
-  this->wingWidth = 1;
-  this->wingHeight = 1.5;
-  this->setPosition(Matrix(1, 3));
-  this->setRotation(0);
+  wingSpan = 0.425;
+  cockpitThickness = 0.2;
+  wingWidth = 1;
+  wingHeight = 1.5;
+  setPosition(Matrix(1, 3));
+  setRotation(0);
 
   wingL.setTexture(arrayToTexture(10, 15, wingSprite));
-  wingL.setSize(this->wingWidth, this->wingHeight);
+  wingL.setSize(wingWidth, wingHeight);
   wingR.setTexture(arrayToTexture(10, 15, wingSprite));
-  wingR.setSize(this->wingWidth, this->wingHeight);
+  wingR.setSize(wingWidth, wingHeight);
   wingLInside.setTexture(arrayToTexture(10, 15, wingInsideSprite));
-  wingLInside.setSize(this->wingWidth, this->wingHeight);
+  wingLInside.setSize(wingWidth, wingHeight);
   wingRInside.setTexture(arrayToTexture(10, 15, wingInsideSprite));
-  wingRInside.setSize(this->wingWidth, this->wingHeight);
+  wingRInside.setSize(wingWidth, wingHeight);
   cockpitFront.setTexture(arrayToTexture(15, 5, cockpitFrontSprite));
-  cockpitFront.setSize(this->wingSpan * 2, this->cockpitThickness * 2);
+  cockpitFront.setSize(wingSpan * 2, cockpitThickness * 2);
   cockpitBack.setTexture(arrayToTexture(15, 5, cockpitBackSprite));
-  cockpitBack.setSize(this->wingSpan * 2, this->cockpitThickness * 2);
+  cockpitBack.setSize(wingSpan * 2, cockpitThickness * 2);
   cockpitTop.setTexture(arrayToTexture(15, 5, cockpitTopSprite));
-  cockpitTop.setSize(this->wingSpan * 2, this->cockpitThickness * 2);
+  cockpitTop.setSize(wingSpan * 2, cockpitThickness * 2);
   cockpitBottom.setTexture(arrayToTexture(15, 5, cockpitTopSprite));
-  cockpitBottom.setSize(this->wingSpan * 2, this->cockpitThickness * 2);
+  cockpitBottom.setSize(wingSpan * 2, cockpitThickness * 2);
 }
 
 void TieFighter::setPosition(Matrix position){
   this->position = position;
-  this->changed = true;
+  changed = true;
 }
 
 void TieFighter::setRotation(double rotation){
@@ -37,42 +37,42 @@ void TieFighter::setRotation(double rotation){
   double co = cos(rotation);
   double fwd[] = {si, 0, co};
   double lft[] = {-co, 0, si};
-  this->forward = Matrix(1, 3, fwd);
-  this->left = Matrix(1, 3, lft);
-  this->changed = true;
+  forward = Matrix(1, 3, fwd);
+  left = Matrix(1, 3, lft);
+  changed = true;
 }
 
 void TieFighter::update(){
   double u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
-  this->wingL.setPosition(this->position + this->left * this->wingSpan);
-  this->wingL.setDirection(this->left, up);
-  this->wingLInside.setPosition(this->position + this->left * this->wingSpan);
-  this->wingLInside.setDirection(-this->left, up);
-  this->wingR.setPosition(this->position - this->left * this->wingSpan);
-  this->wingR.setDirection(-this->left, up);
-  this->wingRInside.setPosition(this->position - this->left * this->wingSpan);
-  this->wingRInside.setDirection(this->left, up);
+  wingL.setPosition(position + left * wingSpan);
+  wingL.setDirection(left, up);
+  wingLInside.setPosition(position + left * wingSpan);
+  wingLInside.setDirection(-left, up);
+  wingR.setPosition(position - left * wingSpan);
+  wingR.setDirection(-left, up);
+  wingRInside.setPosition(position - left * wingSpan);
+  wingRInside.setDirection(left, up);
 
-  this->cockpitFront.setPosition(this->position + this->forward * this->cockpitThickness);
-  this->cockpitFront.setDirection(this->forward, up);
-  this->cockpitBack.setPosition(this->position - this->forward * this->cockpitThickness);
-  this->cockpitBack.setDirection(-this->forward, up);
-  this->cockpitTop.setPosition(this->position + up * this->cockpitThickness);
-  this->cockpitTop.setDirection(up, this->forward);
-  this->cockpitBottom.setPosition(this->position - up * this->cockpitThickness);
-  this->cockpitBottom.setDirection(-up, this->forward);
+  cockpitFront.setPosition(position + forward * cockpitThickness);
+  cockpitFront.setDirection(forward, up);
+  cockpitBack.setPosition(position - forward * cockpitThickness);
+  cockpitBack.setDirection(-forward, up);
+  cockpitTop.setPosition(position + up * cockpitThickness);
+  cockpitTop.setDirection(up, forward);
+  cockpitBottom.setPosition(position - up * cockpitThickness);
+  cockpitBottom.setDirection(-up, forward);
 }
 
 void TieFighter::render(Camera &cam, Renderer &renderer){
-  if(this->changed)
-    this->update();
-  this->wingL.render(cam, renderer);
-  this->wingLInside.render(cam, renderer);
-  this->wingR.render(cam, renderer);
-  this->wingRInside.render(cam, renderer);
-  this->cockpitFront.render(cam, renderer);
-  this->cockpitBack.render(cam, renderer);
-  this->cockpitTop.render(cam, renderer);
-  this->cockpitBottom.render(cam, renderer);
+  if(changed)
+    update();
+  wingL.render(cam, renderer);
+  wingLInside.render(cam, renderer);
+  wingR.render(cam, renderer);
+  wingRInside.render(cam, renderer);
+  cockpitFront.render(cam, renderer);
+  cockpitBack.render(cam, renderer);
+  cockpitTop.render(cam, renderer);
+  cockpitBottom.render(cam, renderer);
 }

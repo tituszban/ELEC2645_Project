@@ -21,12 +21,13 @@ class Camera{
 
 public:
   void init();
-  void SetPosition(double x, double y, double z);
-  void SetRotation(double x, double z);
+  void setPosition(double x, double y, double z);
+  void setRotation(double x, double z);
 
-  Matrix GetFacing();
-  Matrix GetPosition();
-  Matrix GetScreenPosition(Matrix p);
+  Matrix getFacing();
+  Matrix getUp();
+  Matrix getPosition();
+  Matrix getScreenPosition(Matrix p);
 
 private:
   double focalLength;
@@ -45,17 +46,17 @@ private:
   Matrix calProjMatrix;
   Matrix cameraMatrix;
 
-  Matrix RotationMatrix(Matrix u, double theta);
+  Matrix getRotationMatrix(Matrix u, double theta);
 
   vector<vector<Matrix> > rotationMatrices;
 
-  void SetFocalLength(double f);
+  void setFocalLength(double f);
 
-  void UpdateRotationMatrix();
-  void UpdateCalibrationMatrix();
-  void UpdateTransformationMatrix();
+  void updateRotationMatrix();
+  void updateCalibrationMatrix();
+  void updateTransformationMatrix();
 
-  Matrix NormalisePoint(Matrix p);
+  Matrix normalisePoint(Matrix p);
 };
 
 

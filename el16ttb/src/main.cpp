@@ -33,6 +33,7 @@ int main() {
   cont.init();
   // cont.lcdInverseMode();
   // cont.ledsOn();
+  // cont.lcdContrast(0.5);
   cont.lcdContrast(0.5);
   // cont.lcdDrawCircle(20, 20, 10, FILL_TRANSPARENT);
   // cont.lcdRefresh();
@@ -55,7 +56,7 @@ int main() {
   // lcd.refresh();
 
 
-  LivesTest(cont);
+  SpriteDrawTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();

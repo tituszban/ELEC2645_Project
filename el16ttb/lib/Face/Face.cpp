@@ -41,15 +41,15 @@ void Face::render(Camera &cam, Renderer &renderer){
   if(this->faceChanged)
     this->updateCorners();
 
-  Matrix rel = this->position - cam.GetPosition().transpose();
+  Matrix rel = this->position - cam.getPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
   double facing_angle = this->normal.dot(rel);
   if(facing_angle > 0)
     return;
-  Matrix cAT = cam.GetScreenPosition(this->corners.first.first);
-  Matrix cAB = cam.GetScreenPosition(this->corners.first.second);
-  Matrix cBT = cam.GetScreenPosition(this->corners.second.first);
-  Matrix cBB = cam.GetScreenPosition(this->corners.second.second);
+  Matrix cAT = cam.getScreenPosition(this->corners.first.first);
+  Matrix cAB = cam.getScreenPosition(this->corners.first.second);
+  Matrix cBT = cam.getScreenPosition(this->corners.second.first);
+  Matrix cBB = cam.getScreenPosition(this->corners.second.second);
   double distA = cAT.homogDistance(cAB);
   double distB = cBT.homogDistance(cBB);
   int mDist = ceil(max(distA, distB));
