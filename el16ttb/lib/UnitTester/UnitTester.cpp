@@ -605,11 +605,53 @@ bool TieFighterControlTest(Controller &cont){
 
 
     if(cont.buttonPressed(B)){
-      tf.detectCollision(tf.getPosition() + cam.getFacing() * 0.9);
+      tf.detectCollision(tf.getPosition());
     }
     tf.update(0.05, steer, elev, cont.buttonPressed(A));
 
     tf.render(cam, renderer);
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
+  }
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool ImperialShuttleControlTest(Controller &cont){
+  printf("Start Test!\n\n");
+  memoryBenchmark("Start");
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+
+
+  cam.setPosition(0, 1.5, 0);
+  cam.setRotation(0, 0);
+
+  double shPos[] = {0, 0, 3};
+  Matrix shPosition = Matrix(1, 3, shPos);
+
+  ImperialShuttle sh = ImperialShuttle();
+  sh.setPosition(shPosition);
+  sh.setRotation(0);
+
+  while(!cont.buttonPressed(START)){
+    cont.lcdClear();
+    renderer.clearBuffer();
+    skybox.render(cam, renderer);
+
+    double steer = pow(cont.joystickCoord().x, 3);
+
+
+    if(cont.buttonPressed(B)){
+      sh.detectCollision(sh.getPosition() + cam.getFacing().cross(cam.getUp()));
+    }
+    sh.update(0.05, steer);
+
+    sh.render(cam, renderer);
 
     renderer.render(cont);
     cont.lcdRefresh();

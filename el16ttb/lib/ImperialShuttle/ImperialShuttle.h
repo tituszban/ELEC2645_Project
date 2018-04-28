@@ -8,6 +8,7 @@ using namespace std;
 #include <Renderer.h>
 #include <math.h>
 #include <Util.h>
+#include <Explosion.h>
 
 class ImperialShuttle{
 public:
@@ -15,6 +16,11 @@ public:
   void setPosition(Matrix position);
   void setRotation(double rotation);
   void render(Camera &cam, Renderer &renderer);
+  bool detectCollision(Matrix projectile);
+  void update(double dt, double steering);
+  Matrix getPosition();
+  double getRotation();
+  bool toBeRemoved;
 
 
 private:
@@ -61,6 +67,15 @@ private:
   Face wingLBottom;
   Face wingRTop;
   Face wingRBottom;
+
+  double steeringAngle;
+  double speed;
+
+  double life;
+  double outerHitboxRadius;
+  double innerHitboxRadius;
+
+  Explosion explosion;
 
 
   void update();

@@ -8,7 +8,6 @@ using namespace std;
 #include <Renderer.h>
 #include <Util.h>
 #include <math.h>
-#include <algorithm>
 #include <vector>
 #include <Laser.h>
 #include <Explosion.h>

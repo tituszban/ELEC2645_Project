@@ -6,6 +6,7 @@ using namespace std;
 #include "Matrix.h"
 #include <vector>
 #include <utility>
+#include <algorithm>
 #include <string>
 #include "mbed.h"
 // #include <Face.h>

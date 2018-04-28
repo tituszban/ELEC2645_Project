@@ -82,7 +82,6 @@ void TieFighter::update(double dt, double steering, double elevation, bool fire)
       laser.setVelocity(forward, up);
       lasers.push_back(laser);
     }
-
   }
   else{
     explosion.update(dt);
@@ -126,9 +125,9 @@ void TieFighter::update(){
   cockpitFront.setDirection(forward, up);
   cockpitBack.setPosition(position - forward * cockpitThickness);
   cockpitBack.setDirection(-forward, up);
-  cockpitTop.setPosition(position + up * cockpitThickness);
+  cockpitTop.setPosition(position + up * cockpitThickness * 0.6);
   cockpitTop.setDirection(up, forward);
-  cockpitBottom.setPosition(position - up * cockpitThickness);
+  cockpitBottom.setPosition(position - up * cockpitThickness * 0.6);
   cockpitBottom.setDirection(-up, forward);
 }
 

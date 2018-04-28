@@ -18,6 +18,14 @@ ImperialShuttle::ImperialShuttle(){
   topWingLength = 1.2;
   topWingOffset = 0.1;
 
+  steeringAngle = PI * 0.5;
+  speed = 3;
+  life = 6;
+  explosion.toBeRemoved = true;
+
+  innerHitboxRadius = 0.6;
+  outerHitboxRadius = 1.7;
+
   setPosition(Matrix(1, 3));
   setRotation(0);
 
@@ -83,6 +91,42 @@ void ImperialShuttle::setRotation(double rotation){
   changed = true;
 }
 
+bool ImperialShuttle::detectCollision(Matrix projectile){
+  double dist = position.distance(projectile);
+  double rn = (double)rand() / RAND_MAX;
+  if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn) && life > 0){
+    life -= 1;
+    explosion = Explosion();
+    explosion.setPosition(projectile);
+    explosion.setSize(life > 0 ? 1.5 : 7);
+    return true;
+  }
+  return false;
+}
+
+void ImperialShuttle::update(double dt, double steering){
+  if(life > 0){
+    double u[] = {0, 1, 0};
+    Matrix up = Matrix(1, 3, u);
+    steering = min(max(steering, -1.0), 1.0);
+    setRotation(rotation + steering * steeringAngle * dt);
+    setPosition(position + forward * speed * dt);
+  }
+  if(!explosion.toBeRemoved){
+    explosion.update(dt);
+  }
+  if(explosion.toBeRemoved && life <= 0){
+    toBeRemoved = true;
+  }
+}
+
+Matrix ImperialShuttle::getPosition(){
+  return position;
+}
+double ImperialShuttle::getRotation(){
+  return rotation;
+}
+
 void ImperialShuttle::update(){
   double u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
@@ -123,23 +167,28 @@ void ImperialShuttle::update(){
 }
 
 void ImperialShuttle::render(Camera &cam, Renderer &renderer){
-  if(changed)
-    update();
-  sideL.render(cam, renderer);
-  sideR.render(cam, renderer);
-  back.render(cam, renderer);
-  top.render(cam, renderer);
-  bottom.render(cam, renderer);
-  cockpit.render(cam, renderer);
-  front.render(cam, renderer);
-  engineLSide.render(cam, renderer);
-  engineRSide.render(cam, renderer);
-  engineLTop.render(cam, renderer);
-  engineRTop.render(cam, renderer);
-  topWingL.render(cam, renderer);
-  topWingR.render(cam, renderer);
-  wingLTop.render(cam, renderer);
-  wingLBottom.render(cam, renderer);
-  wingRTop.render(cam, renderer);
-  wingRBottom.render(cam, renderer);
+  if(life > 0){
+    if(changed)
+      update();
+    sideL.render(cam, renderer);
+    sideR.render(cam, renderer);
+    back.render(cam, renderer);
+    top.render(cam, renderer);
+    bottom.render(cam, renderer);
+    cockpit.render(cam, renderer);
+    front.render(cam, renderer);
+    engineLSide.render(cam, renderer);
+    engineRSide.render(cam, renderer);
+    engineLTop.render(cam, renderer);
+    engineRTop.render(cam, renderer);
+    topWingL.render(cam, renderer);
+    topWingR.render(cam, renderer);
+    wingLTop.render(cam, renderer);
+    wingLBottom.render(cam, renderer);
+    wingRTop.render(cam, renderer);
+    wingRBottom.render(cam, renderer);
+  }
+  if(!explosion.toBeRemoved){
+    explosion.render(cam, renderer);
+  }
 }
