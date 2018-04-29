@@ -25,6 +25,7 @@ public:
   Matrix getPosition();
   float getRotation();
   bool toBeRemoved;
+  bool destroyed;
 
   vector<Laser> lasers;
 
@@ -54,7 +55,6 @@ private:
   float fireCooldown;
   float fireTimer;
 
-  bool destroyed;
   float outerHitboxRadius;
   float innerHitboxRadius;
 

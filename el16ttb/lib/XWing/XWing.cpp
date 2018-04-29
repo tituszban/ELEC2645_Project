@@ -15,6 +15,9 @@ XWing::XWing(Matrix position, Controller &cont){
   fireDelay = 0.1;
   fireSequence = 5;
   lives = Lives(cont);
+  lives.reset();
+  target = 0;
+  targetPre = 0;
 }
 
 bool XWing::detectCollision(Matrix projectile){
@@ -32,7 +35,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam){
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
   // printf("Speed: %f\n", speed);
-  yaw += pow(cont.joystickCoord().x, 3) * -yawSpeed * dt;
+  yaw += pow(cont.joystickCoord().x, 5) * -yawSpeed * dt;
   float pitch = -cont.joystickCoord().y * pitchAngle;
   cam.setRotation(pitch, yaw);
   cam.setPosition(position.get(0, 0), position.get(0, 1), position.get(0, 2));
@@ -73,7 +76,6 @@ void XWing::update(float dt, Controller &cont, Camera &cam){
 
   unsigned int i = 0;
   while(i < lasers.size()){
-    // printf("remove?: %d\n", lasers[i].toBeRemoved);
     if(lasers[i].toBeRemoved){
       lasers.erase(lasers.begin() + i);
     }
@@ -82,15 +84,69 @@ void XWing::update(float dt, Controller &cont, Camera &cam){
       i++;
     }
   }
+
+  target += cont.buttonPressed(X) - cont.buttonPressed(B);
+  progress = cont.readPot();
+}
+
+void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
+  this->targets = targets;
+  this->targetPositions = targetPositions;
+  if(targets[mod(target, targets.size())] == -1){
+    target = 0;
+    targetPre = 0;
+    ui.setTarget(0);
+  }
+}
+
+bool XWing::isGameOver(){
+  return lives.isGameOver();
 }
 
 void XWing::render(Camera &cam, Renderer &renderer){
   int bar = int(5.0 * speed);
   ui.setBars(bar, bar);
 
+  if(target != targetPre){
+    if(ui.setNextTarget(targets[mod(target, targets.size())], target - targetPre)){
+      targetPre += sgn(target - targetPre);
+    }
+  }
+
   int leftIndicator[] = {0, 0, 0, 0, 1, 1};
   int rightIndicator[] = {1, 1, 0, 0, 0, 1};
   ui.setFire(leftIndicator[fireSequence], rightIndicator[fireSequence]);
+  ui.missionProgress(floor(11.0f * progress));
+
+  Matrix targetPos = targetPositions[mod(target, targets.size())];
+  Matrix screenPoint = cam.getScreenPosition(pos2homogPos(targetPos));
+  float d = screenPoint.get(0, 2);
+  int x = round(screenPoint.get(0, 0));
+  int y = round(screenPoint.get(0, 1));
+  if(!(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT || d < 0)){
+    if(d > RENDER_DISTANCE){
+      ui.setTargetVisibility(1);
+      ui.setFarTargetPos(x, y);
+    }
+    else{
+      ui.setTargetVisibility(0);
+    }
+  }
+  else{
+    ui.setTargetVisibility(2);
+    Matrix rel = (targetPos - position);
+    rel = rel / rel.distance(Matrix(1, 3));
+    Matrix proj = rel - cam.getFacing() * rel.dot(cam.getFacing());
+    float y = proj.dot(cam.getUp());
+    float x = proj.dot(cam.getUp().cross(cam.getFacing()));
+    if(abs(x) > abs(y)){
+      ui.setOffscreenTarget(x > 0 ? 0 : 2, y);
+    }
+    else{
+      ui.setOffscreenTarget(y > 0 ? 1 : 3, x);
+    }
+    // printf("X: %f\tY: %f\n", x, y);
+  }
 
   ui.render(UIIndex, renderer);
   if(UIcounter++ % 10 == 0)

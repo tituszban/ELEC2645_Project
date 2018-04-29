@@ -661,51 +661,73 @@ bool ImperialShuttleControlTest(Controller &cont){
 }
 
 bool XWingTest(Controller &cont){
-printf("Start Test!\n\n");
-Renderer renderer;
-Camera cam;
-cam.init();
-Skybox skybox;
-XWing xwing = XWing(Matrix(1, 3), cont);
+  printf("Start Test!\n\n");
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+  XWing xwing = XWing(Matrix(1, 3), cont);
 
-float tf1Pos[] = {-3, 0, 10};
-TieFighter tf1 = TieFighter(Matrix(1, 3, tf1Pos), 0);
-float tf2Pos[] = {3, 0, 10};
-TieFighter tf2 = TieFighter(Matrix(1, 3, tf2Pos), 0);
-float shPos[] = {0, 1, 13};
-ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), 0);
+  float tf1Pos[] = {-3, 0, 10};
+  TieFighter tf1 = TieFighter(Matrix(1, 3, tf1Pos), 0);
+  float tf2Pos[] = {3, 0, 10};
+  TieFighter tf2 = TieFighter(Matrix(1, 3, tf2Pos), 0);
+  float shPos[] = {0, 1, 13};
+  ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), 0);
 
-while(!cont.buttonPressed(START))
-{
-  cont.lcdClear();
-  renderer.clearBuffer();
+  vector<int> targets;
+  targets.push_back(1);
+  targets.push_back(0);
+  targets.push_back(0);
+  vector<Matrix> targetPositions;
+  targetPositions.push_back(Matrix(1, 3));
+  targetPositions.push_back(Matrix(1, 3));
+  targetPositions.push_back(Matrix(1, 3));
 
-  if(cont.buttonPressed(BACK))
-    xwing.detectCollision(xwing.getPosition());
+  printf("button: %d, shuttle: %d, xwing: %d\n", !cont.buttonPressed(START), !sh.toBeRemoved, !xwing.isGameOver());
 
-  for(unsigned int i = 0; i < xwing.lasers.size(); i++){
-    Matrix pos = xwing.lasers[i].getPosition();
-    xwing.lasers[i].toBeRemoved = tf1.detectCollision(pos) || sh.detectCollision(pos) || tf2.detectCollision(pos);
+  while(!cont.buttonPressed(START) && !sh.toBeRemoved && !xwing.isGameOver())
+  {
+    cont.lcdClear();
+    renderer.clearBuffer();
 
+    if(cont.buttonPressed(BACK))
+      xwing.detectCollision(xwing.getPosition());
+
+    for(unsigned int i = 0; i < xwing.lasers.size(); i++){
+      Matrix pos = xwing.lasers[i].getPosition();
+      xwing.lasers[i].toBeRemoved = tf1.detectCollision(pos) || sh.detectCollision(pos) || tf2.detectCollision(pos);
+
+    }
+
+    tf1.update(0.05, -0.1, 0, false);
+    tf2.update(0.05, 0.03, 0, false);
+    sh.update(0.05, 0);
+    // targets[1] = tf1.toBeRemoved ? -1 : 0;
+    // targets[2] = tf2.toBeRemoved ? -1 : 0;
+    targetPositions[1] = tf1.getPosition();
+    targetPositions[2] = tf2.getPosition();
+    targetPositions[0] = sh.getPosition();
+    xwing.updateTargets(targets, targetPositions);
+    // for(unsigned int i = 0; i < targets.size(); i++){
+    //   if(targets[i] == -1){
+    //     targets.erase(targets.begin() + i);
+    //     targetPositions.erase(targetPositions.begin() + i);
+    //   }
+    // }
+
+    xwing.update(0.05, cont, cam);
+
+    skybox.render(cam, renderer);
+    xwing.render(cam, renderer);
+    tf1.render(cam, renderer);
+    tf2.render(cam, renderer);
+    sh.render(cam, renderer);
+
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
   }
-
-  tf1.update(0.05, 0, 0, false);
-  tf2.update(0.05, 0, 0, false);
-  sh.update(0.05, 0);
-
-
-  xwing.update(0.05, cont, cam);
-
-  skybox.render(cam, renderer);
-  xwing.render(cam, renderer);
-  tf1.render(cam, renderer);
-  tf2.render(cam, renderer);
-  sh.render(cam, renderer);
-
-  renderer.render(cont);
-  cont.lcdRefresh();
-  wait(0.05);
-}
-printf("Test completed\n\n");
-return true;
+  printf("Test completed\n\n");
+  return true;
 }

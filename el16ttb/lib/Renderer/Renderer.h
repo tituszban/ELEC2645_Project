@@ -31,6 +31,7 @@ public:
   void addUISprite(Matrix point, Texture sprite);
   void addUISprite(int x, int y, Texture sprite);
   void addUISprite(int x, int y, int w, int h, const int* texture);
+  void addUISpriteToSubArea(int aX, int aY, int x, int y, int aW, int aH, int w, int h, const int* texture);
 
 private:
   vector< vector< pair<int, float> > > _buffer;

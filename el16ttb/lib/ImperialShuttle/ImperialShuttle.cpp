@@ -31,6 +31,7 @@ void ImperialShuttle::init(){
   speed = 3;
   life = 6;
   explosion.toBeRemoved = true;
+  toBeRemoved = false;
 
   innerHitboxRadius = 0.6;
   outerHitboxRadius = 1.2;

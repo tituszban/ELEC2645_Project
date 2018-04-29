@@ -25,8 +25,10 @@ public:
   XWing(Matrix position, Controller &cont);
   bool detectCollision(Matrix projectile);
   void update(float dt, Controller &cont, Camera &cam);
+  void updateTargets(vector<int> targets, vector<Matrix> targetPositions);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
+  bool isGameOver();
 
   vector<Laser> lasers;
 
@@ -54,6 +56,13 @@ private:
 
   float outerHitboxRadius;
   float innerHitboxRadius;
+
+  int target;
+  int targetPre;
+  vector<int> targets;
+  vector<Matrix> targetPositions;
+
+  float progress;
 
   Lives lives;
 };

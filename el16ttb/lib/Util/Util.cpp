@@ -107,3 +107,16 @@ Texture flipTexture(Texture tx, int d){
   }
   return tx;
 }
+
+int sgn(int val){
+  return (0 < val) - (val < 0);
+}
+
+int mod(int val, int m){
+  int d = val / m;
+  return abs(val - d * m);
+
+  // if(val > 0)
+  //   return val % m;
+  // return m + (val % m) -  1;
+}
