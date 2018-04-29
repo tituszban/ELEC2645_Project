@@ -35,11 +35,11 @@ void Camera::setPosition(double x, double y, double z)
   updateTransformationMatrix();
 }
 
-void Camera::setRotation(double x, double z)
+void Camera::setRotation(double x, double y)
 {
   rotation.set(0, 0, x);
-  rotation.set(1, 0, 0);
-  rotation.set(2, 0, z);
+  rotation.set(1, 0, y);
+  rotation.set(2, 0, 0);
   updateRotationMatrix();
   updateTransformationMatrix();
 }
@@ -50,7 +50,7 @@ void Camera::setFocalLength(double f)
   updateCalibrationMatrix();
 }
 
-Matrix Camera::getRotationMatrix(Matrix u, double theta)
+Matrix Camera::rotateAboutU(Matrix u, double theta)
 {
   double ux = u.get(0, 0);
   double uy = u.get(1, 0);
@@ -65,13 +65,33 @@ Matrix Camera::getRotationMatrix(Matrix u, double theta)
   return Matrix(3, 3, R);
 }
 
+Matrix Camera::rotateAboutX(double theta){
+  double si = sin(theta);
+  double co = cos(theta);
+  double R[] = {
+    1, 0, 0,
+    0, co, -si,
+    0, si, co
+  };
+  return Matrix(3, 3, R);
+}
+
+Matrix Camera::rotateAboutY(double theta){
+  double si = sin(theta);
+  double co = cos(theta);
+  double R[] = {
+    co, 0, si,
+    0, 1, 0,
+    -si, 0, co
+  };
+  return Matrix(3, 3, R);
+}
+
 void Camera::updateRotationMatrix()
 {
   double rotX = rotation.get(0, 0);// / PI * 180);
-  double rotZ = rotation.get(2, 0);// / PI * 180);
-  Matrix matZ = getRotationMatrix(Zunit, rotZ);
-  Matrix matX = getRotationMatrix(Xunit * matZ, rotX);
-  rotationMatrix = matZ * matX;
+  double rotY = rotation.get(1, 0);// / PI * 180);
+  rotationMatrix = rotateAboutX(rotX) * rotateAboutY(rotY);
 }
 
 void Camera::updateCalibrationMatrix()
@@ -121,7 +141,12 @@ Matrix Camera::getFacing()
 {
   double forw[] = {0, 0, 1};
   Matrix forward = Matrix(1, 3, forw);
-  Matrix facing = rotationMatrix * forward;
+  double rotX = rotation.get(0, 0);// / PI * 180);
+  double rotY = rotation.get(1, 0);// / PI * 180);
+  Matrix facing = rotateAboutX(rotX) * forward;
+  facing =  rotateAboutY(rotY) * facing;
+  // rotationMatrix = rotateAboutX(rotX) * rotateAboutY(rotZ);
+  // Matrix facing = rotationMatrix * forward;
   facing.set(0, 0, -facing.get(0, 0));
   facing.set(0, 1, -facing.get(0, 1));
   return facing;
@@ -129,9 +154,16 @@ Matrix Camera::getFacing()
 
 Matrix Camera::getUp()
 {
-  double u[] = {0, 0, 1};
+  double u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
-  return rotationMatrix * up;
+  double rotX = rotation.get(0, 0);// / PI * 180);
+  double rotY = rotation.get(1, 0);// / PI * 180);
+  Matrix cUp = rotateAboutX(rotX) * up;
+  cUp =  rotateAboutY(rotY) * cUp;
+  // Matrix cUp = rotationMatrix * up;
+  // cUp.set(0, 0, -cUp.get(0, 0));
+  cUp.set(0, 2, -cUp.get(0, 2));
+  return cUp;
 }
 
 Matrix Camera::getPosition(){

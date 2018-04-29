@@ -1,5 +1,9 @@
 #include "Lives.h"
 
+Lives::Lives(){
+  
+}
+
 Lives::Lives(Controller &cont){
   this->cont = &cont;
   reset();

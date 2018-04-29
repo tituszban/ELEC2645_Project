@@ -39,3 +39,7 @@ void Laser::render(Camera &cam, Renderer &renderer){
   laserUp.render(cam, renderer);
   laserDown.render(cam, renderer);
 }
+
+Matrix Laser::getPosition(){
+  return position;
+}

@@ -1,6 +1,10 @@
 #include <UI.h>
 
-
+UI::UI(){
+  setDir(0);
+  setBars(0, 0);
+  setFire(0, 0);
+}
 
 void UI::setDir(int dir){
   this->dir = dir % 8;
@@ -17,8 +21,6 @@ void UI::setFire(int left, int right){
 }
 
 void UI::render(int index, Renderer &renderer){
-  // memoryBenchmark("before UI");
-  // Texture cockpit = arrayToTexture(84, 48, cockpitSprite);
   renderer.addUISprite(0, 0, 84, 48, cockpitSprite);
   renderer.addUISprite(34, 30, 16, 1, topBarSprites[index % 19]);
   renderer.addUISprite(9, 44, 6, 3, leftBottomSprites[index % 3]);
@@ -32,11 +34,4 @@ void UI::render(int index, Renderer &renderer){
   renderer.addUISprite(8, 40, 4, 3, leftBigIndicatorSprite[leftFire]);
   renderer.addUISprite(72, 40, 4, 3, rightBigIndicatorSprite[rightFire]);
   renderer.addUISprite(23, 38, 3, 3, dirSprites[dir]);
-  // memoryBenchmark("After UI");
-}
-
-UI::UI(){
-  this->setDir(0);
-  this->setBars(0, 0);
-  this->setFire(0, 0);
 }

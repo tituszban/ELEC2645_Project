@@ -16,6 +16,7 @@ using namespace std;
 class TieFighter{
 public:
   TieFighter();
+  TieFighter(Matrix position, double rotation);
   void setPosition(Matrix position);
   void setRotation(double rotation);
   bool detectCollision(Matrix projectile);
@@ -25,7 +26,10 @@ public:
   double getRotation();
   bool toBeRemoved;
 
+  vector<Laser> lasers;
+
 private:
+  void init();
   Matrix position;
   double rotation;
   Matrix forward;
@@ -55,8 +59,6 @@ private:
   double innerHitboxRadius;
 
   Explosion explosion;
-
-  vector<Laser> lasers;
 
   void update();
 };

@@ -19,6 +19,7 @@ public:
   void update(double dt);
   void render(Camera &cam, Renderer &renderer);
   bool toBeRemoved;
+  Matrix getPosition();
 private:
   double width;
   double length;

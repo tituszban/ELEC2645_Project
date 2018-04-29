@@ -30,6 +30,7 @@ void alive(){
 Ticker t;
 
 int main() {
+  srand(time(NULL));
   cont.init();
   // cont.lcdInverseMode();
   // cont.ledsOn();
@@ -37,11 +38,11 @@ int main() {
   cont.lcdContrast(0.5);
   // cont.lcdDrawCircle(20, 20, 10, FILL_TRANSPARENT);
   // cont.lcdRefresh();
-  t.attach(&alive, 0.5);
+  // t.attach(&alive, 0.5);
 
 
 
-  ImperialShuttleControlTest(cont);
+  XWingTest(cont);
   // lcd.printString("Test completed", 0, 2);
   // lcd.refresh();
   //DrawPoints();

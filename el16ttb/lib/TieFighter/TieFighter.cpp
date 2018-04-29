@@ -1,6 +1,15 @@
 #include <TieFighter.h>
 
 TieFighter::TieFighter(){
+  init();
+}
+TieFighter::TieFighter(Matrix position, double rotation){
+  init();
+  setPosition(position);
+  setRotation(rotation);
+}
+
+void TieFighter::init(){
   wingSpan = 0.425;
   cockpitThickness = 0.2;
   wingWidth = 1;
@@ -57,7 +66,7 @@ void TieFighter::setRotation(double rotation){
 bool TieFighter::detectCollision(Matrix projectile){
   double dist = position.distance(projectile);
   double rn = (double)rand() / RAND_MAX;
-  if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn) && !destroyed){
+  if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < sqrt(rn)) && !destroyed){
     destroyed = true;
     explosion.setPosition(position);
     explosion.setSize(2.5);

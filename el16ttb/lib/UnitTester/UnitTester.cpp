@@ -17,6 +17,7 @@ using namespace std;
 #include "Lives.h"
 #include "Laser.h"
 #include "Explosion.h"
+#include "XWing.h"
 
 #include <ctime>
 
@@ -432,8 +433,6 @@ bool TieFighterRenderTest(Controller &cont){
   return true;
 }
 
-
-
 bool SpriteDrawTest(Controller &cont){
   printf("Start Test\n\n");
   Renderer renderer;
@@ -490,8 +489,8 @@ bool SkyboxandLaserTest(Controller &cont){
   vector<Laser> lasers;
   vector<Explosion> explosions;
 
-  double l[] = {0.2, -0.2, 0.4};
-  double r[] = {-0.2, -0.2, 0.2};
+  double l[] = {0.5, -0.1, 0.0};
+  double r[] = {-0.5, -0.1, 0.2};
   Matrix left = Matrix(1, 3, l);
   Matrix right = Matrix(1, 3, r);
   double x[] = {0, 0, 5};
@@ -659,4 +658,46 @@ bool ImperialShuttleControlTest(Controller &cont){
   }
   printf("Test completed\n\n");
   return true;
+}
+
+bool XWingTest(Controller &cont){
+printf("Start Test!\n\n");
+Renderer renderer;
+Camera cam;
+cam.init();
+Skybox skybox;
+XWing xwing = XWing(Matrix(1, 3), cont);
+
+double tfPos[] = {0, 0, 3};
+TieFighter tf = TieFighter(Matrix(1, 3, tfPos), 0);
+
+while(!cont.buttonPressed(START))
+{
+  cont.lcdClear();
+  renderer.clearBuffer();
+
+  if(cont.buttonPressed(BACK))
+    xwing.detectCollision(xwing.getPosition());
+
+  for(unsigned int i = 0; i < xwing.lasers.size(); i++){
+    if(tf.detectCollision(xwing.lasers[i].getPosition())){
+      xwing.lasers[i].toBeRemoved = true;
+    }
+  }
+
+  tf.update(0.05, 0, 0, false);
+
+
+  xwing.update(0.05, cont, cam);
+
+  skybox.render(cam, renderer);
+  xwing.render(cam, renderer);
+  tf.render(cam, renderer);
+
+  renderer.render(cont);
+  cont.lcdRefresh();
+  wait(0.05);
+}
+printf("Test completed\n\n");
+return true;
 }

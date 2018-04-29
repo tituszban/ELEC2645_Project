@@ -6,6 +6,7 @@
 
 class Lives{
 public:
+  Lives();
   Lives(Controller &cont);
   void damage(double dam);
   bool isGameOver();

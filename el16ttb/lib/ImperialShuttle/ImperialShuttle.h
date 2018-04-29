@@ -13,6 +13,7 @@ using namespace std;
 class ImperialShuttle{
 public:
   ImperialShuttle();
+  ImperialShuttle(Matrix position, double rotation);
   void setPosition(Matrix position);
   void setRotation(double rotation);
   void render(Camera &cam, Renderer &renderer);
@@ -24,6 +25,7 @@ public:
 
 
 private:
+  void init();
   Matrix position;
   double rotation;
   Matrix forward;

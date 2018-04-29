@@ -46,7 +46,9 @@ private:
   Matrix calProjMatrix;
   Matrix cameraMatrix;
 
-  Matrix getRotationMatrix(Matrix u, double theta);
+  Matrix rotateAboutU(Matrix u, double theta);
+  Matrix rotateAboutX(double theta);
+  Matrix rotateAboutY(double theta);
 
   vector<vector<Matrix> > rotationMatrices;
 

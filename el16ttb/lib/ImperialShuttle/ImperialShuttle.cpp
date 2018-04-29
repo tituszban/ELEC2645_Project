@@ -1,6 +1,15 @@
 #include <ImperialShuttle.h>
 
 ImperialShuttle::ImperialShuttle(){
+  init();
+}
+ImperialShuttle::ImperialShuttle(Matrix position, double rotation){
+  init();
+  setPosition(position);
+  setRotation(rotation);
+}
+
+void ImperialShuttle::init(){
   bodyLength = 1.5;
   bodyWidth = 1;
   cockpitLength = 0.4;
