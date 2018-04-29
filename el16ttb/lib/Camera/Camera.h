@@ -15,14 +15,14 @@ using namespace std;
 #define ROTATION_X_MAX 90
 
 
-typedef std::vector<std::vector<double> > matrix_type;
+typedef std::vector<std::vector<float> > matrix_type;
 
 class Camera{
 
 public:
   void init();
-  void setPosition(double x, double y, double z);
-  void setRotation(double x, double z);
+  void setPosition(float x, float y, float z);
+  void setRotation(float x, float z);
 
   Matrix getFacing();
   Matrix getUp();
@@ -30,7 +30,7 @@ public:
   Matrix getScreenPosition(Matrix p);
 
 private:
-  double focalLength;
+  float focalLength;
   Matrix position;
   Matrix homogPosition;
   Matrix rotation;
@@ -46,13 +46,13 @@ private:
   Matrix calProjMatrix;
   Matrix cameraMatrix;
 
-  Matrix rotateAboutU(Matrix u, double theta);
-  Matrix rotateAboutX(double theta);
-  Matrix rotateAboutY(double theta);
+  Matrix rotateAboutU(Matrix u, float theta);
+  Matrix rotateAboutX(float theta);
+  Matrix rotateAboutY(float theta);
 
   vector<vector<Matrix> > rotationMatrices;
 
-  void setFocalLength(double f);
+  void setFocalLength(float f);
 
   void updateRotationMatrix();
   void updateCalibrationMatrix();

@@ -16,14 +16,14 @@ using namespace std;
 class TieFighter{
 public:
   TieFighter();
-  TieFighter(Matrix position, double rotation);
+  TieFighter(Matrix position, float rotation);
   void setPosition(Matrix position);
-  void setRotation(double rotation);
+  void setRotation(float rotation);
   bool detectCollision(Matrix projectile);
   void render(Camera &cam, Renderer &renderer);
-  void update(double dt, double steering, double elevation, bool fire);
+  void update(float dt, float steering, float elevation, bool fire);
   Matrix getPosition();
-  double getRotation();
+  float getRotation();
   bool toBeRemoved;
 
   vector<Laser> lasers;
@@ -31,7 +31,7 @@ public:
 private:
   void init();
   Matrix position;
-  double rotation;
+  float rotation;
   Matrix forward;
   Matrix left;
   Face wingL;
@@ -42,21 +42,21 @@ private:
   Face cockpitBack;
   Face cockpitTop;
   Face cockpitBottom;
-  double wingSpan;
-  double cockpitThickness;
+  float wingSpan;
+  float cockpitThickness;
   bool changed;
-  double wingWidth;
-  double wingHeight;
+  float wingWidth;
+  float wingHeight;
 
-  double steeringAngle;
-  double elevationSpeed;
-  double speed;
-  double fireCooldown;
-  double fireTimer;
+  float steeringAngle;
+  float elevationSpeed;
+  float speed;
+  float fireCooldown;
+  float fireTimer;
 
   bool destroyed;
-  double outerHitboxRadius;
-  double innerHitboxRadius;
+  float outerHitboxRadius;
+  float innerHitboxRadius;
 
   Explosion explosion;
 

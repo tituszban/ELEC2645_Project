@@ -3,7 +3,7 @@
 
 Renderer::Renderer()
 {
-  vector< vector< pair<int, double> > > bf(WIDTH, vector< pair<int, double> >(HEIGHT));
+  vector< vector< pair<int, float> > > bf(WIDTH, vector< pair<int, float> >(HEIGHT));
   this->_buffer = bf;
 
   this->clearBuffer();
@@ -36,7 +36,7 @@ void Renderer::addPoint(Matrix point, int value)
   int y = round(point.get(0, 1));
   this->addPoint(x, y, d, value);
 }
-void Renderer::addPoint(int x, int y, double d, int value)
+void Renderer::addPoint(int x, int y, float d, int value)
 {
   if(d < 0)
     return;
@@ -87,9 +87,9 @@ void Renderer::addLine(Matrix point1, Matrix point2, int value){
   if(distance > 100){
     return;
   }
-  vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
-  vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
-  vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
+  vector<float> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
+  vector<float> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
+  vector<float> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
   for(int i = 0; i < distance; i++){
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
   }
@@ -99,12 +99,12 @@ void Renderer::addLine(Matrix point1, Matrix point2, int value){
 
 void Renderer::addPatternLine(Matrix point1, Matrix point2, vector<int> pattern){
   int distance = ceil(point1.homogDistance(point2));
-  vector<double> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
-  vector<double> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
-  vector<double> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
+  vector<float> lX = lerp(point1.get(0, 0), point2.get(0, 0), distance);
+  vector<float> lY = lerp(point1.get(0, 1), point2.get(0, 1), distance);
+  vector<float> lZ = lerp(point1.get(0, 2), point2.get(0, 2), distance);
 
   for(int i = 0; i < distance; i++){
-    int scaled_indexer = floor((double) i / (double) distance * pattern.size());
+    int scaled_indexer = floor((float) i / (float) distance * pattern.size());
     int value = pattern[scaled_indexer];
     this->addPoint(round(lX[i]), round(lY[i]), lZ[i], value);
   }

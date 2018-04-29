@@ -14,22 +14,22 @@ void MatrixDimentionMissmatchError(Shape s1, Shape s2, string context)
 }
 
 Matrix::Matrix(){
-  matrix_type m(0, vector<double>(0));
+  matrix_type m(0, vector<float>(0));
   this->Setup(m);
 }
 Matrix::Matrix(Shape shape){
-  matrix_type m(shape.width, vector<double>(shape.height));
+  matrix_type m(shape.width, vector<float>(shape.height));
   this->Setup(m);
 }
 Matrix::Matrix(int width, int height){
-  matrix_type m(width, vector<double>(height));
+  matrix_type m(width, vector<float>(height));
   this->Setup(m);
 }
 Matrix::Matrix(matrix_type m){
   this->Setup(m);
 }
-Matrix::Matrix(int width, int height, double* m){
-  matrix_type tempM(width, vector<double>(height));
+Matrix::Matrix(int width, int height, float* m){
+  matrix_type tempM(width, vector<float>(height));
   for(int i = 0; i < width; i++){
     for (int j = 0; j < height; j++) {
       tempM[i][j] = m[i + width * j];
@@ -59,11 +59,11 @@ void Matrix::print_matrix(){
   printf("%s\n]\n", buffer.c_str());
 }
 
-void Matrix::set(int w, int h, double v){
+void Matrix::set(int w, int h, float v){
   this->_matrix[w][h] = v;
 }
 
-double Matrix::get(int w, int h){
+float Matrix::get(int w, int h){
   return this->_matrix[w][h];
 }
 
@@ -77,13 +77,13 @@ Matrix Matrix::transpose(){
   return m;
 }
 
-double Matrix::dot(Matrix other){
+float Matrix::dot(Matrix other){
   if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
   (this->shape.width != 1 && this->shape.height != 1)){
     MatrixDimentionMissmatchError(this->shape, other.shape, "Dot product");
     return -1;
   }
-  double sum = 0;
+  float sum = 0;
   if(this->shape.width == 1){
     for(int i = 0; i < this->shape.height; i++){
       sum += this->get(0, i) * other.get(0, i);
@@ -109,13 +109,13 @@ Matrix Matrix::cross(Matrix other){
   return m;
 }
 
-double Matrix::distance(Matrix other){
+float Matrix::distance(Matrix other){
   if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
   (this->shape.width != 1 && this->shape.height != 1)){
     MatrixDimentionMissmatchError(this->shape, other.shape, "distance");
     return -1;
   }
-  double sum = 0;
+  float sum = 0;
   if(this->shape.width == 1){
     for(int i = 0; i < this->shape.height; i++){
       sum += pow(this->get(0, i) - other.get(0, i), 2);
@@ -129,13 +129,13 @@ double Matrix::distance(Matrix other){
   return sqrt(sum);
 }
 
-double Matrix::homogDistance(Matrix other){
+float Matrix::homogDistance(Matrix other){
   if(this->shape.width != other.shape.width || this->shape.height != other.shape.height ||
   (this->shape.width != 1 && this->shape.height != 1)){
     MatrixDimentionMissmatchError(this->shape, other.shape, "homogenious distance");
     return -1;
   }
-  double sum = 0;
+  float sum = 0;
   if(this->shape.width == 1){
     for(int i = 0; i < this->shape.height - 1; i++){
       sum += pow(this->get(0, i) - other.get(0, i), 2);
@@ -154,7 +154,7 @@ Matrix Matrix::operator+(Matrix p){
     MatrixDimentionMissmatchError(this->shape, p.shape, "Addition");
     return Matrix();
   }
-  matrix_type m(p.shape.width, vector<double>(p.shape.height));
+  matrix_type m(p.shape.width, vector<float>(p.shape.height));
   for(int i = 0; i < p.shape.width; i++){
     for(int j = 0; j < p.shape.height; j++){
       m[i][j] = this->get(i, j) + p.get(i, j);
@@ -178,7 +178,7 @@ Matrix Matrix::operator-(Matrix p){
     MatrixDimentionMissmatchError(this->shape, p.shape, "Subtraction");
     return Matrix();
   }
-  matrix_type m(p.shape.width, vector<double>(p.shape.height));
+  matrix_type m(p.shape.width, vector<float>(p.shape.height));
   for(int i = 0; i < p.shape.width; i++){
     for(int j = 0; j < p.shape.height; j++){
       m[i][j] = this->get(i, j) - p.get(i, j);
@@ -194,10 +194,10 @@ Matrix Matrix::operator*(Matrix p){
   int n_width = p.shape.width;
   int n_height = this->shape.height;
   int n = p.shape.height;
-  matrix_type m(n_width, vector<double>(n_height));
+  matrix_type m(n_width, vector<float>(n_height));
   for(int i = 0; i < n_width; i++){
     for(int j = 0; j < n_height; j++){
-      double sum = 0;
+      float sum = 0;
       for(int k = 0; k < n; k++){
         sum += this->get(k, j) * p.get(i, k);
       }
@@ -207,7 +207,7 @@ Matrix Matrix::operator*(Matrix p){
   return Matrix(m);
 }
 
-Matrix Matrix::operator*(double x){
+Matrix Matrix::operator*(float x){
   Matrix m(this->shape);
   for(int i = 0; i < m.shape.width; i++){
     for(int j = 0; j < m.shape.height; j++){
@@ -217,7 +217,7 @@ Matrix Matrix::operator*(double x){
   return m;
 }
 
-Matrix Matrix::operator/(double x){
+Matrix Matrix::operator/(float x){
   Matrix m(this->shape);
   for(int i = 0; i < m.shape.width; i++){
     for(int j = 0; j < m.shape.height; j++){

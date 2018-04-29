@@ -20,7 +20,7 @@ struct Texture{
 #define PI  3.14159265358979323846
 
 Matrix pos2homogPos(Matrix pos);
-vector<double> lerp(double a, double b, int length);
+vector<float> lerp(float a, float b, int length);
 pair<Matrix, Matrix> getPerpVectors(Matrix fwd);
 void memoryBenchmark(string id);
 Texture arrayToTexture(int width, int height, const int* array);

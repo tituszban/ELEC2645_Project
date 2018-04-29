@@ -18,22 +18,22 @@ XWing::XWing(Matrix position, Controller &cont){
 }
 
 bool XWing::detectCollision(Matrix projectile){
-  double dist = position.distance(projectile);
-  double rn = (double)rand() / RAND_MAX;
+  float dist = position.distance(projectile);
+  float rn = (float)rand() / RAND_MAX;
   if(dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn){
-    lives.damage((double)rand() / RAND_MAX * (MAX_DAMAGE - MIN_DAMAGE) + MIN_DAMAGE);
+    lives.damage((float)rand() / RAND_MAX * (MAX_DAMAGE - MIN_DAMAGE) + MIN_DAMAGE);
     return true;
   }
   return false;
 }
 
-void XWing::update(double dt, Controller &cont, Camera &cam){
+void XWing::update(float dt, Controller &cont, Camera &cam){
   speed = min(max(
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
   // printf("Speed: %f\n", speed);
   yaw += pow(cont.joystickCoord().x, 3) * -yawSpeed * dt;
-  double pitch = -cont.joystickCoord().y * pitchAngle;
+  float pitch = -cont.joystickCoord().y * pitchAngle;
   cam.setRotation(pitch, yaw);
   cam.setPosition(position.get(0, 0), position.get(0, 1), position.get(0, 2));
   position = position + cam.getFacing() * dt * ((MAX_SPEED - MIN_SPEED) * speed + MIN_SPEED);

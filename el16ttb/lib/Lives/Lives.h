@@ -8,11 +8,11 @@ class Lives{
 public:
   Lives();
   Lives(Controller &cont);
-  void damage(double dam);
+  void damage(float dam);
   bool isGameOver();
   void reset();
 private:
-  double life;
+  float life;
   void setLEDs();
   Controller *cont;
 };

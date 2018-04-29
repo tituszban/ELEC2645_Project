@@ -21,7 +21,7 @@ public:
   void clearBuffer();
   void render(Controller &cont);
   void addPoint(Matrix point, int value);
-  void addPoint(int x, int y, double d, int value);
+  void addPoint(int x, int y, float d, int value);
   void addUIPoint(Matrix point, int value);
   void addUIPoint(int x, int y, int value);
   void addSkyboxPoint(Matrix point, int value);
@@ -33,7 +33,7 @@ public:
   void addUISprite(int x, int y, int w, int h, const int* texture);
 
 private:
-  vector< vector< pair<int, double> > > _buffer;
+  vector< vector< pair<int, float> > > _buffer;
   vector<int> map(vector<int> pattern, int length);
 };
 

@@ -24,7 +24,7 @@ void Laser::setVelocity(Matrix velocity, Matrix up){
   forward = velocity / velocity.distance(Matrix(1, 3));
 }
 
-void Laser::update(double dt){
+void Laser::update(float dt){
   position = position + velocity * dt;
   if(origin.distance(position) > MAX_LASER_DISTANCE){
     toBeRemoved = true;

@@ -3,7 +3,7 @@
 ImperialShuttle::ImperialShuttle(){
   init();
 }
-ImperialShuttle::ImperialShuttle(Matrix position, double rotation){
+ImperialShuttle::ImperialShuttle(Matrix position, float rotation){
   init();
   setPosition(position);
   setRotation(rotation);
@@ -33,7 +33,7 @@ void ImperialShuttle::init(){
   explosion.toBeRemoved = true;
 
   innerHitboxRadius = 0.6;
-  outerHitboxRadius = 1.7;
+  outerHitboxRadius = 1.2;
 
   setPosition(Matrix(1, 3));
   setRotation(0);
@@ -82,16 +82,16 @@ void ImperialShuttle::setPosition(Matrix position){
   changed = true;
 }
 
-void ImperialShuttle::setRotation(double rotation){
+void ImperialShuttle::setRotation(float rotation){
   this->rotation = rotation;
-  double si = sin(rotation);
-  double co = cos(rotation);
+  float si = sin(rotation);
+  float co = cos(rotation);
 
-  double fwd[] = {si, 0, co};
-  double lft[] = {-co, 0, si};
-  double lw[] = {-co * wingCos, wingSin, si*wingSin};
-  double rw[] = {co * wingCos, wingSin, -si*wingCos};
-  double fc[] = {si * cockpitCos, cockpitSin, co*cockpitCos};
+  float fwd[] = {si, 0, co};
+  float lft[] = {-co, 0, si};
+  float lw[] = {-co * wingCos, wingSin, si*wingSin};
+  float rw[] = {co * wingCos, wingSin, -si*wingCos};
+  float fc[] = {si * cockpitCos, cockpitSin, co*cockpitCos};
   forward = Matrix(1, 3, fwd);
   left = Matrix(1, 3, lft);
   leftWing = Matrix(1, 3, lw);
@@ -101,23 +101,24 @@ void ImperialShuttle::setRotation(double rotation){
 }
 
 bool ImperialShuttle::detectCollision(Matrix projectile){
-  double dist = position.distance(projectile);
-  double rn = (double)rand() / RAND_MAX;
+  float dist = position.distance(projectile);
+  float rn = (float)rand() / RAND_MAX;
   if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn) && life > 0){
+    printf("Hit!\n");
     life -= 1;
-    explosion = Explosion();
-    explosion.setPosition(projectile);
+    explosion.reset();
+    explosion.setPosition(life > 0 ? projectile : position);
     explosion.setSize(life > 0 ? 1.5 : 7);
     return true;
   }
   return false;
 }
 
-void ImperialShuttle::update(double dt, double steering){
+void ImperialShuttle::update(float dt, float steering){
   if(life > 0){
-    double u[] = {0, 1, 0};
+    float u[] = {0, 1, 0};
     Matrix up = Matrix(1, 3, u);
-    steering = min(max(steering, -1.0), 1.0);
+    steering = min(max(steering, -1.0f), 1.0f);
     setRotation(rotation + steering * steeringAngle * dt);
     setPosition(position + forward * speed * dt);
   }
@@ -132,12 +133,12 @@ void ImperialShuttle::update(double dt, double steering){
 Matrix ImperialShuttle::getPosition(){
   return position;
 }
-double ImperialShuttle::getRotation(){
+float ImperialShuttle::getRotation(){
   return rotation;
 }
 
 void ImperialShuttle::update(){
-  double u[] = {0, 1, 0};
+  float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
   sideL.setPosition(position + left * (bodyWidth * 0.5 - engineWidth) +forward * cockpitLength * 0.5);
   sideL.setDirection(left, up);

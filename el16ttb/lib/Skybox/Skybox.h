@@ -13,7 +13,7 @@ public:
   void render(Camera &cam, Renderer &renderer);
 };
 
-const double stars[][3] =	{
+const float stars[][3] =	{
 	{-0.610098, 0.572810, -0.547420},
 	{-0.762873, 0.646503, 0.007639},
 	{0.643230, 0.757781, -0.109646},

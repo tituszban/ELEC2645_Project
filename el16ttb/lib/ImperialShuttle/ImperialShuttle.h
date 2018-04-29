@@ -13,21 +13,21 @@ using namespace std;
 class ImperialShuttle{
 public:
   ImperialShuttle();
-  ImperialShuttle(Matrix position, double rotation);
+  ImperialShuttle(Matrix position, float rotation);
   void setPosition(Matrix position);
-  void setRotation(double rotation);
+  void setRotation(float rotation);
   void render(Camera &cam, Renderer &renderer);
   bool detectCollision(Matrix projectile);
-  void update(double dt, double steering);
+  void update(float dt, float steering);
   Matrix getPosition();
-  double getRotation();
+  float getRotation();
   bool toBeRemoved;
 
 
 private:
   void init();
   Matrix position;
-  double rotation;
+  float rotation;
   Matrix forward;
   Matrix left;
   Matrix leftWing;
@@ -35,22 +35,22 @@ private:
   Matrix cockpitFacing;
   bool changed;
 
-  double bodyLength;
-  double bodyWidth;
-  double cockpitLength;
-  double cockpitSin;
-  double cockpitCos;
-  double cockpitHypot;
-  double engineWidth;
-  double engineHeight;
-  double bodyHeight;
-  double wingAngle;
-  double wingSin;
-  double wingCos;
-  double wingLength;
-  double topWingHeight;
-  double topWingLength;
-  double topWingOffset;
+  float bodyLength;
+  float bodyWidth;
+  float cockpitLength;
+  float cockpitSin;
+  float cockpitCos;
+  float cockpitHypot;
+  float engineWidth;
+  float engineHeight;
+  float bodyHeight;
+  float wingAngle;
+  float wingSin;
+  float wingCos;
+  float wingLength;
+  float topWingHeight;
+  float topWingLength;
+  float topWingOffset;
 
   Face sideL;
   Face sideR;
@@ -70,12 +70,12 @@ private:
   Face wingRTop;
   Face wingRBottom;
 
-  double steeringAngle;
-  double speed;
+  float steeringAngle;
+  float speed;
 
-  double life;
-  double outerHitboxRadius;
-  double innerHitboxRadius;
+  float life;
+  float outerHitboxRadius;
+  float innerHitboxRadius;
 
   Explosion explosion;
 

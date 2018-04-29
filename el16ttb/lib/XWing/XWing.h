@@ -24,7 +24,7 @@ class XWing{
 public:
   XWing(Matrix position, Controller &cont);
   bool detectCollision(Matrix projectile);
-  void update(double dt, Controller &cont, Camera &cam);
+  void update(float dt, Controller &cont, Camera &cam);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
 
@@ -34,26 +34,26 @@ private:
   UI ui;
 
   Matrix position;
-  double yaw;
-  double speed;
+  float yaw;
+  float speed;
 
-  double yawSpeed;
-  double pitchAngle;
+  float yawSpeed;
+  float pitchAngle;
 
   int UIIndex;
   int UIcounter;
 
-  double laserYOffset;
-  double laserXOffset;
+  float laserYOffset;
+  float laserXOffset;
 
 
-  double fireTimer;
-  double fireCooldown;
-  double fireDelay;
+  float fireTimer;
+  float fireCooldown;
+  float fireDelay;
   int fireSequence;
 
-  double outerHitboxRadius;
-  double innerHitboxRadius;
+  float outerHitboxRadius;
+  float innerHitboxRadius;
 
   Lives lives;
 };

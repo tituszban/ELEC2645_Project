@@ -16,14 +16,14 @@ public:
   Laser();
   void setPosition(Matrix position);
   void setVelocity(Matrix velocity, Matrix up);
-  void update(double dt);
+  void update(float dt);
   void render(Camera &cam, Renderer &renderer);
   bool toBeRemoved;
   Matrix getPosition();
 private:
-  double width;
-  double length;
-  double speed;
+  float width;
+  float length;
+  float speed;
   Matrix position;
   Matrix origin;
   Matrix velocity;

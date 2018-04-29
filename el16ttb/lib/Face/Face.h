@@ -20,7 +20,7 @@ public:
   void setDirection(Matrix normal, Matrix up);
   void setPosition(Matrix position);
   void render(Camera &cam, Renderer &renderer);
-  void setSize(double width, double height);
+  void setSize(float width, float height);
 
 private:
   Matrix position;
@@ -28,8 +28,8 @@ private:
   Matrix up;
   Matrix left;
   Texture texture;
-  double halfWidth;
-  double halfHeight;
+  float halfWidth;
+  float halfHeight;
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > corners;
   bool faceChanged;
 

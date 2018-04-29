@@ -13,17 +13,19 @@ using namespace std;
 class Explosion{
 public:
   Explosion();
+  Explosion(Matrix position, float size);
   void setPosition(Matrix position);
-  void setSize(double size);
-  void update(double dt);
+  void setSize(float size);
+  void update(float dt);
   void render(Camera &cam, Renderer &renderer);
+  void reset();
   bool toBeRemoved;
 private:
   Matrix position;
-  double explosionTime;
-  double timer;
+  float explosionTime;
+  float timer;
+  int explosionIndexPre;
   Face explosion;
-  vector<Texture> textures;
 };
 
 const int explosion0Sprite[] =	{

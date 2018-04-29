@@ -30,7 +30,7 @@ bool MatrixCreationTest(){
   m1.print_matrix();
 
   printf("Testing M2\n");
-  std::vector< std::vector<double> > m2Template(4, std::vector<double>(3));
+  std::vector< std::vector<float> > m2Template(4, std::vector<float>(3));
   Matrix m2 = Matrix(m2Template);
   printf("M2 shape: %d:%d\n", m2.shape.width, m2.shape.height);
   m2.print_matrix();
@@ -47,13 +47,13 @@ bool MatrixCreationTest(){
   m4.print_matrix();
 
   printf("Testing M5\n");
-  double tempM5[] = {
+  float tempM5[] = {
     0, 1, 2,
     3, 4, 5,
     6, 7, 8,
     9, 0, 1
   };
-  Matrix m5 = Matrix(3, 4, (double*) tempM5);
+  Matrix m5 = Matrix(3, 4, (float*) tempM5);
   printf("M5 shape: %d:%d\n", m5.shape.width, m5.shape.height);
   m5.print_matrix();
   printf("Test completed\n");
@@ -62,7 +62,7 @@ bool MatrixCreationTest(){
 
 bool MatrixReadWriteTest(){
   printf("Starting Matrix Read-Write Test\n");
-  double temp[] = {
+  float temp[] = {
     0, 1, 2,
     3, 4, 5,
     6, 7, 8,
@@ -85,12 +85,12 @@ bool MatrixReadWriteTest(){
 
 bool MatrixOperationsTest(){
   printf("Starting Matrix Operations Test\n");
-  double temp1[] = {
+  float temp1[] = {
     0, 1, 2,
     3, 4, 5,
     6, 7, 8
   };
-  double temp2[] = {
+  float temp2[] = {
     8, 7, 6,
     5, 4, 3,
     2, 1, 0
@@ -142,12 +142,12 @@ bool MatrixOperationsTest(){
 
 bool MatrixErrorTest(){
   printf("Starting Matrix Error Test\n");
-  double temp1[] = {
+  float temp1[] = {
     0, 1, 2,
     3, 4, 5,
     6, 7, 8
   };
-  double temp2[] = {
+  float temp2[] = {
     8, 7, 6,
     5, 4, 3
   };
@@ -170,22 +170,22 @@ bool CameraValueTest(){
   Camera cam;
   cam.init();
   cam.setPosition(0, 0, 6);
-  double p[] = {1, 1, -1, 1};
+  float p[] = {1, 1, -1, 1};
   Matrix point = Matrix(1, 4, p);
   Matrix screenPoint = cam.getScreenPosition(point);
   screenPoint.print_matrix();
-  //double v =
+  //float v =
   screenPoint = screenPoint / screenPoint.get(0, 2);
   screenPoint.print_matrix();
   return true;
 }
 
 bool CameraScaleTest(Controller &cont){
-  double posX = 0.5;
-  double posZ = 0.5;
+  float posX = 0.5;
+  float posZ = 0.5;
 
-  double rotX = 0;
-  double rotZ = 0;
+  float rotX = 0;
+  float rotZ = 0;
   Camera cam;
   cam.init();
 
@@ -195,8 +195,8 @@ bool CameraScaleTest(Controller &cont){
     rotZ += pow(cont.joystickCoord().x, 3) * -0.4;
     rotX += pow(cont.joystickCoord().y, 3) * -0.15;
 
-    double moveX = (cont.buttonDown(A) ? -1 : 0) + (cont.buttonDown(Y) ? 1 : 0);
-    double moveZ = (cont.buttonDown(X) ? -1 : 0) + (cont.buttonDown(B) ? 1 : 0);
+    float moveX = (cont.buttonDown(A) ? -1 : 0) + (cont.buttonDown(Y) ? 1 : 0);
+    float moveZ = (cont.buttonDown(X) ? -1 : 0) + (cont.buttonDown(B) ? 1 : 0);
 
     posZ += (moveX * cos(-rotZ) + moveZ * sin(-rotZ)) * 0.3;
     posX += (moveX * sin(-rotZ) + moveZ * cos(-rotZ)) * 0.3;
@@ -209,7 +209,7 @@ bool CameraScaleTest(Controller &cont){
       for(int j = -10; j <= 10; j++){
         for(int k = 0; k < 1; k++){
           if(sqrt(pow(i, 2) + pow(j, 2)) < 10){
-            double p[] = {(double)i, (double)k, (double)j, 1};
+            float p[] = {(float)i, (float)k, (float)j, 1};
             Matrix point = Matrix(1, 4, p);
             Matrix screenPoint = cam.getScreenPosition(point);
             if(screenPoint.get(0, 2) > 0){
@@ -217,7 +217,7 @@ bool CameraScaleTest(Controller &cont){
               if(screenPoint.get(0, 0) > 0 && screenPoint.get(0, 0) < 84 && screenPoint.get(0, 1) > 0 && screenPoint.get(0, 1) < 48){
                 cont.lcdSetPixel((int)screenPoint.get(0, 0),(int)screenPoint.get(0, 1),true);
               }
-              // double dist = sqrt(pow(posZ - j, 2) + pow(posX - i, 2) + pow(1.8 - k, 2));
+              // float dist = sqrt(pow(posZ - j, 2) + pow(posX - i, 2) + pow(1.8 - k, 2));
               if(doPrint && i == 0){
                 screenPoint.print_matrix();
                 //printf("actual distance: %.4f, depth: %.4f\n", dist, screenPoint.get(0, 2));
@@ -233,7 +233,7 @@ bool CameraScaleTest(Controller &cont){
 }
 
 bool RendererDisplayTest(Controller &cont){
-  double points_d[][3] = {
+  float points_d[][3] = {
     {0, 0, 0},
     {10, 10, 0},
     {30, 10, 5},
@@ -289,27 +289,27 @@ bool FaceRenderTest(Controller &cont){
   Camera cam;
   cam.init();
 
-  double pos[][3] = {
+  float pos[][3] = {
     {1.8, 3, 2.2},
     {1.2, 3, 2.8},
     {1.4, 3, 2.4},
     {1, 2, 3.5}
   };
 
-  double nor[][3] = {
+  float nor[][3] = {
     {0.707, 0, -0.707},
     {0.707, 0, -0.707},
     {-0.707, 0, -0.707},
     {0, 0, -1}
   };
 
-  double up[][3] = {
+  float up[][3] = {
     {0, 1, 0},
     {0, 1, 0},
     {0, 1, 0}
   };
 
-  double size[][2] = {
+  float size[][2] = {
     {1, 1.5},
     {1, 1.5},
     {0.85, 0.4}
@@ -358,15 +358,15 @@ bool TieFighterRenderTest(Controller &cont){
   cam.setPosition(1, 3, 0);
   cam.setRotation(0, 0);
   memoryBenchmark("Create camera and renderer");
-  double dir[] = {-0.766, 0, -0.642};
+  float dir[] = {-0.766, 0, -0.642};
 #ifdef FLYBY
-  double shPos[] = {9.5, 3, 15};
-  double tf1Pos[] = {10.5, 3.5, 16.7};
-  double tf2Pos[] = {7.2, 2.5, 14.6};
+  float shPos[] = {9.5, 3, 15};
+  float tf1Pos[] = {10.5, 3.5, 16.7};
+  float tf2Pos[] = {7.2, 2.5, 14.6};
   Matrix tf1Position = Matrix(1, 3, tf1Pos);
   Matrix tf2Position = Matrix(1, 3, tf2Pos);
 #else
-  double shPos[] = {1, 3, 15};
+  float shPos[] = {1, 3, 15};
 #endif
   Matrix shPosition = Matrix(1, 3, shPos);
   Matrix direction = Matrix(1, 3, dir);
@@ -380,7 +380,7 @@ bool TieFighterRenderTest(Controller &cont){
   memoryBenchmark("Create tie fighters");
 #endif
 
-  double rot = PI * 11.0 / 9.0;
+  float rot = PI * 11.0 / 9.0;
   while(!cont.buttonPressed(START)){
     cont.lcdClear();
     renderer.clearBuffer();
@@ -441,7 +441,7 @@ bool SpriteDrawTest(Controller &cont){
   int index = 0;
   int indexTick = 0;
 
-  double speed = 0;
+  float speed = 0;
 
   int fireTick = 11;
 
@@ -479,8 +479,8 @@ bool SpriteDrawTest(Controller &cont){
 bool SkyboxandLaserTest(Controller &cont){
   printf("Start Test!\n\n");
   Renderer renderer;
-  double rotX = 0;
-  double rotZ = 0;
+  float rotX = 0;
+  float rotZ = 0;
   Camera cam;
   cam.init();
 
@@ -489,11 +489,11 @@ bool SkyboxandLaserTest(Controller &cont){
   vector<Laser> lasers;
   vector<Explosion> explosions;
 
-  double l[] = {0.5, -0.1, 0.0};
-  double r[] = {-0.5, -0.1, 0.2};
+  float l[] = {0.5, -0.1, 0.0};
+  float r[] = {-0.5, -0.1, 0.2};
   Matrix left = Matrix(1, 3, l);
   Matrix right = Matrix(1, 3, r);
-  double x[] = {0, 0, 5};
+  float x[] = {0, 0, 5};
   Matrix explosionPos = Matrix(1, 3, x);
 
   while(!cont.buttonPressed(START)){
@@ -587,7 +587,7 @@ bool TieFighterControlTest(Controller &cont){
   cam.setPosition(0, 3, 0);
   cam.setRotation(0, 0);
 
-  double tfPos[] = {0, 0, 3};
+  float tfPos[] = {0, 0, 3};
   Matrix tfPosition = Matrix(1, 3, tfPos);
 
   TieFighter tf = TieFighter();
@@ -599,8 +599,8 @@ bool TieFighterControlTest(Controller &cont){
     renderer.clearBuffer();
     skybox.render(cam, renderer);
 
-    double steer = pow(cont.joystickCoord().x, 3);
-    double elev = pow(cont.joystickCoord().y, 3);
+    float steer = pow(cont.joystickCoord().x, 3);
+    float elev = pow(cont.joystickCoord().y, 3);
 
 
     if(cont.buttonPressed(B)){
@@ -630,7 +630,7 @@ bool ImperialShuttleControlTest(Controller &cont){
   cam.setPosition(0, 1.5, 0);
   cam.setRotation(0, 0);
 
-  double shPos[] = {0, 0, 3};
+  float shPos[] = {0, 0, 3};
   Matrix shPosition = Matrix(1, 3, shPos);
 
   ImperialShuttle sh = ImperialShuttle();
@@ -642,7 +642,7 @@ bool ImperialShuttleControlTest(Controller &cont){
     renderer.clearBuffer();
     skybox.render(cam, renderer);
 
-    double steer = pow(cont.joystickCoord().x, 3);
+    float steer = pow(cont.joystickCoord().x, 3);
 
 
     if(cont.buttonPressed(B)){
@@ -668,8 +668,12 @@ cam.init();
 Skybox skybox;
 XWing xwing = XWing(Matrix(1, 3), cont);
 
-double tfPos[] = {0, 0, 3};
-TieFighter tf = TieFighter(Matrix(1, 3, tfPos), 0);
+float tf1Pos[] = {-3, 0, 10};
+TieFighter tf1 = TieFighter(Matrix(1, 3, tf1Pos), 0);
+float tf2Pos[] = {3, 0, 10};
+TieFighter tf2 = TieFighter(Matrix(1, 3, tf2Pos), 0);
+float shPos[] = {0, 1, 13};
+ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), 0);
 
 while(!cont.buttonPressed(START))
 {
@@ -680,19 +684,23 @@ while(!cont.buttonPressed(START))
     xwing.detectCollision(xwing.getPosition());
 
   for(unsigned int i = 0; i < xwing.lasers.size(); i++){
-    if(tf.detectCollision(xwing.lasers[i].getPosition())){
-      xwing.lasers[i].toBeRemoved = true;
-    }
+    Matrix pos = xwing.lasers[i].getPosition();
+    xwing.lasers[i].toBeRemoved = tf1.detectCollision(pos) || sh.detectCollision(pos) || tf2.detectCollision(pos);
+
   }
 
-  tf.update(0.05, 0, 0, false);
+  tf1.update(0.05, 0, 0, false);
+  tf2.update(0.05, 0, 0, false);
+  sh.update(0.05, 0);
 
 
   xwing.update(0.05, cont, cam);
 
   skybox.render(cam, renderer);
   xwing.render(cam, renderer);
-  tf.render(cam, renderer);
+  tf1.render(cam, renderer);
+  tf2.render(cam, renderer);
+  sh.render(cam, renderer);
 
   renderer.render(cont);
   cont.lcdRefresh();

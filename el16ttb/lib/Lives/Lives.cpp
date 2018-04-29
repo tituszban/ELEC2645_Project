@@ -1,7 +1,7 @@
 #include "Lives.h"
 
 Lives::Lives(){
-  
+
 }
 
 Lives::Lives(Controller &cont){
@@ -9,7 +9,7 @@ Lives::Lives(Controller &cont){
   reset();
 }
 
-void Lives::damage(double dam){
+void Lives::damage(float dam){
   life -= dam;
   setLEDs();
 }

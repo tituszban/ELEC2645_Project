@@ -14,10 +14,10 @@ Matrix pos2homogPos(Matrix pos){
   return mat;
 }
 
-vector<double> lerp(double a, double b, int length)
+vector<float> lerp(float a, float b, int length)
 {
-  vector<double> data(length);
-  double step = (b - a) / (double)length;
+  vector<float> data(length);
+  float step = (b - a) / (float)length;
   for(int i = 0; i < length; i++){
     data[i] = a + step * i;
   }
@@ -35,9 +35,9 @@ pair<Matrix, Matrix> getPerpVectors(Matrix fwd)
     p.second.set(0, 1, 1);
   }
   else{
-    double X = fwd.get(0, 0);
-    double Y = fwd.get(0, 1);
-    double Z = fwd.get(0, 2);
+    float X = fwd.get(0, 0);
+    float Y = fwd.get(0, 1);
+    float Z = fwd.get(0, 2);
     p.first.set(0, 0, abs(-Y));
     p.first.set(0, 1, abs(X));
     p.second.set(0, 0, abs(-X*Z));

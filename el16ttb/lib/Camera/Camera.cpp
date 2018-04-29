@@ -23,7 +23,7 @@ void Camera::init()
   setRotation(0, 0);
 }
 
-void Camera::setPosition(double x, double y, double z)
+void Camera::setPosition(float x, float y, float z)
 {
   position.set(0, 0, x);
   position.set(1, 0, y);
@@ -35,7 +35,7 @@ void Camera::setPosition(double x, double y, double z)
   updateTransformationMatrix();
 }
 
-void Camera::setRotation(double x, double y)
+void Camera::setRotation(float x, float y)
 {
   rotation.set(0, 0, x);
   rotation.set(1, 0, y);
@@ -44,20 +44,20 @@ void Camera::setRotation(double x, double y)
   updateTransformationMatrix();
 }
 
-void Camera::setFocalLength(double f)
+void Camera::setFocalLength(float f)
 {
   focalLength = f;
   updateCalibrationMatrix();
 }
 
-Matrix Camera::rotateAboutU(Matrix u, double theta)
+Matrix Camera::rotateAboutU(Matrix u, float theta)
 {
-  double ux = u.get(0, 0);
-  double uy = u.get(1, 0);
-  double uz = u.get(2, 0);
-  double co = cos(theta);
-  double si = sin(theta);
-  double R[] = {
+  float ux = u.get(0, 0);
+  float uy = u.get(1, 0);
+  float uz = u.get(2, 0);
+  float co = cos(theta);
+  float si = sin(theta);
+  float R[] = {
     co + pow(ux,2)*(1-co), ux*uy*(1-co) - uz*si, ux*uz*(1-co) + uy*si,
     uy*ux*(1-co)+uz*si, co + pow(uy, 2)*(1-co), uy*uz*(1-co) - ux*si,
     uz*ux*(1-co) - uy*si, uz*uy*(1-co)+ux*si, co + pow(uz, 2)*(1-co)
@@ -65,10 +65,10 @@ Matrix Camera::rotateAboutU(Matrix u, double theta)
   return Matrix(3, 3, R);
 }
 
-Matrix Camera::rotateAboutX(double theta){
-  double si = sin(theta);
-  double co = cos(theta);
-  double R[] = {
+Matrix Camera::rotateAboutX(float theta){
+  float si = sin(theta);
+  float co = cos(theta);
+  float R[] = {
     1, 0, 0,
     0, co, -si,
     0, si, co
@@ -76,10 +76,10 @@ Matrix Camera::rotateAboutX(double theta){
   return Matrix(3, 3, R);
 }
 
-Matrix Camera::rotateAboutY(double theta){
-  double si = sin(theta);
-  double co = cos(theta);
-  double R[] = {
+Matrix Camera::rotateAboutY(float theta){
+  float si = sin(theta);
+  float co = cos(theta);
+  float R[] = {
     co, 0, si,
     0, 1, 0,
     -si, 0, co
@@ -89,14 +89,14 @@ Matrix Camera::rotateAboutY(double theta){
 
 void Camera::updateRotationMatrix()
 {
-  double rotX = rotation.get(0, 0);// / PI * 180);
-  double rotY = rotation.get(1, 0);// / PI * 180);
+  float rotX = rotation.get(0, 0);// / PI * 180);
+  float rotY = rotation.get(1, 0);// / PI * 180);
   rotationMatrix = rotateAboutX(rotX) * rotateAboutY(rotY);
 }
 
 void Camera::updateCalibrationMatrix()
 {
-  double C[] = {
+  float C[] = {
     focalLength * KU, 0, WIDTH / 2,
     0, -focalLength * KV, HEIGHT / 2,
     0, 0, 1
@@ -109,7 +109,7 @@ void Camera::updateTransformationMatrix()
 {
   Matrix R = rotationMatrix;
   Matrix T = position.transpose();
-  double RT[] = {
+  float RT[] = {
     R.get(0, 0), R.get(1, 0), R.get(2, 0), T.get(0, 0),
     R.get(0, 1), R.get(1, 1), R.get(2, 1), T.get(0, 1),
     R.get(0, 2), R.get(1, 2), R.get(2, 2), T.get(0, 2),
@@ -139,10 +139,10 @@ Matrix Camera::getScreenPosition(Matrix p)
 
 Matrix Camera::getFacing()
 {
-  double forw[] = {0, 0, 1};
+  float forw[] = {0, 0, 1};
   Matrix forward = Matrix(1, 3, forw);
-  double rotX = rotation.get(0, 0);// / PI * 180);
-  double rotY = rotation.get(1, 0);// / PI * 180);
+  float rotX = rotation.get(0, 0);// / PI * 180);
+  float rotY = rotation.get(1, 0);// / PI * 180);
   Matrix facing = rotateAboutX(rotX) * forward;
   facing =  rotateAboutY(rotY) * facing;
   // rotationMatrix = rotateAboutX(rotX) * rotateAboutY(rotZ);
@@ -154,10 +154,10 @@ Matrix Camera::getFacing()
 
 Matrix Camera::getUp()
 {
-  double u[] = {0, 1, 0};
+  float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
-  double rotX = rotation.get(0, 0);// / PI * 180);
-  double rotY = rotation.get(1, 0);// / PI * 180);
+  float rotX = rotation.get(0, 0);// / PI * 180);
+  float rotY = rotation.get(1, 0);// / PI * 180);
   Matrix cUp = rotateAboutX(rotX) * up;
   cUp =  rotateAboutY(rotY) * cUp;
   // Matrix cUp = rotationMatrix * up;

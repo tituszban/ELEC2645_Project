@@ -3,7 +3,7 @@
 TieFighter::TieFighter(){
   init();
 }
-TieFighter::TieFighter(Matrix position, double rotation){
+TieFighter::TieFighter(Matrix position, float rotation){
   init();
   setPosition(position);
   setRotation(rotation);
@@ -52,20 +52,20 @@ void TieFighter::setPosition(Matrix position){
   changed = true;
 }
 
-void TieFighter::setRotation(double rotation){
+void TieFighter::setRotation(float rotation){
   this->rotation = rotation;
-  double si = sin(rotation);
-  double co = cos(rotation);
-  double fwd[] = {si, 0, co};
-  double lft[] = {-co, 0, si};
+  float si = sin(rotation);
+  float co = cos(rotation);
+  float fwd[] = {si, 0, co};
+  float lft[] = {-co, 0, si};
   forward = Matrix(1, 3, fwd);
   left = Matrix(1, 3, lft);
   changed = true;
 }
 
 bool TieFighter::detectCollision(Matrix projectile){
-  double dist = position.distance(projectile);
-  double rn = (double)rand() / RAND_MAX;
+  float dist = position.distance(projectile);
+  float rn = (float)rand() / RAND_MAX;
   if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < sqrt(rn)) && !destroyed){
     destroyed = true;
     explosion.setPosition(position);
@@ -75,12 +75,12 @@ bool TieFighter::detectCollision(Matrix projectile){
   return false;
 }
 
-void TieFighter::update(double dt, double steering, double elevation, bool fire){
+void TieFighter::update(float dt, float steering, float elevation, bool fire){
   if(!destroyed){
-    double u[] = {0, 1, 0};
+    float u[] = {0, 1, 0};
     Matrix up = Matrix(1, 3, u);
-    steering = min(max(steering, -1.0), 1.0);
-    elevation = min(max(elevation, -1.0), 1.0);
+    steering = min(max(steering, -1.0f), 1.0f);
+    elevation = min(max(elevation, -1.0f), 1.0f);
     setRotation(rotation + steering * steeringAngle * dt);
     setPosition(position + (forward * speed + up * elevation * elevationSpeed) * dt);
     fireTimer += dt;
@@ -114,12 +114,12 @@ void TieFighter::update(double dt, double steering, double elevation, bool fire)
 Matrix TieFighter::getPosition(){
   return position;
 }
-double TieFighter::getRotation(){
+float TieFighter::getRotation(){
   return rotation;
 }
 
 void TieFighter::update(){
-  double u[] = {0, 1, 0};
+  float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
   wingL.setPosition(position + left * wingSpan);
   wingL.setDirection(left, up);
