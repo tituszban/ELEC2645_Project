@@ -28,7 +28,7 @@ void ImperialShuttle::init(){
   topWingOffset = 0.1;
 
   steeringAngle = PI * 0.5;
-  speed = 3;
+  speed = 2;
   life = 6;
   explosion.toBeRemoved = true;
   toBeRemoved = false;
@@ -70,11 +70,11 @@ void ImperialShuttle::init(){
   topWingR.setSize(topWingLength, topWingHeight);
   wingLTop.setTexture(flipTexture(wingTexture, 0));
   wingLTop.setSize(bodyLength - cockpitLength, wingLength);
-  wingLBottom.setTexture(flipTexture(wingTexture, 0));
+  wingLBottom.setTexture(wingTexture);
   wingLBottom.setSize(bodyLength - cockpitLength, wingLength);
   wingRTop.setTexture(flipTexture(wingTexture, 2));
   wingRTop.setSize(bodyLength - cockpitLength, wingLength);
-  wingRBottom.setTexture(flipTexture(wingTexture, 2));
+  wingRBottom.setTexture(flipTexture(wingTexture, 1));
   wingRBottom.setSize(bodyLength - cockpitLength, wingLength);
 }
 
@@ -105,7 +105,6 @@ bool ImperialShuttle::detectCollision(Matrix projectile){
   float dist = position.distance(projectile);
   float rn = (float)rand() / RAND_MAX;
   if((dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn) && life > 0){
-    printf("Hit!\n");
     life -= 1;
     explosion.reset();
     explosion.setPosition(life > 0 ? projectile : position);

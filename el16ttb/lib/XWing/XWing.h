@@ -13,22 +13,25 @@ using namespace std;
 #include <UI.h>
 #include <Lives.h>
 
-#define MIN_SPEED 2.5
+#define MIN_SPEED 1.5
 #define MAX_SPEED 5.0
 #define SPEED_INCREMENT 2.0
 
 #define MAX_DAMAGE 10
 #define MIN_DAMAGE 5
 
+#define MISSION_DISTACNE 10.0
+#define MISSION_SPEED 0.05
+
 class XWing{
 public:
   XWing(Matrix position, Controller &cont);
   bool detectCollision(Matrix projectile);
-  void update(float dt, Controller &cont, Camera &cam);
+  void update(float dt, Controller &cont, Camera &cam, Matrix shuttlePosition);
   void updateTargets(vector<int> targets, vector<Matrix> targetPositions);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
-  bool isGameOver();
+  int isGameOver();
 
   vector<Laser> lasers;
 
@@ -59,6 +62,7 @@ private:
 
   int target;
   int targetPre;
+  bool canChangeTarget;
   vector<int> targets;
   vector<Matrix> targetPositions;
 

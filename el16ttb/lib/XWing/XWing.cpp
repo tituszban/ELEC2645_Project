@@ -18,6 +18,8 @@ XWing::XWing(Matrix position, Controller &cont){
   lives.reset();
   target = 0;
   targetPre = 0;
+  canChangeTarget = false;
+  progress = 0;
 }
 
 bool XWing::detectCollision(Matrix projectile){
@@ -30,7 +32,7 @@ bool XWing::detectCollision(Matrix projectile){
   return false;
 }
 
-void XWing::update(float dt, Controller &cont, Camera &cam){
+void XWing::update(float dt, Controller &cont, Camera &cam, Matrix shuttlePosition){
   speed = min(max(
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
@@ -84,23 +86,52 @@ void XWing::update(float dt, Controller &cont, Camera &cam){
       i++;
     }
   }
+  if(canChangeTarget)
+    target += cont.buttonPressed(X) - cont.buttonPressed(B);
 
-  target += cont.buttonPressed(X) - cont.buttonPressed(B);
-  progress = cont.readPot();
+  bool missionActive = position.distance(shuttlePosition) < MISSION_DISTACNE && !canChangeTarget;
+  ui.setMissionActive(missionActive);
+  if(missionActive){
+    if(cont.buttonDown(L))
+      progress += MISSION_SPEED * dt;
+  }
+
 }
 
 void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
-  this->targets = targets;
-  this->targetPositions = targetPositions;
-  if(targets[mod(target, targets.size())] == -1){
+  bool targetExploded = false;
+  unsigned int i = 0;
+  int a = 0;
+  while(i < targets.size()){
+    if(targets[i] == -1){
+      targets.erase(targets.begin() + i);
+      targetPositions.erase(targetPositions.begin() + i);
+      if(a == target){
+        targetExploded = true;
+      }
+      if(a < target){
+        target--;
+      }
+    }
+    else{
+      i++;
+    }
+    a++;
+  }
+
+  if(targetExploded){
     target = 0;
     targetPre = 0;
     ui.setTarget(0);
   }
+  canChangeTarget = targets.size() > 1;
+
+  this->targets = targets;
+  this->targetPositions = targetPositions;
 }
 
-bool XWing::isGameOver(){
-  return lives.isGameOver();
+int XWing::isGameOver(){
+  return lives.isGameOver() ? -1 : (progress >= 1 ? 1 : 0);
 }
 
 void XWing::render(Camera &cam, Renderer &renderer){
@@ -110,13 +141,19 @@ void XWing::render(Camera &cam, Renderer &renderer){
   if(target != targetPre){
     if(ui.setNextTarget(targets[mod(target, targets.size())], target - targetPre)){
       targetPre += sgn(target - targetPre);
+      target = mod(target, targets.size());
+      targetPre = mod(targetPre, targets.size());
     }
+  }
+  else if(ui.targetProgress == 0){
+    ui.setTarget(targets[mod(target, targets.size())]);
   }
 
   int leftIndicator[] = {0, 0, 0, 0, 1, 1};
   int rightIndicator[] = {1, 1, 0, 0, 0, 1};
   ui.setFire(leftIndicator[fireSequence], rightIndicator[fireSequence]);
-  ui.missionProgress(floor(11.0f * progress));
+  ui.missionProgress(floor(10.0f * progress));
+  ui.setDir(floor(progress * 300.0f));
 
   Matrix targetPos = targetPositions[mod(target, targets.size())];
   Matrix screenPoint = cam.getScreenPosition(pos2homogPos(targetPos));
@@ -145,7 +182,6 @@ void XWing::render(Camera &cam, Renderer &renderer){
     else{
       ui.setOffscreenTarget(y > 0 ? 1 : 3, x);
     }
-    // printf("X: %f\tY: %f\n", x, y);
   }
 
   ui.render(UIIndex, renderer);

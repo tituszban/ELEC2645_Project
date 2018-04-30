@@ -29,7 +29,7 @@ void UI::missionProgress(int progress){
 bool UI::setNextTarget(int type, int dir){
   if(targetProgress == 0){
     nextTarget = type;
-    targetProgress = sgn(dir) * 14;
+    targetProgress = sgn(dir) * 15;
     return true;
   }
   return false;
@@ -53,9 +53,9 @@ void UI::setOffscreenTarget(int side, float p){
   arrowSide = side;
   switch(side){
     case 0: arrowX = WIDTH - 7; arrowY = (int)(HEIGHT / 2 - p * (float)HEIGHT); break;
-    case 1: arrowX = (int)(WIDTH / 2 + p * (float)HEIGHT / 2); arrowY = 0; break;
+    case 1: arrowX = (int)(WIDTH / 2 + min(max(p, -0.5f), 0.5f) * (float)HEIGHT / 2); arrowY = 0; break;
     case 2: arrowX = 0; arrowY = (int)(HEIGHT / 2 - p * (float)HEIGHT); break;
-    case 3: arrowX = (int)(WIDTH / 2 + p * (float)HEIGHT / 2); arrowY = HEIGHT - 7; break;
+    case 3: arrowX = (int)(WIDTH / 2 + min(max(p, -0.5f), 0.5f) * (float)HEIGHT / 2); arrowY = HEIGHT - 7; break;
   }
   if(side == 0){
 
@@ -63,6 +63,10 @@ void UI::setOffscreenTarget(int side, float p){
   else if(side == 1){
 
   }
+}
+
+void UI::setMissionActive(bool missionActive){
+  this->missionActive = missionActive;
 }
 
 void UI::render(int index, Renderer &renderer){
@@ -90,17 +94,21 @@ void UI::render(int index, Renderer &renderer){
   renderer.addUISprite(8, 40, 4, 3, leftBigIndicatorSprite[leftFire]);
   renderer.addUISprite(72, 40, 4, 3, rightBigIndicatorSprite[rightFire]);
   renderer.addUISprite(23, 38, 3, 3, dirSprites[dir]);
-  for(int i = 0; i < progress; i++){
-    renderer.addUISprite(32, 45 - i, 2, 1, missionIndicatorSprite);
+  if(missionActive){
+    renderer.addUISprite(32, 35, 3, 12, missionindicatorSprite);
+    for(int i = 0; i < progress; i++){
+      renderer.addUISprite(32, 45 - i, 2, 1, missionIndicatorBarSprite);
+    }
   }
+
   if(targetProgress != 0){
-    renderer.addUISpriteToSubArea(36, 34, 1 + targetProgress, 1, 15, 14, 12, 11, nextTarget == 0 ? uitietargetSprite : uishuttletargetSprite);
-    renderer.addUISpriteToSubArea(36, 34, 1 - sgn(targetProgress) * 14 + targetProgress, 1, 15, 14, 12, 11, target == 0 ? uitietargetSprite : uishuttletargetSprite);
-    targetProgress -= sgn(targetProgress) * 2;
+    renderer.addUISpriteToSubArea(36, 34, 1 + targetProgress, 1, 15, 14, 12, 11, nextTarget == 0 ? uitietargetSprite : (nextTarget == 1 ? uishuttletargetSprite : uiexplodedtargetSprite));
+    renderer.addUISpriteToSubArea(36, 34, 1 - sgn(targetProgress) * 15 + targetProgress, 1, 15, 14, 12, 11, target == 0 ? uitietargetSprite : (target == 1 ? uishuttletargetSprite : uiexplodedtargetSprite));
+    targetProgress -= sgn(targetProgress) * 3;
   }
   else{
     target = nextTarget;
-    renderer.addUISprite(37, 35, 12, 11, target == 0 ? uitietargetSprite : uishuttletargetSprite);
+    renderer.addUISprite(37, 35, 12, 11, target == 0 ? uitietargetSprite : (target == 1 ? uishuttletargetSprite : uiexplodedtargetSprite));
     // renderer.addUISpriteToSubArea(36, 34, 2, 1, 15, 14, 12, 11, );
   }
 

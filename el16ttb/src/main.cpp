@@ -8,14 +8,10 @@ Username: el16ttb
 Student ID Number: 201005198
 Date: 05/03/2018
 */
-using namespace std;
-
 #include "mbed.h"
 #include <Controller.h>
-#include <Matrix.h>
-#include <Camera.h>
 #include <UnitTester.cpp>
-#include <vector>
+#include <GameEngine.h>
 
 Controller cont;
 
@@ -34,18 +30,17 @@ int main() {
   cont.init();
   // cont.lcdInverseMode();
   // cont.ledsOn();
-  // cont.lcdContrast(0.5);
   cont.lcdContrast(0.5);
-  // cont.lcdDrawCircle(20, 20, 10, FILL_TRANSPARENT);
-  // cont.lcdRefresh();
+
   // t.attach(&alive, 0.5);
 
 
 
-  XWingTest(cont);
-  // lcd.printString("Test completed", 0, 2);
-  // lcd.refresh();
-  //DrawPoints();
+  // XWingTest(cont);
+  mainGame(cont);
 
+  cont.lcdClear();
+  cont.lcdRefresh();
+  cont.ledsOff();
   cont.lcdSetBrightness(0);
 }

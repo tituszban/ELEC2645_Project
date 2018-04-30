@@ -114,9 +114,5 @@ int sgn(int val){
 
 int mod(int val, int m){
   int d = val / m;
-  return abs(val - d * m);
-
-  // if(val > 0)
-  //   return val % m;
-  // return m + (val % m) -  1;
+  return val - d * m + (val < 0 ? m : 0);
 }

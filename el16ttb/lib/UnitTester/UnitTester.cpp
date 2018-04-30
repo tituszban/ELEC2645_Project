@@ -703,20 +703,12 @@ bool XWingTest(Controller &cont){
     tf1.update(0.05, -0.1, 0, false);
     tf2.update(0.05, 0.03, 0, false);
     sh.update(0.05, 0);
-    // targets[1] = tf1.toBeRemoved ? -1 : 0;
-    // targets[2] = tf2.toBeRemoved ? -1 : 0;
     targetPositions[1] = tf1.getPosition();
     targetPositions[2] = tf2.getPosition();
     targetPositions[0] = sh.getPosition();
     xwing.updateTargets(targets, targetPositions);
-    // for(unsigned int i = 0; i < targets.size(); i++){
-    //   if(targets[i] == -1){
-    //     targets.erase(targets.begin() + i);
-    //     targetPositions.erase(targetPositions.begin() + i);
-    //   }
-    // }
 
-    xwing.update(0.05, cont, cam);
+    xwing.update(0.05, cont, cam, sh.getPosition());
 
     skybox.render(cam, renderer);
     xwing.render(cam, renderer);
