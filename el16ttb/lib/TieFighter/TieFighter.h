@@ -24,6 +24,7 @@ public:
   void update(float dt, float steering, float elevation, bool fire);
   Matrix getPosition();
   float getRotation();
+  Matrix getFacing();
   bool toBeRemoved;
   bool destroyed;
 

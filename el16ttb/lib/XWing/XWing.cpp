@@ -42,6 +42,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, Matrix shuttlePositi
   cam.setRotation(pitch, yaw);
   cam.setPosition(position.get(0, 0), position.get(0, 1), position.get(0, 2));
   position = position + cam.getFacing() * dt * ((MAX_SPEED - MIN_SPEED) * speed + MIN_SPEED);
+  facing = cam.getFacing();
   fireTimer += dt;
   if(fireTimer >= fireCooldown && cont.buttonDown(R)){
     fireTimer = 0;
@@ -161,7 +162,7 @@ void XWing::render(Camera &cam, Renderer &renderer){
   int x = round(screenPoint.get(0, 0));
   int y = round(screenPoint.get(0, 1));
   if(!(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT || d < 0)){
-    if(d > RENDER_DISTANCE){
+    if(d > RENDER_DISTANCE * 0.7f){
       ui.setTargetVisibility(1);
       ui.setFarTargetPos(x, y);
     }
@@ -193,4 +194,11 @@ void XWing::render(Camera &cam, Renderer &renderer){
 }
 Matrix XWing::getPosition(){
   return position;
+}
+
+Matrix XWing::getFlatFacing(){
+  Matrix fFacing = facing.copy();
+  fFacing.set(0, 1, 0);
+  fFacing = fFacing / fFacing.distance(Matrix(1, 3));
+  return fFacing;
 }

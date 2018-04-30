@@ -33,7 +33,7 @@ void mainGame(Controller &cont){
 
     // UPDATE
     xwing.update(dt, cont, cam, empire.getShuttlePosition());
-    empire.update(dt, xwing.getPosition());
+    empire.update(dt, xwing.getPosition(), xwing.getFlatFacing());
 
     // RENDER
     skybox.render(cam, renderer);
@@ -43,7 +43,7 @@ void mainGame(Controller &cont){
     // ENDLOOP
     renderer.render(cont);
     cont.lcdRefresh();
-    wait(0.05);
+    // wait(0.05);
   }
 
   // ENDGAME

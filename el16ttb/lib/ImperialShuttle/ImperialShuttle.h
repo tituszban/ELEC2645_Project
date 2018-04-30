@@ -18,9 +18,10 @@ public:
   void setRotation(float rotation);
   void render(Camera &cam, Renderer &renderer);
   bool detectCollision(Matrix projectile);
-  void update(float dt, float steering);
+  void update(float dt, float steering, float speedMult);
   Matrix getPosition();
   float getRotation();
+  Matrix getFacing();
   bool toBeRemoved;
 
 
@@ -72,6 +73,7 @@ private:
 
   float steeringAngle;
   float speed;
+  float minSpeed;
 
   float life;
   float outerHitboxRadius;

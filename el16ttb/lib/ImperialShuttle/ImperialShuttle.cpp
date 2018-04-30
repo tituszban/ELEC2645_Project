@@ -27,8 +27,9 @@ void ImperialShuttle::init(){
   topWingLength = 1.2;
   topWingOffset = 0.1;
 
-  steeringAngle = PI * 0.5;
-  speed = 2;
+  steeringAngle = PI * 0.85;
+  speed = 3;
+  minSpeed = 2;
   life = 6;
   explosion.toBeRemoved = true;
   toBeRemoved = false;
@@ -114,13 +115,13 @@ bool ImperialShuttle::detectCollision(Matrix projectile){
   return false;
 }
 
-void ImperialShuttle::update(float dt, float steering){
+void ImperialShuttle::update(float dt, float steering, float speedMult){
   if(life > 0){
     float u[] = {0, 1, 0};
     Matrix up = Matrix(1, 3, u);
-    steering = min(max(steering, -1.0f), 1.0f);
+    // steering = min(max(steering, -1.0f), 1.0f);
     setRotation(rotation + steering * steeringAngle * dt);
-    setPosition(position + forward * speed * dt);
+    setPosition(position + forward * (speed * speedMult + minSpeed) * dt);
   }
   if(!explosion.toBeRemoved){
     explosion.update(dt);
@@ -135,6 +136,9 @@ Matrix ImperialShuttle::getPosition(){
 }
 float ImperialShuttle::getRotation(){
   return rotation;
+}
+Matrix ImperialShuttle::getFacing(){
+  return forward;
 }
 
 void ImperialShuttle::update(){

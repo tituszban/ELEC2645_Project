@@ -116,3 +116,7 @@ int mod(int val, int m){
   int d = val / m;
   return val - d * m + (val < 0 ? m : 0);
 }
+
+float randf(){
+  return (float)rand() / (float)RAND_MAX;
+}

@@ -20,8 +20,8 @@ using namespace std;
 #define MAX_DAMAGE 10
 #define MIN_DAMAGE 5
 
-#define MISSION_DISTACNE 10.0
-#define MISSION_SPEED 0.05
+#define MISSION_DISTACNE 8.0
+#define MISSION_SPEED 0.1
 
 class XWing{
 public:
@@ -31,6 +31,7 @@ public:
   void updateTargets(vector<int> targets, vector<Matrix> targetPositions);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
+  Matrix getFlatFacing();
   int isGameOver();
 
   vector<Laser> lasers;
@@ -39,6 +40,7 @@ private:
   UI ui;
 
   Matrix position;
+  Matrix facing;
   float yaw;
   float speed;
 

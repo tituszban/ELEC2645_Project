@@ -117,6 +117,9 @@ Matrix TieFighter::getPosition(){
 float TieFighter::getRotation(){
   return rotation;
 }
+Matrix TieFighter::getFacing(){
+  return forward;
+}
 
 void TieFighter::update(){
   float u[] = {0, 1, 0};

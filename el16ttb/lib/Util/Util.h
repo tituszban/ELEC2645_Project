@@ -27,5 +27,6 @@ Texture arrayToTexture(int width, int height, const int* array);
 Texture flipTexture(Texture tx, int d);
 int sgn(int val);
 int mod(int val, int m);
+float randf();
 
 #endif

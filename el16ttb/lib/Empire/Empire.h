@@ -17,7 +17,7 @@ public:
   Empire();
 
   bool isGameOver();
-  void update(float dt, Matrix xwingPos);
+  void update(float dt, Matrix xwingPos, Matrix xwingFacing);
   void checkCollisions(XWing &xwing);
   vector<int> getTargets();
   vector<Matrix> getTargetPositions();
@@ -27,6 +27,18 @@ public:
 private:
   vector<TieFighter> tfs;
   ImperialShuttle sh;
+
+  void updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing);
+  void updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi);
+  void tfRoleManager();
+
+  Matrix shHeading;
+  float shSpeed;
+  float shTimer;
+
+  vector<int> tfRoles;
+  vector<Matrix> tfEvadeTarget;
+  vector<char> tfMem;
 };
 
 #endif

@@ -648,7 +648,7 @@ bool ImperialShuttleControlTest(Controller &cont){
     if(cont.buttonPressed(B)){
       sh.detectCollision(sh.getPosition() + cam.getFacing().cross(cam.getUp()));
     }
-    sh.update(0.05, steer);
+    sh.update(0.05, steer, 0);
 
     sh.render(cam, renderer);
 
@@ -702,7 +702,7 @@ bool XWingTest(Controller &cont){
 
     tf1.update(0.05, -0.1, 0, false);
     tf2.update(0.05, 0.03, 0, false);
-    sh.update(0.05, 0);
+    sh.update(0.05, 0, 0.0f);
     targetPositions[1] = tf1.getPosition();
     targetPositions[2] = tf2.getPosition();
     targetPositions[0] = sh.getPosition();

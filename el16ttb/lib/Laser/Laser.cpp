@@ -3,7 +3,7 @@
 Laser::Laser(){
   width = 0.1;
   length = 0.5;
-  speed = 10;
+  speed = 20;
   toBeRemoved = false;
 
   Texture laserTexture = arrayToTexture(1, 1, laserSprite);
