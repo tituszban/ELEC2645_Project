@@ -14,6 +14,7 @@ using namespace std;
 class Laser{
 public:
   Laser();
+  void reset();
   void setPosition(Matrix position);
   void setVelocity(Matrix velocity, Matrix up);
   void update(float dt);

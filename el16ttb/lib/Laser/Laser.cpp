@@ -1,16 +1,20 @@
 #include "Laser.h"
 
 Laser::Laser(){
-  width = 0.1;
-  length = 0.5;
-  speed = 20;
-  toBeRemoved = false;
+  reset();
 
   Texture laserTexture = arrayToTexture(1, 1, laserSprite);
   laserUp.setTexture(laserTexture);
   laserUp.setSize(width, length);
   laserDown.setTexture(laserTexture);
   laserDown.setSize(width, length);
+}
+
+void Laser::reset(){
+  width = 0.1;
+  length = 0.5;
+  speed = 20;
+  toBeRemoved = false;
 }
 
 void Laser::setPosition(Matrix position){
@@ -36,6 +40,8 @@ void Laser::update(float dt){
 }
 
 void Laser::render(Camera &cam, Renderer &renderer){
+  if(toBeRemoved)
+    return;
   laserUp.render(cam, renderer);
   laserDown.render(cam, renderer);
 }

@@ -25,13 +25,14 @@ Empire::Empire(){
   orbitPattern = Matrix(2, 4, orbitPoses);
   attackCooldown = 0;
   respawnTimer = 0;
+  respawnCounter = 0;
   sh.setPosition(Matrix(1, 3, shInitialPos));
   sh.setRotation(initialAngle);
-  for(int i = 0; i < 3; i++){
+  for(int i = 0; i < 2; i++){
     TieFighter tf = TieFighter(Matrix(1, 3, tfInitialPos[i]), initialAngle);
     tfs.push_back(tf);
     tfRoles.push_back(-1);
-    tfEvadeTarget.push_back(sh.getPosition());
+    tfEvadeTarget.push_back(0);
     tfMem.push_back(0);
     tfCooldown.push_back(0);
   }
@@ -137,12 +138,12 @@ void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int
 
   if(xwingDist < 6){
     tfRoles[tfi] = 0;
-    tfEvadeTarget[tfi] = xwingPos;
+    tfEvadeTarget[tfi] = 0;
   }
   else if(sh.getPosition().distance(tfs[tfi].getPosition()) < 2)
   {
     tfRoles[tfi] = 0;
-    tfEvadeTarget[tfi] = sh.getPosition();
+    tfEvadeTarget[tfi] = 1;
   }
   else if(xwingDist < 15){
     int roleCount[] = {0, 0, 0, 0, 0};
@@ -160,10 +161,11 @@ void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int
   float elev = 0;
 
   if(tfRoles[tfi] == 0){
-    Matrix rel = tfs[tfi].getPosition() - tfEvadeTarget[tfi];
+    Matrix evade = tfEvadeTarget[tfi] == 0 ? xwingPos : sh.getPosition();
+    Matrix rel = tfs[tfi].getPosition() - evade;
     rel = rel / rel.distance(Matrix(1, 3));
     steer = -rel.dot(tfs[tfi].getFacing().cross(up));
-    if(tfEvadeTarget[tfi].distance(tfs[tfi].getPosition()) > 8){
+    if(evade.distance(tfs[tfi].getPosition()) > 8){
       tfRoles[tfi] = -1;
       tfCooldown[tfi] = 1;
     }
@@ -296,6 +298,8 @@ void Empire::tfRoleManager(){
 
 int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
 {
+  float u[] = {0, 1, 0};
+  Matrix up = Matrix(1, 3, u);
   tfRoleManager();
   updateShuttle(dt, xwingPos, xwingFacing);
   int action = 0;
@@ -304,6 +308,7 @@ int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
   unsigned int tf = 0;
   while(tf < tfs.size()){
     if(tfs[tf].toBeRemoved){
+      destroyedTFs.push_back(tfs[tf]);
       tfs.erase(tfs.begin() + tf);
       tfRoles.erase(tfRoles.begin() + tf);
       tfEvadeTarget.erase(tfEvadeTarget.begin() + tf);
@@ -329,19 +334,28 @@ int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
   if(tfs.size() == 0){
     respawnTimer += dt;
   }
-  if(respawnTimer > 2 + randf()){
-    // printf("")
+  if(respawnTimer > 4 + respawnCounter + randf()){
+    respawnTimer = 0;
     Matrix spawnPoint = sh.getPosition() - xwingPos;
-    spawnPoint = spawnPoint / spawnPoint.distance(Matrix(1, 3)) * 15;
-    float offset[] = {1, -1};
-    for(int i = 0; i < 1; i++){
-      TieFighter ntf = TieFighter(spawnPoint + sh.getFacing() * offset[i], 0);
-      tfs.push_back(ntf);
+    spawnPoint = spawnPoint / spawnPoint.distance(Matrix(1, 3));
+    Matrix spawnOffset = up.cross(spawnPoint);
+    float offset[] = {25, -25};
+    // memoryBenchmark("ressurect tie fighters");
+    for(int i = 0; i < 2; i++){
+      destroyedTFs[0].reset();
+      destroyedTFs[0].setPosition(spawnPoint * (randf() * 0.5f + 0.5f) * 25 + sh.getPosition() + spawnOffset * offset[i]);
+      // memoryBenchmark("about to read tf");
+      tfs.push_back(destroyedTFs[0]);
+      // memoryBenchmark("tf readded");
       tfRoles.push_back(-1);
-      tfEvadeTarget.push_back(sh.getPosition());
+      tfEvadeTarget.push_back(0);
       tfMem.push_back(0);
       tfCooldown.push_back(0);
+      // printf("Everything repopulated\n");
+      destroyedTFs.erase(destroyedTFs.begin());
+      // printf("Zombie removed\n");
     }
+    respawnCounter++;
     action = 1;
   }
   return action;

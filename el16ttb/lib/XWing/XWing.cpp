@@ -20,6 +20,8 @@ XWing::XWing(Matrix position, Controller &cont){
   targetPre = 0;
   canChangeTarget = false;
   progress = 0;
+  innerHitboxRadius = 0.6;
+  outerHitboxRadius = 1.2;
 }
 
 bool XWing::detectCollision(Matrix projectile){
@@ -38,6 +40,9 @@ void XWing::damage(float dam){
 }
 
 void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
+  if(empireAction == 1)
+    ui.setAlert(1);
+
   speed = min(max(
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
@@ -52,11 +57,20 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   if(fireTimer >= fireCooldown && cont.buttonDown(R)){
     fireTimer = 0;
     fireSequence = 0;
-    Laser laser = Laser();
 
-    laser.setPosition(position + cam.getUp() * laserYOffset + cam.getFacing().cross(cam.getUp()) * laserXOffset);
-    laser.setVelocity(cam.getFacing(), cam.getUp());
-    lasers.push_back(laser);
+    if(removedLasers.size() > 0){
+      removedLasers[0].reset();
+      removedLasers[0].setPosition(position + cam.getUp() * laserYOffset + cam.getFacing().cross(cam.getUp()) * laserXOffset);
+      removedLasers[0].setVelocity(cam.getFacing(), cam.getUp());
+      lasers.push_back(removedLasers[0]);
+      removedLasers.erase(removedLasers.begin());
+    }
+    else{
+      Laser laser = Laser();
+      laser.setPosition(position + cam.getUp() * laserYOffset + cam.getFacing().cross(cam.getUp()) * laserXOffset);
+      laser.setVelocity(cam.getFacing(), cam.getUp());
+      lasers.push_back(laser);
+    }
     cont.lcdSetBrightness(1);
   }
   else if(fireTimer > 0.05 && fireSequence == 0){
@@ -65,10 +79,19 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   }
   else if(fireTimer > fireDelay && fireSequence == 1){
     fireSequence++;
-    Laser laser = Laser();
-    laser.setPosition(position + cam.getUp() * laserYOffset - cam.getFacing().cross(cam.getUp()) * laserXOffset);
-    laser.setVelocity(cam.getFacing(), cam.getUp());
-    lasers.push_back(laser);
+    if(removedLasers.size() > 0){
+      removedLasers[0].reset();
+      removedLasers[0].setPosition(position + cam.getUp() * laserYOffset - cam.getFacing().cross(cam.getUp()) * laserXOffset);
+      removedLasers[0].setVelocity(cam.getFacing(), cam.getUp());
+      lasers.push_back(removedLasers[0]);
+      removedLasers.erase(removedLasers.begin());
+    }
+    else{
+      Laser laser = Laser();
+      laser.setPosition(position + cam.getUp() * laserYOffset - cam.getFacing().cross(cam.getUp()) * laserXOffset);
+      laser.setVelocity(cam.getFacing(), cam.getUp());
+      lasers.push_back(laser);
+    }
     cont.lcdSetBrightness(1);
   }
   else if(fireTimer > fireDelay + 0.05 && fireSequence == 2){
@@ -85,6 +108,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   unsigned int i = 0;
   while(i < lasers.size()){
     if(lasers[i].toBeRemoved){
+      removedLasers.push_back(lasers[i]);
       lasers.erase(lasers.begin() + i);
     }
     else{
@@ -105,6 +129,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
 
 void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
   bool targetExploded = false;
+  bool proximityAlert = false;
   unsigned int i = 0;
   int a = 0;
   while(i < targets.size()){
@@ -119,6 +144,8 @@ void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
       }
     }
     else{
+      if(targetPositions[i].distance(position) < 1.7 && targets[i] != 2)
+        proximityAlert = true;
       i++;
     }
     a++;
@@ -135,6 +162,8 @@ void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
   this->targetPositions = targetPositions;
 
   missionActive = position.distance(targetPositions[0]) < MISSION_DISTACNE && !canChangeTarget;
+  if(proximityAlert)
+    ui.setAlert(0);
 }
 
 int XWing::isGameOver(){

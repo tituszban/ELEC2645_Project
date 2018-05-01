@@ -10,24 +10,7 @@ TieFighter::TieFighter(Matrix position, float rotation){
 }
 
 void TieFighter::init(){
-  wingSpan = 0.425;
-  cockpitThickness = 0.2;
-  wingWidth = 1;
-  wingHeight = 1.5;
-
-  steeringAngle = PI * 2;
-  speed = 4;
-  elevationSpeed = 1;
-  fireCooldown = 0.25;
-
-  destroyed = false;
-  innerHitboxRadius = 0.425;
-  outerHitboxRadius = 1;
-
-  toBeRemoved = false;
-
-  setPosition(Matrix(1, 3));
-  setRotation(0);
+  reset();
 
   wingL.setTexture(arrayToTexture(10, 15, wingSprite));
   wingL.setSize(wingWidth, wingHeight);
@@ -45,6 +28,29 @@ void TieFighter::init(){
   cockpitTop.setSize(wingSpan * 2, cockpitThickness * 2);
   cockpitBottom.setTexture(arrayToTexture(15, 5, cockpitTopSprite));
   cockpitBottom.setSize(wingSpan * 2, cockpitThickness * 2);
+}
+
+void TieFighter::reset(){
+  wingSpan = 0.425;
+  cockpitThickness = 0.2;
+  wingWidth = 1;
+  wingHeight = 1.5;
+
+  steeringAngle = PI * 2;
+  speed = 4;
+  elevationSpeed = 1;
+  fireCooldown = 0.25;
+
+  destroyed = false;
+  innerHitboxRadius = 0.425;
+  outerHitboxRadius = 1;
+
+  toBeRemoved = false;
+
+  explosion.reset();
+
+  setPosition(Matrix(1, 3));
+  setRotation(0);
 }
 
 void TieFighter::setPosition(Matrix position){
@@ -86,10 +92,19 @@ void TieFighter::update(float dt, float steering, float elevation, bool fire){
     fireTimer += dt;
     if(fireTimer >= fireCooldown && fire){
       fireTimer = 0;
-      Laser laser = Laser();
-      laser.setPosition(position + forward * 0.2);
-      laser.setVelocity(forward, up);
-      lasers.push_back(laser);
+      if(removedLasers.size() > 0){
+        removedLasers[0].reset();
+        removedLasers[0].setPosition(position + forward * 0.2);
+        removedLasers[0].setVelocity(forward, up);
+        lasers.push_back(removedLasers[0]);
+        removedLasers.erase(removedLasers.begin());
+      }
+      else{
+        Laser laser = Laser();
+        laser.setPosition(position + forward * 0.2);
+        laser.setVelocity(forward, up);
+        lasers.push_back(laser);
+      }
     }
   }
   else{
@@ -98,6 +113,7 @@ void TieFighter::update(float dt, float steering, float elevation, bool fire){
   unsigned int i = 0;
   while(i < lasers.size()){
     if(lasers[i].toBeRemoved){
+      removedLasers.push_back(lasers[i]);
       lasers.erase(lasers.begin() + i);
     }
     else{

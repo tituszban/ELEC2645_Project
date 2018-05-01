@@ -17,6 +17,7 @@ class TieFighter{
 public:
   TieFighter();
   TieFighter(Matrix position, float rotation);
+  void reset();
   void setPosition(Matrix position);
   void setRotation(float rotation);
   bool detectCollision(Matrix projectile);
@@ -62,6 +63,8 @@ private:
   Explosion explosion;
 
   void update();
+
+  vector<Laser> removedLasers;
 };
 
 const int wingSprite [] = {

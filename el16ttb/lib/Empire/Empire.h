@@ -26,6 +26,7 @@ public:
 
 private:
   vector<TieFighter> tfs;
+  vector<TieFighter> destroyedTFs;
   ImperialShuttle sh;
 
   void updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing);
@@ -37,13 +38,14 @@ private:
   float shTimer;
 
   vector<int> tfRoles;
-  vector<Matrix> tfEvadeTarget;
+  vector<int> tfEvadeTarget;
   vector<char> tfMem;
   vector<float> tfCooldown;
   Matrix guardPattern;
   Matrix orbitPattern;
   float attackCooldown;
   float respawnTimer;
+  int respawnCounter;
 };
 
 #endif

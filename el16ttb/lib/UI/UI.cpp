@@ -6,6 +6,7 @@ UI::UI(){
   setFire(0, 0);
   missionProgress(0);
   setTarget(1);
+  alertCounter = 0;
 }
 
 void UI::setDir(int dir){
@@ -57,16 +58,15 @@ void UI::setOffscreenTarget(int side, float p){
     case 2: arrowX = 0; arrowY = (int)(HEIGHT / 2 - p * (float)HEIGHT); break;
     case 3: arrowX = (int)(WIDTH / 2 + min(max(p, -0.5f), 0.5f) * (float)HEIGHT / 2); arrowY = HEIGHT - 7; break;
   }
-  if(side == 0){
-
-  }
-  else if(side == 1){
-
-  }
 }
 
 void UI::setMissionActive(bool missionActive){
   this->missionActive = missionActive;
+}
+
+void UI::setAlert(int type){
+  alertCounter = 15;
+  alertType = type;
 }
 
 void UI::render(int index, Renderer &renderer){
@@ -110,6 +110,11 @@ void UI::render(int index, Renderer &renderer){
     target = nextTarget;
     renderer.addUISprite(37, 35, 12, 11, target == 0 ? uitietargetSprite : (target == 1 ? uishuttletargetSprite : uiexplodedtargetSprite));
     // renderer.addUISpriteToSubArea(36, 34, 2, 1, 15, 14, 12, 11, );
+  }
+
+  if(alertCounter > 0){
+    alertCounter--;
+    renderer.addUISprite(18, 0, 48, 16, alertType == 0 ? proximityallertSprite : incomingenemySprite);
   }
 
 }

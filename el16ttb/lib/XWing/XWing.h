@@ -40,6 +40,8 @@ public:
 private:
   UI ui;
 
+  vector<Laser> removedLasers;
+
   Matrix position;
   Matrix facing;
   float yaw;
