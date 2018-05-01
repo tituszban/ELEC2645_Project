@@ -25,7 +25,7 @@ void mainGame(Controller &cont){
     float dt = (now - framePrev) / (float) CLOCKS_PER_SEC * 0.25;
     framePrev = now;
 
-    gameOver = cont.buttonPressed(START) || xwing.isGameOver() != 0 || empire.isGameOver();
+    gameOver = cont.buttonPressed(BACK) || xwing.isGameOver() != 0 || empire.isGameOver();
 
     // COLLISION DETECTION
     empire.checkCollisions(xwing);
@@ -123,5 +123,67 @@ void tutorial(Controller &cont){
 }
 
 void showcase(Controller &cont){
-  
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+
+  float rot = 2;
+  float tfPos[] = {0, 0, 1.7};
+  float shPos[] = {10, 0, 2.5};
+
+  TieFighter tf = TieFighter(Matrix(1, 3, tfPos), rot);
+  ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), rot);
+
+  cam.setRotation(0, 0);
+
+  bool mode = 0;
+
+  float pos = 0;
+  float startPos = 0;
+  float targetPos = 10;
+  float transitionTimer = 0;
+
+  while(!cont.buttonPressed(A)){
+    cont.lcdClear();
+    cont.lcdPrintString("Showcase", 17, 0);
+    cont.lcdPrintString("A-Change mode", 4, 2);
+    cont.lcdPrintString("X/B-Ship,Angle", 1, 3);
+    cont.lcdPrintString("BACK-main menu", 1, 5);
+    cont.lcdRefresh();
+  }
+
+  while(!cont.buttonPressed(BACK)){
+    cont.lcdClear();
+    renderer.clearBuffer();
+
+    if(transitionTimer > 0){
+      transitionTimer -= 0.1;
+      pos = (targetPos - startPos) * transitionTimer + startPos;
+    }
+
+    cam.setPosition(pos, 0, 0);
+
+    mode = (mode + cont.buttonPressed(A)) % 2;
+
+    if(mode == 0){
+      rot += 0.05;
+      if(cont.buttonPressed(X) || cont.buttonPressed(B)){
+        startPos = targetPos;
+        targetPos = 10 - targetPos;
+        transitionTimer = 1;
+      }
+    }
+    else {rot += (cont.buttonDown(X) - cont.buttonDown(B)) * 0.05;}
+    tf.setRotation(rot);
+    sh.setRotation(rot);
+
+    tf.render(cam, renderer);
+    sh.render(cam, renderer);
+
+    skybox.render(cam, renderer);
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
+  }
 }
