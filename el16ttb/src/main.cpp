@@ -30,13 +30,17 @@ int main() {
   cont.init();
   // cont.lcdInverseMode();
   // cont.ledsOn();
-  cont.lcdContrast(0.5);
+  cont.muted = false;
+  cont.contrast = 0.5;
+  cont.lcdContrast(cont.contrast);
+  cont.brightness = 0.5;
+  cont.lcdSetBrightness(cont.brightness);
 
   // t.attach(&alive, 0.5);
 
   while(1){
     switch(mainMenu(cont)){
-      case 0: cutscene(cont); mainGame(cont); break;
+      case 0: cutscene(cont); gameManager(cont); break;
       case 1: tutorial(cont); break;
       case 2: showcase(cont); break;
     }

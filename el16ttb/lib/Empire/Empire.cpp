@@ -4,8 +4,8 @@ Empire::Empire(){
   float initialAngle = -PI * 0.3;
   float shInitialPos[] = {-1, 0, 12};
   float tfInitialPos[][3] = {
-    {1, -1, 10},
-    {3, 1, 14},
+    {1, 0.2, 10},
+    {0, -1, 14},
     {5, 0, 11},
     {4.5, 1, 6},
     {-4.5, 1, 6}
@@ -136,7 +136,7 @@ void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int
   if(tfCooldown[tfi] > 0)
     tfCooldown[tfi] -= dt;
 
-  if(xwingDist < 6){
+  if(xwingDist < 7){
     tfRoles[tfi] = 0;
     tfEvadeTarget[tfi] = 0;
   }

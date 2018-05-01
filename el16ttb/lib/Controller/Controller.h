@@ -36,6 +36,7 @@ public:
   void led(int n, float val);
   float readPot();
   void tone(float frequency, float duration);
+  bool muted;
   float joystickMag();
   float joystickAngle();
   Direction joystickDirection();
@@ -80,7 +81,8 @@ public:
                   int nrows,
                   int ncols,
                   int *sprite);
-
+  float contrast;
+  float brightness;
 private:
   std::map<Button, int> _buttons;
 

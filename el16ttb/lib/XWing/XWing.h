@@ -17,8 +17,8 @@ using namespace std;
 #define MAX_SPEED 5.0
 #define SPEED_INCREMENT 2.0
 
-#define MAX_DAMAGE 8
-#define MIN_DAMAGE 5
+#define MAX_DAMAGE 15
+#define MIN_DAMAGE 8
 
 #define MISSION_DISTACNE 6.0
 #define MISSION_SPEED 0.1

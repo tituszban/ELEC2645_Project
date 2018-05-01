@@ -1,6 +1,13 @@
 #include <GameEngine.h>
 
-void mainGame(Controller &cont){
+void gameManager(Controller &cont){
+  int play = 0;
+  while(play == 0){
+    play = mainGame(cont);
+  }
+}
+
+int mainGame(Controller &cont){
   // SETUP
   Renderer renderer;
   Camera cam;
@@ -9,23 +16,32 @@ void mainGame(Controller &cont){
   XWing xwing = XWing(Matrix(1, 3), cont);
   Empire empire;
 
-  bool gameOver = false;
+  int gameResult = -1;
+  /*
+  -1 game in progress
+  0 quit
+  1 restart
+  2 success
+  3 destroyed
+  4 shuttle destroyed
+  */
 
   std::clock_t framePrev = std::clock();
 
   int empireAction = 0;
 
-  while(!gameOver)
+  while(gameResult < 0)
   {
     // RESET
     cont.lcdClear();
     renderer.clearBuffer();
 
+    // GET FRAME TIME
     std::clock_t now = std::clock();
     float dt = (now - framePrev) / (float) CLOCKS_PER_SEC * 0.25;
     framePrev = now;
 
-    gameOver = cont.buttonPressed(BACK) || xwing.isGameOver() != 0 || empire.isGameOver();
+    // gameOver = cont.buttonPressed(BACK) || xwing.isGameOver() != 0 || empire.isGameOver();  // check game over states
 
     // COLLISION DETECTION
     empire.checkCollisions(xwing);
@@ -45,11 +61,70 @@ void mainGame(Controller &cont){
     // ENDLOOP
     renderer.render(cont);
     cont.lcdRefresh();
-    // wait(0.05);
-  }
 
+    int pauseResult = 0;
+    if(cont.buttonPressed(START)){
+      pauseResult = pause(cont, renderer);
+      framePrev = std::clock();
+    }
+    int xWingResult = xwing.isGameOver();
+    gameResult = (pauseResult == 3 || cont.buttonPressed(BACK)) ? 0 :
+      (pauseResult == 1 ? 1 :
+      (xWingResult == 1 ? 2 :
+      (xWingResult == -1 ? 3 :
+      (empire.isGameOver() ? 4 : -1))));
+  }
+  printf("gameResult: %d\n", gameResult);
   // ENDGAME
+  return gameResult != 1;
 }
+
+int pause(Controller &cont, Renderer &renderer){
+  int selected = -1;
+  int optionSelected = -1;
+  int menuSelected = 0;
+  Direction dirPre = CENTRE;
+  int pointerPositions[] = {8, 17, 26, 36};
+  while(selected < 0){
+    renderer.addUISprite(3, 2, 79, 44, menuframeSprite);
+    if(optionSelected >= 0){
+      renderer.addUISprite(3, 2, 79, 44, menuoptionsSprite);
+      if(optionSelected == 0){renderer.addUISprite(3, 2, 79, 44, cont.muted ? menuoptionss0Sprite : menuoptionss1Sprite);}
+      else if(optionSelected == 1){renderer.addUISprite(3, 2, 79, 44, menuoptionss2Sprite);}
+      else if(optionSelected == 2){renderer.addUISprite(3, 2, 79, 44, menuoptionss3Sprite);}
+      else if(optionSelected == 3){renderer.addUISprite(3, 2, 79, 44, menuoptionss4Sprite);}
+      Direction dir = cont.joystickDirection();
+      if(dirPre != dir){
+        dirPre = cont.joystickDirection();
+        optionSelected = mod(optionSelected - (dirPre == N) + (dirPre == S), 4);
+        if(optionSelected == 0 && (dirPre == W || dirPre == E)){cont.muted = !cont.muted;}
+      }
+
+      if(optionSelected == 1){cont.contrast = max(min(cont.contrast - ((dir == W) - (dir == E)) * CONTR_STEP, CONTR_MAX), CONTR_MIN); cont.lcdContrast(cont.contrast);}
+      if(optionSelected == 2){cont.brightness = max(min(cont.brightness - ((dir == W) - (dir == E)) * BRIGHT_STEP, BRIGH_MAX), BRIGHT_MIN); cont.lcdSetBrightness(cont.brightness);}
+      if((optionSelected == 3 && cont.buttonPressed(A)) || cont.buttonPressed(START) || cont.buttonPressed(BACK)){optionSelected = -1;}
+    }
+    else{
+      renderer.addUISprite(3, 2, 79, 44, menutextSprite);
+      if(dirPre != cont.joystickDirection()){
+        dirPre = cont.joystickDirection();
+        menuSelected = mod(menuSelected - (dirPre == N) + (dirPre == S), 4);
+      }
+      renderer.addUISprite(18, pointerPositions[menuSelected], 5, 3, menupointerSprite);
+      if(cont.buttonPressed(A)){
+        if(menuSelected == 2){optionSelected = 0;}
+        else{selected = menuSelected;}
+      }
+      if(cont.buttonPressed(START)){selected = 0;}
+      if(cont.buttonPressed(BACK)){selected = 3;}
+    }
+    wait(0.05);
+    renderer.render(cont);
+    cont.lcdRefresh();
+  }
+  return selected;
+}
+
 int mainMenu(Controller &cont)
 {
   Renderer renderer;
@@ -95,12 +170,13 @@ int mainMenu(Controller &cont)
 
     if(cont.joystickDirection() != dirPre){
       dirPre = cont.joystickDirection();
-      if(dirPre == N){
-        menuPoint = mod(menuPoint - 1, 3);
-      }
-      if(dirPre == S){
-        menuPoint = mod(menuPoint + 1, 3);
-      }
+      menuPoint = mod(menuPoint - (dirPre == N) + (dirPre == S), 3);
+      // if(dirPre == N){
+      //   menuPoint = mod(menuPoint - 1, 3);
+      // }
+      // if(dirPre == S){
+      //   menuPoint = mod(menuPoint + 1, 3);
+      // }
     }
     if(cont.buttonPressed(A) || cont.buttonPressed(START)){
       selected = menuPoint;

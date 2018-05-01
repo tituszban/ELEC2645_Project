@@ -75,7 +75,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   }
   else if(fireTimer > 0.05 && fireSequence == 0){
     fireSequence++;
-    cont.lcdSetBrightness(0.5);
+    cont.lcdSetBrightness(cont.brightness);
   }
   else if(fireTimer > fireDelay && fireSequence == 1){
     fireSequence++;
@@ -96,7 +96,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   }
   else if(fireTimer > fireDelay + 0.05 && fireSequence == 2){
     fireSequence++;
-    cont.lcdSetBrightness(0.5);
+    cont.lcdSetBrightness(cont.brightness);
   }
   else if(fireTimer > fireCooldown - fireDelay && fireSequence == 3){
     fireSequence++;
