@@ -34,13 +34,11 @@ int main() {
 
   // t.attach(&alive, 0.5);
 
-
-
-  // XWingTest(cont);
-  mainGame(cont);
-
-  cont.lcdClear();
-  cont.lcdRefresh();
-  cont.ledsOff();
-  cont.lcdSetBrightness(0);
+  while(1){
+    switch(mainMenu(cont)){
+      case 0: cutscene(cont); mainGame(cont); break;
+      case 1: tutorial(cont); break;
+      case 2: showcase(cont); break;
+    }
+  }
 }

@@ -22,6 +22,8 @@ public:
   void render(Camera &cam, Renderer &renderer);
   void setSize(float width, float height);
 
+  bool forceRender;
+
 private:
   Matrix position;
   Matrix normal;
@@ -32,6 +34,7 @@ private:
   float halfHeight;
   pair<pair<Matrix, Matrix>, pair<Matrix, Matrix> > corners;
   bool faceChanged;
+
 
   void updateCorners();
 

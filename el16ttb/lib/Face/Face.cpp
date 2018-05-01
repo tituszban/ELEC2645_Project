@@ -1,7 +1,7 @@
 #include "Face.h"
 
 Face::Face(){
-
+  forceRender = false;
 }
 
 void Face::setTexture(Texture texture){
@@ -41,9 +41,9 @@ void Face::render(Camera &cam, Renderer &renderer){
   Matrix rel = this->position - cam.getPosition().transpose();
   rel = rel / rel.distance(Matrix(1, 3));
   float facing_angle = this->normal.dot(rel);
-  if(facing_angle > 0)
+  if(facing_angle > 0 && !forceRender)
     return;
-  if(cam.getFacing().dot(rel) < 0.55)
+  if(cam.getFacing().dot(rel) < 0.55 && !forceRender)
      return;
   if(this->faceChanged)
     this->updateCorners();
@@ -54,7 +54,7 @@ void Face::render(Camera &cam, Renderer &renderer){
   float distA = cAT.homogDistance(cAB);
   float distB = cBT.homogDistance(cBB);
   int mDist = ceil(max(distA, distB));
-  if(mDist > 100){
+  if((mDist > 100 && !forceRender) || mDist > 200){
     return;
   }
   vector<float> lXA = lerp(cAT.get(0, 0), cAB.get(0, 0), mDist);
