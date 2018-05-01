@@ -18,7 +18,7 @@ void TieFighter::init(){
   steeringAngle = PI * 2;
   speed = 4;
   elevationSpeed = 1;
-  fireCooldown = 1;
+  fireCooldown = 0.25;
 
   destroyed = false;
   innerHitboxRadius = 0.425;
@@ -97,7 +97,6 @@ void TieFighter::update(float dt, float steering, float elevation, bool fire){
   }
   unsigned int i = 0;
   while(i < lasers.size()){
-    // printf("remove?: %d\n", lasers[i].toBeRemoved);
     if(lasers[i].toBeRemoved){
       lasers.erase(lasers.begin() + i);
     }

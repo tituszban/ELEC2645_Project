@@ -17,7 +17,7 @@ public:
   Empire();
 
   bool isGameOver();
-  void update(float dt, Matrix xwingPos, Matrix xwingFacing);
+  int update(float dt, Matrix xwingPos, Matrix xwingFacing);
   void checkCollisions(XWing &xwing);
   vector<int> getTargets();
   vector<Matrix> getTargetPositions();
@@ -39,6 +39,11 @@ private:
   vector<int> tfRoles;
   vector<Matrix> tfEvadeTarget;
   vector<char> tfMem;
+  vector<float> tfCooldown;
+  Matrix guardPattern;
+  Matrix orbitPattern;
+  float attackCooldown;
+  float respawnTimer;
 };
 
 #endif

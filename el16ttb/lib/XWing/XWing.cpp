@@ -27,12 +27,17 @@ bool XWing::detectCollision(Matrix projectile){
   float rn = (float)rand() / RAND_MAX;
   if(dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn){
     lives.damage((float)rand() / RAND_MAX * (MAX_DAMAGE - MIN_DAMAGE) + MIN_DAMAGE);
+    printf("OUCH!\n");
     return true;
   }
   return false;
 }
 
-void XWing::update(float dt, Controller &cont, Camera &cam, Matrix shuttlePosition){
+void XWing::damage(float dam){
+  lives.damage(dam);
+}
+
+void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   speed = min(max(
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
@@ -90,7 +95,6 @@ void XWing::update(float dt, Controller &cont, Camera &cam, Matrix shuttlePositi
   if(canChangeTarget)
     target += cont.buttonPressed(X) - cont.buttonPressed(B);
 
-  bool missionActive = position.distance(shuttlePosition) < MISSION_DISTACNE && !canChangeTarget;
   ui.setMissionActive(missionActive);
   if(missionActive){
     if(cont.buttonDown(L))
@@ -129,6 +133,8 @@ void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
 
   this->targets = targets;
   this->targetPositions = targetPositions;
+
+  missionActive = position.distance(targetPositions[0]) < MISSION_DISTACNE && !canChangeTarget;
 }
 
 int XWing::isGameOver(){

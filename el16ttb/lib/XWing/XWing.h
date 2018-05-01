@@ -17,17 +17,18 @@ using namespace std;
 #define MAX_SPEED 5.0
 #define SPEED_INCREMENT 2.0
 
-#define MAX_DAMAGE 10
+#define MAX_DAMAGE 8
 #define MIN_DAMAGE 5
 
-#define MISSION_DISTACNE 8.0
+#define MISSION_DISTACNE 6.0
 #define MISSION_SPEED 0.1
 
 class XWing{
 public:
   XWing(Matrix position, Controller &cont);
   bool detectCollision(Matrix projectile);
-  void update(float dt, Controller &cont, Camera &cam, Matrix shuttlePosition);
+  void damage(float dam);
+  void update(float dt, Controller &cont, Camera &cam, int empireAction);
   void updateTargets(vector<int> targets, vector<Matrix> targetPositions);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
@@ -67,6 +68,8 @@ private:
   bool canChangeTarget;
   vector<int> targets;
   vector<Matrix> targetPositions;
+
+  bool missionActive;
 
   float progress;
 

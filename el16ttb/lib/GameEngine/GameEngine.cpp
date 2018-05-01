@@ -13,6 +13,8 @@ void mainGame(Controller &cont){
 
   std::clock_t framePrev = std::clock();
 
+  int empireAction = 0;
+
   while(!gameOver)
   {
     // RESET
@@ -32,8 +34,8 @@ void mainGame(Controller &cont){
     xwing.updateTargets(empire.getTargets(), empire.getTargetPositions());
 
     // UPDATE
-    xwing.update(dt, cont, cam, empire.getShuttlePosition());
-    empire.update(dt, xwing.getPosition(), xwing.getFlatFacing());
+    xwing.update(dt, cont, cam, empireAction);
+    empireAction = empire.update(dt, xwing.getPosition(), xwing.getFlatFacing());
 
     // RENDER
     skybox.render(cam, renderer);

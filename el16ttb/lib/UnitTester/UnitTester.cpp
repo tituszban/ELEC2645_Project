@@ -708,7 +708,7 @@ bool XWingTest(Controller &cont){
     targetPositions[0] = sh.getPosition();
     xwing.updateTargets(targets, targetPositions);
 
-    xwing.update(0.05, cont, cam, sh.getPosition());
+    xwing.update(0.05, cont, cam, 0);
 
     skybox.render(cam, renderer);
     xwing.render(cam, renderer);

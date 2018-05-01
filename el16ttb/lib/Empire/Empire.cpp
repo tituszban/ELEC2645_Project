@@ -2,7 +2,7 @@
 
 Empire::Empire(){
   float initialAngle = -PI * 0.3;
-  float shInitialPos[] = {-1, 0.5, 12};
+  float shInitialPos[] = {-1, 0, 12};
   float tfInitialPos[][3] = {
     {1, -1, 10},
     {3, 1, 14},
@@ -10,6 +10,21 @@ Empire::Empire(){
     {4.5, 1, 6},
     {-4.5, 1, 6}
   };
+  float guardPoses[] = {
+    3, -3,
+    3, 3,
+    6, 0
+  };
+  guardPattern = Matrix(2, 3, guardPoses);
+  float orbitPoses[] = {
+    10, 0,
+    0, 10,
+    -10, 0,
+    0, -10
+  };
+  orbitPattern = Matrix(2, 4, orbitPoses);
+  attackCooldown = 0;
+  respawnTimer = 0;
   sh.setPosition(Matrix(1, 3, shInitialPos));
   sh.setRotation(initialAngle);
   for(int i = 0; i < 3; i++){
@@ -18,6 +33,7 @@ Empire::Empire(){
     tfRoles.push_back(-1);
     tfEvadeTarget.push_back(sh.getPosition());
     tfMem.push_back(0);
+    tfCooldown.push_back(0);
   }
   shTimer = 0;
   shHeading = Matrix(1, 3);
@@ -47,6 +63,13 @@ void Empire::checkCollisions(XWing &xwing)
     for(unsigned int j = 0; j < tfs[i].lasers.size(); j++){
       tfs[i].lasers[j].toBeRemoved = xwing.detectCollision(tfs[i].lasers[j].getPosition());
     }
+    if(tfs[i].getPosition().distance(xwing.getPosition()) < 1.2 && !tfs[i].destroyed){
+      tfs[i].detectCollision(tfs[i].getPosition());
+      xwing.damage(50.0f);
+    }
+  }
+  if(sh.getPosition().distance(xwing.getPosition()) < 1.2){
+    xwing.damage(100.0f);
   }
 }
 
@@ -79,7 +102,7 @@ void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
     shSteer = -xwingFacing.dot(sh.getFacing().cross(up)) * 1.4;
     shSpeed = 1.4f;
   }
-  else if(shDist < 8){
+  else if(shDist < 6){
     if(shTimer > 0.75){
       float rd = randf();
       shHeading = (xwingFacing * (randf() * 0.8f - 0.2f) + sh.getFacing().cross(up) * ((rd > 0.5) - (rd < 0.5) * (randf() * 2.0f + 1.0f)));
@@ -93,8 +116,7 @@ void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
     Matrix rel = xwingPos - sh.getPosition();
     rel.set(0, 1, 0);
     rel = rel / rel.distance(Matrix(1, 3));
-    shHeading = (rel + xwingFacing) * 0.5;
-    shSteer = -shHeading.dot(sh.getFacing().cross(up));
+    shSteer = -rel.dot(sh.getFacing().cross(up));
   }
   else{
     shSpeed = 0;
@@ -105,26 +127,87 @@ void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
 void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi){
   float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
+  float xwingDist = xwingPos.distance(tfs[tfi].getPosition());
+  Matrix xRel = xwingPos - tfs[tfi].getPosition();
+  float xRelY = xRel.get(0, 1);
+  xRel.set(0, 1, 0);
+  xRel = xRel / xRel.distance(Matrix(1, 3));
+  if(tfCooldown[tfi] > 0)
+    tfCooldown[tfi] -= dt;
 
-  if(xwingPos.distance(tfs[tfi].getPosition()) < 4){
+  if(xwingDist < 6){
     tfRoles[tfi] = 0;
-    tfEvadeTarget[tfi] = xwingPos.getPosition();
+    tfEvadeTarget[tfi] = xwingPos;
   }
-  else if(sh.distance(tfs[tfi].getPosition()) < 4)
+  else if(sh.getPosition().distance(tfs[tfi].getPosition()) < 2)
   {
     tfRoles[tfi] = 0;
     tfEvadeTarget[tfi] = sh.getPosition();
+  }
+  else if(xwingDist < 15){
+    int roleCount[] = {0, 0, 0, 0, 0};
+    for(unsigned int i = 0; i < tfs.size(); i++){
+      if(tfRoles[i] != -1){ roleCount[tfRoles[i]]++;}
+    }
+    if(roleCount[4] == 0 && (roleCount[1] + roleCount[2] > 1
+      || (tfRoles[tfi] != 1 && tfRoles[tfi] != 2)
+      || tfs.size() == 1) && tfCooldown[tfi] <= 0 && attackCooldown <= 0){
+      printf("CHARGE! (%d)\n", tfi);
+      tfRoles[tfi] = 4;
+    }
   }
   float steer = 0;
   float elev = 0;
 
   if(tfRoles[tfi] == 0){
-    Matrix rel = tfEvadeTarget[tfi] - tfs[tfi].getPosition();
+    Matrix rel = tfs[tfi].getPosition() - tfEvadeTarget[tfi];
+    rel = rel / rel.distance(Matrix(1, 3));
+    steer = -rel.dot(tfs[tfi].getFacing().cross(up));
+    if(tfEvadeTarget[tfi].distance(tfs[tfi].getPosition()) > 8){
+      tfRoles[tfi] = -1;
+      tfCooldown[tfi] = 1;
+    }
+  }
+  if(tfRoles[tfi] == 1 || tfRoles[tfi] == 2){
+    Matrix target = sh.getPosition()
+      + sh.getFacing() * guardPattern.get(1, tfMem[tfi])
+      + up.cross(sh.getFacing()) * guardPattern.get(0, tfMem[tfi]) * (tfRoles[tfi] == 1 ? 1 : -1);
+    if(target.distance(tfs[tfi].getPosition()) < 0.3f){tfMem[tfi] = (tfMem[tfi] + 1) % 3; }
+    // printf("Left guard: i: %d, dist %f, t: %d\n", tfi, target.distance(tfs[tfi].getPosition()), tfMem[tfi]);
+    Matrix rel = target - tfs[tfi].getPosition();
+    float relY = rel.get(0, 1);
+    rel.set(0, 1, 0);
+    rel = rel / rel.distance(Matrix(1, 3));
+    steer = -rel.dot(tfs[tfi].getFacing().cross(up));
+    elev = relY;
+  }
+  if(tfRoles[tfi] == 3){
+    Matrix target = sh.getPosition()
+      + sh.getFacing() * orbitPattern.get(1, tfMem[tfi])
+      + up.cross(sh.getFacing()) * orbitPattern.get(0, tfMem[tfi]);
+    if(target.distance(tfs[tfi].getPosition()) < 0.3f){tfMem[tfi] = (tfMem[tfi] + 1) % 4; }
+    Matrix rel = target - tfs[tfi].getPosition();
+    // float relY = rel.get(0, 1);
+    rel.set(0, 1, 0);
     rel = rel / rel.distance(Matrix(1, 3));
     steer = -rel.dot(tfs[tfi].getFacing().cross(up));
   }
+  if(tfRoles[tfi] == 4){
+    Matrix target = xRel + xwingFacing * 0.2;
+    target = target / target.distance(Matrix(1, 3));
+    steer = -xRel.dot(tfs[tfi].getFacing().cross(up));
+    elev = xRelY;
+    attackCooldown = 2;
+  }
 
-  tfs[tfi].update(dt, steer, elev, false);
+
+  bool fire = xRel.dot(tfs[tfi].getFacing()) > 0.8f && xwingDist < 20;
+
+  if(fire){
+    printf("PEW! (%d)\n", tfi);
+  }
+
+  tfs[tfi].update(dt, steer, elev, fire);
 }
 
 /*
@@ -135,9 +218,7 @@ Roles:
 2 right guard
 3 wide orbit
 4 attack
-
 */
-
 void Empire::tfRoleManager(){
   int roleCount[] = {0, 0, 0, 0, 0};
   bool hasToUpdate = false;
@@ -157,7 +238,11 @@ void Empire::tfRoleManager(){
       float shSide = up.cross(sh.getFacing()).dot(shRel);
       selector.set(0, i, shDist + shSide);
       selector.set(1, i, shDist - shSide);
-      printf("selector: i: %d shDist: %f\t, shSide: %f, 0: %f, 1: %f\n", i, shDist, shSide, shDist + shSide, shDist - shSide);
+      // printf("selector: i: %d shDist: %f\t, shSide: %f, 0: %f, 1: %f\n", i, shDist, shSide, shDist + shSide, shDist - shSide);
+    }
+    else{
+      selector.set(0, i, 9999999);
+      selector.set(1, i, 9999999);
     }
   }
   if(roleCount[1] == 0 && roleCount[2] == 0){
@@ -173,14 +258,14 @@ void Empire::tfRoleManager(){
         minSide = 1;
       }
     }
-    if(selector.get(minSide, mintf) > 0){
+    if(selector.get(minSide, mintf) < 9999999){
       tfRoles[mintf] = minSide + 1;
       int minRowtf = 0;
       for(unsigned int i = 0; i < tfs.size(); i++){
         if(selector.get(1 - minSide, i) < selector.get(1 - minSide, minRowtf))
           minRowtf = i;
       }
-      if(selector.get(1 - minSide, minRowtf) > 0)
+      if(selector.get(1 - minSide, minRowtf) < 9999999)
         tfRoles[minRowtf] = 2 - minSide;
     }
   }
@@ -190,7 +275,7 @@ void Empire::tfRoleManager(){
       if(selector.get(0, i) < selector.get(0, minRowtf))
         minRowtf = i;
     }
-    if(selector.get(0, minRowtf) > 0)
+    if(selector.get(0, minRowtf) < 9999999)
       tfRoles[minRowtf] = 1;
   }
   else if(roleCount[2] == 0){
@@ -199,7 +284,7 @@ void Empire::tfRoleManager(){
       if(selector.get(1, i) < selector.get(1, minRowtf))
         minRowtf = i;
     }
-    if(selector.get(1, minRowtf) > 0)
+    if(selector.get(1, minRowtf) < 9999999)
       tfRoles[minRowtf] = 2;
   }
   for(unsigned int i = 0; i < tfs.size(); i++){
@@ -209,16 +294,21 @@ void Empire::tfRoleManager(){
   }
 }
 
-void Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
+int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
 {
   tfRoleManager();
   updateShuttle(dt, xwingPos, xwingFacing);
+  int action = 0;
+  if(attackCooldown > 0)
+    attackCooldown -= dt;
   unsigned int tf = 0;
   while(tf < tfs.size()){
     if(tfs[tf].toBeRemoved){
       tfs.erase(tfs.begin() + tf);
       tfRoles.erase(tfRoles.begin() + tf);
       tfEvadeTarget.erase(tfEvadeTarget.begin() + tf);
+      tfMem.erase(tfMem.begin() + tf);
+      tfCooldown.erase(tfCooldown.begin() + tf);
     }
     else{
       updateTieFighter(dt, xwingPos, xwingFacing, tf);
@@ -235,6 +325,26 @@ void Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
       tf++;
     }
   }
+  // printf("Most of it is still working\n");
+  if(tfs.size() == 0){
+    respawnTimer += dt;
+  }
+  if(respawnTimer > 2 + randf()){
+    // printf("")
+    Matrix spawnPoint = sh.getPosition() - xwingPos;
+    spawnPoint = spawnPoint / spawnPoint.distance(Matrix(1, 3)) * 15;
+    float offset[] = {1, -1};
+    for(int i = 0; i < 1; i++){
+      TieFighter ntf = TieFighter(spawnPoint + sh.getFacing() * offset[i], 0);
+      tfs.push_back(ntf);
+      tfRoles.push_back(-1);
+      tfEvadeTarget.push_back(sh.getPosition());
+      tfMem.push_back(0);
+      tfCooldown.push_back(0);
+    }
+    action = 1;
+  }
+  return action;
 }
 
 void Empire::render(Camera &cam, Renderer &renderer)
