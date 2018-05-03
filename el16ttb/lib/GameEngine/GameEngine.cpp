@@ -193,8 +193,183 @@ int mainMenu(Controller &cont)
   return selected;
 }
 
-void cutscene(Controller &cont){
+void waitPress(Controller &cont){
+  while(!cont.buttonPressed(A)){
+    wait(0.1);
+  }
+}
 
+void scene1(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("Welcome!", 18, 1);
+  cont.lcdPrintString("Press A", 21, 3);
+  cont.lcdPrintString("to continue!", 6, 4);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene2(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("Pilot!", 24, 0);
+  cont.lcdPrintString("You have been", 3, 2);
+  cont.lcdPrintString("tasked with a", 3, 3);
+  cont.lcdPrintString("secret", 24, 4);
+  cont.lcdPrintString("mission!", 18, 5);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene3(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("The rebel", 15, 0);
+  cont.lcdPrintString("allience needs", 0, 1);
+  cont.lcdPrintString("an IMPERIAL", 9, 2);
+  cont.lcdPrintString("SHUTTLE for", 9, 3);
+  cont.lcdPrintString("their upcoming", 0, 4);
+  cont.lcdPrintString("attack", 24, 5);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene4(Controller &cont){
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+  cam.setPosition(0, 0, 0);
+  cam.setRotation(0, 0);
+
+  float rot = 4.1;
+  float shPos[] = {7, 0, 15.5};
+
+  ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), rot);
+  float timer = 0;
+  float timerPre = 0;
+  float speed = 0.4;
+  while(!cont.buttonPressed(A) && timer < 4){
+    cont.lcdClear();
+    renderer.clearBuffer();
+    timer += 0.05;
+    if(timer > 1 && timerPre <= 1){
+      cam.setFocalLength(0.056);
+    }
+    if(timer > 2 && timerPre <= 2)
+    {
+      cam.setFocalLength(0.140);
+    }
+    timerPre = timer;
+    Matrix shPos = sh.getPosition();
+    sh.setPosition(shPos + sh.getFacing() * speed);
+    float angle = atan2(shPos.get(0, 0), shPos.get(0, 2));
+    cam.setRotation(0, -angle);
+
+    skybox.render(cam, renderer);
+    sh.render(cam, renderer);
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
+  }
+}
+
+void scene5(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("You need to", 9, 0);
+  cont.lcdPrintString("hack the", 18, 1);
+  cont.lcdPrintString("shuttle so", 12, 2);
+  cont.lcdPrintString("Botham spies", 6, 3);
+  cont.lcdPrintString("can find and", 6, 4);
+  cont.lcdPrintString("collect it!", 9, 5);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene6(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("The shuttle is", 0, 0);
+  cont.lcdPrintString("escorted by", 9, 1);
+  cont.lcdPrintString("TIE FIGHTERS", 6, 2);
+  cont.lcdPrintString("equiped with", 6, 3);
+  cont.lcdPrintString("jammers", 18, 4);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene7(Controller &cont){
+  Renderer renderer;
+  Camera cam;
+  cam.init();
+  Skybox skybox;
+  cam.setPosition(0, 0, 0);
+  cam.setRotation(0, 0);
+
+  float shRot = PI;
+  float shPos[] = {-1, -0.5, 4};
+  float tf1Rot = PI * 1.15;
+  float tf1Pos[] = {2, 0, 6};
+  float tf1Steer = 0;
+  float tf2Rot = PI * 1.05;
+  float tf2Pos[] = {-4, 1, 8};
+
+  ImperialShuttle sh = ImperialShuttle(Matrix(1, 3, shPos), shRot);
+  TieFighter tf1 = TieFighter(Matrix(1, 3, tf1Pos), tf1Rot);
+  TieFighter tf2 = TieFighter(Matrix(1, 3, tf2Pos), tf2Rot);
+
+  float timer = 0;
+  float shSpeed = 0.01;
+  while(!cont.buttonPressed(A) && timer < 2.1){
+    cont.lcdClear();
+    renderer.clearBuffer();
+    timer += 0.05;
+    Matrix shPos = sh.getPosition();
+    sh.setPosition(shPos + sh.getFacing() * shSpeed);
+    float angle = atan2(shPos.get(0, 0), shPos.get(0, 2)) + 0.1 * timer;
+    cam.setRotation(0, -angle);
+
+    if(timer > 0.8 && timer < 1.4){tf1Steer = -0.5;}
+    else{tf1Steer = 0;}
+
+    tf1.update(0.03, tf1Steer, 0, false);
+    tf2.update(0.03, 0, 0, false);
+
+    skybox.render(cam, renderer);
+    sh.render(cam, renderer);
+    tf1.render(cam, renderer);
+    tf2.render(cam, renderer);
+    renderer.render(cont);
+    cont.lcdRefresh();
+    wait(0.05);
+  }
+}
+
+void scene8(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("Take down the", 3, 1);
+  cont.lcdPrintString("fighters and", 6, 2);
+  cont.lcdPrintString("hack the", 18, 3);
+  cont.lcdPrintString("shuttle!", 18, 4);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void scene9(Controller &cont){
+  cont.lcdClear();
+  cont.lcdPrintString("Good luck, and", 0, 1);
+  cont.lcdPrintString("may the force", 3, 2);
+  cont.lcdPrintString("be with you!", 6, 3);
+  cont.lcdRefresh();
+  waitPress(cont);
+}
+
+void cutscene(Controller &cont){
+  scene1(cont);
+  scene2(cont);
+  scene3(cont);
+  scene4(cont);
+  scene5(cont);
+  scene6(cont);
+  scene7(cont);
+  scene8(cont);
+  scene9(cont);
 }
 
 void tutorial(Controller &cont){

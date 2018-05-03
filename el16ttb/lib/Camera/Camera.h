@@ -23,7 +23,8 @@ public:
   void init();
   void setPosition(float x, float y, float z);
   void setRotation(float x, float z);
-
+  void setFocalLength(float f);
+  
   Matrix getFacing();
   Matrix getUp();
   Matrix getPosition();
@@ -51,8 +52,6 @@ private:
   Matrix rotateAboutY(float theta);
 
   vector<vector<Matrix> > rotationMatrices;
-
-  void setFocalLength(float f);
 
   void updateRotationMatrix();
   void updateCalibrationMatrix();
