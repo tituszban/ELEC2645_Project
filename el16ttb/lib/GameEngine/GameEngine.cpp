@@ -41,8 +41,6 @@ int mainGame(Controller &cont){
     float dt = (now - framePrev) / (float) CLOCKS_PER_SEC * 0.25;
     framePrev = now;
 
-    // gameOver = cont.buttonPressed(BACK) || xwing.isGameOver() != 0 || empire.isGameOver();  // check game over states
-
     // COLLISION DETECTION
     empire.checkCollisions(xwing);
 
@@ -74,6 +72,17 @@ int mainGame(Controller &cont){
       (xWingResult == -1 ? 3 :
       (empire.isGameOver() ? 4 : -1))));
   }
+  if(gameResult == 2 || gameResult == 3 || gameResult == 4){
+    renderer.addUISprite(0, 0, 84, 48, gameResult == 2 ? missionsuccessSprite : (
+      gameResult == 3 ? missionfailedxwingSprite : missionfailedshuttleSprite
+    ));
+  }
+  renderer.render(cont);
+  cont.lcdRefresh();
+  while(!cont.buttonPressed(A) && !cont.buttonPressed(A) && !cont.buttonPressed(START) && !cont.buttonPressed(BACK)){
+    wait(0.1);
+  }
+
   printf("gameResult: %d\n", gameResult);
   // ENDGAME
   return gameResult != 1;
@@ -132,8 +141,8 @@ int mainMenu(Controller &cont)
   cam.init();
   cam.setPosition(0, 0, 0);
   cam.setRotation(0, 0);
-  float crawlAngle = PI * 0.1;
-  float cs[] = {0, -0.2, 2};
+  float crawlAngle = PI * 0.05;
+  float cs[] = {0, -1.2, 2.3};
   Matrix crawlStart = Matrix(1, 3, cs);
   float cu[] = {0, cos(crawlAngle), sin(crawlAngle)};
   Matrix crawlUp = Matrix(1, 3, cu);
@@ -158,7 +167,7 @@ int mainMenu(Controller &cont)
     cont.lcdClear();
     renderer.clearBuffer();
 
-    if(dist < 2.5)
+    if(dist < 2.8f)
       dist += 0.03;
     crawlH.setPosition(crawlStart + crawlUp * dist);
     crawlH.setTexture(flipTexture(arrayToTexture(84, 50, crawl0Sprite), 0));
@@ -171,12 +180,6 @@ int mainMenu(Controller &cont)
     if(cont.joystickDirection() != dirPre){
       dirPre = cont.joystickDirection();
       menuPoint = mod(menuPoint - (dirPre == N) + (dirPre == S), 3);
-      // if(dirPre == N){
-      //   menuPoint = mod(menuPoint - 1, 3);
-      // }
-      // if(dirPre == S){
-      //   menuPoint = mod(menuPoint + 1, 3);
-      // }
     }
     if(cont.buttonPressed(A) || cont.buttonPressed(START)){
       selected = menuPoint;
