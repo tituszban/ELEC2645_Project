@@ -60,6 +60,8 @@ int mainGame(Controller &cont){
     renderer.render(cont);
     cont.lcdRefresh();
 
+    cont.muted = (cont.forceMuted && cont.muted) || (!cont.forceMuted && cont.readPot() < 0.2f);
+
     int pauseResult = 0;
     if(cont.buttonPressed(START)){
       pauseResult = pause(cont, renderer);
@@ -79,8 +81,10 @@ int mainGame(Controller &cont){
   }
   renderer.render(cont);
   cont.lcdRefresh();
-  while(!cont.buttonPressed(A) && !cont.buttonPressed(A) && !cont.buttonPressed(START) && !cont.buttonPressed(BACK)){
-    wait(0.1);
+  if(gameResult != 0 && gameResult != 1){
+    while(!cont.buttonPressed(A) && !cont.buttonPressed(A) && !cont.buttonPressed(START) && !cont.buttonPressed(BACK)){
+      wait(0.1);
+    }
   }
 
   printf("gameResult: %d\n", gameResult);
@@ -106,7 +110,7 @@ int pause(Controller &cont, Renderer &renderer){
       if(dirPre != dir){
         dirPre = cont.joystickDirection();
         optionSelected = mod(optionSelected - (dirPre == N) + (dirPre == S), 4);
-        if(optionSelected == 0 && (dirPre == W || dirPre == E)){cont.muted = !cont.muted;}
+        if(optionSelected == 0 && (dirPre == W || dirPre == E)){cont.muted = !cont.muted; cont.forceMuted = true; }
       }
 
       if(optionSelected == 1){cont.contrast = max(min(cont.contrast - ((dir == W) - (dir == E)) * CONTR_STEP, CONTR_MAX), CONTR_MIN); cont.lcdContrast(cont.contrast);}
@@ -127,6 +131,7 @@ int pause(Controller &cont, Renderer &renderer){
       if(cont.buttonPressed(START)){selected = 0;}
       if(cont.buttonPressed(BACK)){selected = 3;}
     }
+    cont.muted = (cont.forceMuted && cont.muted) || (!cont.forceMuted && cont.readPot() < 0.2f);
     wait(0.05);
     renderer.render(cont);
     cont.lcdRefresh();
@@ -136,6 +141,7 @@ int pause(Controller &cont, Renderer &renderer){
 
 int mainMenu(Controller &cont)
 {
+  // playTheme(cont);
   Renderer renderer;
   Camera cam;
   cam.init();
@@ -163,6 +169,11 @@ int mainMenu(Controller &cont)
 
   Direction dirPre = CENTRE;
 
+  cont.muted = (cont.forceMuted && cont.muted) || (!cont.forceMuted && cont.readPot() < 0.2f);
+  std::clock_t noteStart = std::clock();
+  int noteIndex = 0;
+  cont.tone(SWTheme[noteIndex][0], (float)SWTheme[noteIndex][1] / 1000);
+
   while(selected == -1){
     cont.lcdClear();
     renderer.clearBuffer();
@@ -184,10 +195,20 @@ int mainMenu(Controller &cont)
     if(cont.buttonPressed(A) || cont.buttonPressed(START)){
       selected = menuPoint;
     }
+    cont.muted = (cont.forceMuted && cont.muted) || (!cont.forceMuted && cont.readPot() < 0.2f);
+    std::clock_t now = std::clock();
+    if((now - noteStart) / (float) CLOCKS_PER_SEC * 1000 >= SWTheme[noteIndex][1]){
+      noteStart = std::clock();
+      noteIndex++;
+      if(SWTheme[noteIndex][0] != DELAY)
+        cont.tone(SWTheme[noteIndex][0], (float)SWTheme[noteIndex][1] / 1000);
+      else
+        cont.tone(0, (float)SWTheme[noteIndex][1] / 1000);
+    }
 
     renderer.render(cont);
     cont.lcdRefresh();
-    wait(0.05);
+    // wait(0.05);
   }
 
   return selected;
@@ -250,13 +271,8 @@ void scene4(Controller &cont){
     cont.lcdClear();
     renderer.clearBuffer();
     timer += 0.05;
-    if(timer > 1 && timerPre <= 1){
-      cam.setFocalLength(0.056);
-    }
-    if(timer > 2 && timerPre <= 2)
-    {
-      cam.setFocalLength(0.140);
-    }
+    if(timer > 1 && timerPre <= 1){cam.setFocalLength(0.056);}
+    if(timer > 2 && timerPre <= 2){cam.setFocalLength(0.140);}
     timerPre = timer;
     Matrix shPos = sh.getPosition();
     sh.setPosition(shPos + sh.getFacing() * speed);
@@ -285,11 +301,12 @@ void scene5(Controller &cont){
 
 void scene6(Controller &cont){
   cont.lcdClear();
-  cont.lcdPrintString("The shuttle is", 0, 0);
-  cont.lcdPrintString("escorted by", 9, 1);
-  cont.lcdPrintString("TIE FIGHTERS", 6, 2);
-  cont.lcdPrintString("equiped with", 6, 3);
-  cont.lcdPrintString("jammers", 18, 4);
+  cont.lcdPrintString("Watch out!", 12, 0);
+  cont.lcdPrintString("The shuttle is", 0, 1);
+  cont.lcdPrintString("escorted by", 9, 2);
+  cont.lcdPrintString("TIE FIGHTERS", 6, 3);
+  cont.lcdPrintString("equiped with", 6, 4);
+  cont.lcdPrintString("jammers", 18, 5);
   cont.lcdRefresh();
   waitPress(cont);
 }

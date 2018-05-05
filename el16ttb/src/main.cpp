@@ -13,6 +13,8 @@ Date: 05/03/2018
 #include <UnitTester.cpp>
 #include <GameEngine.h>
 
+// #define FINAL
+
 Controller cont;
 
 void DrawPoints();
@@ -25,6 +27,20 @@ void alive(){
 
 Ticker t;
 
+void details(){
+  cont.lcdPrintString("Star Wars", 15, 2);
+  cont.lcdPrintString("X-Wing Mission", 0, 3);
+  cont.lcdRefresh();
+  wait(2.5f);
+  cont.lcdClear();
+  cont.lcdPrintString("Created by:", 9, 1);
+  cont.lcdPrintString("Tamas", 27, 2);
+  cont.lcdPrintString("Titusz Ban", 12, 3);
+  cont.lcdPrintString("201005198", 15, 4);
+  cont.lcdRefresh();
+  wait(2.5f);
+}
+
 int main() {
   srand(time(NULL));
   cont.init();
@@ -35,7 +51,9 @@ int main() {
   cont.lcdContrast(cont.contrast);
   cont.brightness = 0.5;
   cont.lcdSetBrightness(cont.brightness);
-
+#ifdef FINAL
+  details();
+#endif
   // t.attach(&alive, 0.5);
 
   while(1){

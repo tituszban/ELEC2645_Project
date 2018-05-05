@@ -23,6 +23,7 @@ Controller::Controller():
   this->_buttons[START] = 0;
   this->_buttons[BACK] = 0;
   this->_buttons[JOYSTICK] = 0;
+  this->forceMuted = false;
 }
 
 void Controller::init()
@@ -175,7 +176,9 @@ float Controller::readPot(){
   return this->pad->read_pot();
 }
 void Controller::tone(float frequency, float duration){
-  this->pad->tone(frequency, duration);
+  if(!muted){
+    this->pad->tone(frequency, duration);
+  }
 }
 float Controller::joystickMag(){
   return this->pad->get_mag();

@@ -37,6 +37,7 @@ public:
   float readPot();
   void tone(float frequency, float duration);
   bool muted;
+  bool forceMuted;
   float joystickMag();
   float joystickAngle();
   Direction joystickDirection();
