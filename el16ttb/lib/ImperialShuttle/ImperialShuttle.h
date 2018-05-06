@@ -9,6 +9,7 @@ using namespace std;
 #include <math.h>
 #include <Util.h>
 #include <Explosion.h>
+#include <SoundManager.h>
 
 class ImperialShuttle{
 public:
@@ -18,7 +19,7 @@ public:
   void setRotation(float rotation);
   void render(Camera &cam, Renderer &renderer);
   bool detectCollision(Matrix projectile);
-  void update(float dt, float steering, float speedMult);
+  void update(float dt, float steering, float speedMult, SoundManager &sm);
   Matrix getPosition();
   float getRotation();
   Matrix getFacing();
@@ -80,7 +81,7 @@ private:
   float innerHitboxRadius;
 
   Explosion explosion;
-
+  int smID;
 
   void update();
 };

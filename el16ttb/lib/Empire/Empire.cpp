@@ -94,7 +94,7 @@ vector<Matrix> Empire::getTargetPositions(){
   return targetPositions;
 }
 
-void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
+void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing, SoundManager &sm){
   float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
   float shSteer = 0;
@@ -123,7 +123,7 @@ void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
   else{
     shSpeed = 0;
   }
-  sh.update(dt, shSteer, shSpeed);
+  sh.update(dt, shSteer, shSpeed, sm);
 }
 
 void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi, SoundManager &sm){
@@ -291,7 +291,7 @@ void Empire::tfRoleManager(){
   for(unsigned int i = 0; i < tfs.size(); i++){
     if(tfRoles[i] == -1)
       tfRoles[i] = 3;
-    printf("Role: i: %d, r: %d\n", i, tfRoles[i]);
+    // printf("Role: i: %d, r: %d\n", i, tfRoles[i]);
   }
 }
 
@@ -300,7 +300,7 @@ int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing, SoundManager &
   float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
   tfRoleManager();
-  updateShuttle(dt, xwingPos, xwingFacing);
+  updateShuttle(dt, xwingPos, xwingFacing, sm);
   int action = 0;
   if(attackCooldown > 0)
     attackCooldown -= dt;

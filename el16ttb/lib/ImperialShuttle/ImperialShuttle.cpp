@@ -36,6 +36,7 @@ void ImperialShuttle::init(){
 
   innerHitboxRadius = 0.6;
   outerHitboxRadius = 1.2;
+  smID = -1;
 
   setPosition(Matrix(1, 3));
   setRotation(0);
@@ -115,7 +116,8 @@ bool ImperialShuttle::detectCollision(Matrix projectile){
   return false;
 }
 
-void ImperialShuttle::update(float dt, float steering, float speedMult){
+void ImperialShuttle::update(float dt, float steering, float speedMult, SoundManager &sm){
+  if(smID == -1){smID = sm.getID();}
   if(life > 0){
     float u[] = {0, 1, 0};
     Matrix up = Matrix(1, 3, u);
@@ -125,6 +127,12 @@ void ImperialShuttle::update(float dt, float steering, float speedMult){
   }
   if(!explosion.toBeRemoved){
     explosion.update(dt);
+    if(!explosion.toBeRemoved){
+      sm.setContTone(smID, 5, 70 + randf() * 30);
+    }
+    else{
+      sm.stopContTone(smID);
+    }
   }
   if(explosion.toBeRemoved && life <= 0){
     toBeRemoved = true;

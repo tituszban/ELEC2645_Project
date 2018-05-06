@@ -29,7 +29,7 @@ private:
   vector<TieFighter> destroyedTFs;
   ImperialShuttle sh;
 
-  void updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing);
+  void updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing, SoundManager &sm);
   void updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi, SoundManager &sm);
   void tfRoleManager();
 

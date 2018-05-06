@@ -627,6 +627,7 @@ bool ImperialShuttleControlTest(Controller &cont){
   Camera cam;
   cam.init();
   Skybox skybox;
+  SoundManager sm;
 
 
   cam.setPosition(0, 1.5, 0);
@@ -650,7 +651,7 @@ bool ImperialShuttleControlTest(Controller &cont){
     if(cont.buttonPressed(B)){
       sh.detectCollision(sh.getPosition() + cam.getFacing().cross(cam.getUp()));
     }
-    sh.update(0.05, steer, 0);
+    sh.update(0.05, steer, 0, sm);
 
     sh.render(cam, renderer);
 
@@ -705,7 +706,7 @@ bool XWingTest(Controller &cont){
 
     tf1.update(0.05, -0.1, 0, false, sm);
     tf2.update(0.05, 0.03, 0, false, sm);
-    sh.update(0.05, 0, 0.0f);
+    sh.update(0.05, 0, 0.0f, sm);
     targetPositions[1] = tf1.getPosition();
     targetPositions[2] = tf2.getPosition();
     targetPositions[0] = sh.getPosition();
