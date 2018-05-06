@@ -11,6 +11,7 @@ public:
   void damage(float dam);
   bool isGameOver();
   void reset();
+  void update();
 private:
   float life;
   void setLEDs();

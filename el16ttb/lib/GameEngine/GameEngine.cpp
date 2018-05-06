@@ -60,6 +60,7 @@ int mainGame(Controller &cont){
     // ENDLOOP
     renderer.render(cont);
     cont.lcdRefresh();
+    cont.lcdSetBrightness(cont.brightness);
 
     sm.update(dt / SPEED_FACTOR, cont);
 

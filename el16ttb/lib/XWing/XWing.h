@@ -12,6 +12,7 @@ using namespace std;
 #include <Laser.h>
 #include <UI.h>
 #include <Lives.h>
+#include <SoundManager.h>
 
 #define MIN_SPEED 1.5
 #define MAX_SPEED 5.0
@@ -28,7 +29,7 @@ public:
   XWing(Matrix position, Controller &cont);
   bool detectCollision(Matrix projectile);
   void damage(float dam);
-  void update(float dt, Controller &cont, Camera &cam, int empireAction);
+  void update(float dt, Controller &cont, Camera &cam, SoundManager &sm, int empireAction);
   void updateTargets(vector<int> targets, vector<Matrix> targetPositions);
   void render(Camera &cam, Renderer &renderer);
   Matrix getPosition();
@@ -74,8 +75,14 @@ private:
   bool missionActive;
 
   float progress;
+  int progressIndicator;
+
+  bool damaged;
 
   Lives lives;
+
+  int smID1;
+  int smID2;
 };
 
 #endif

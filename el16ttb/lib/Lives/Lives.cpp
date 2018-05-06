@@ -23,6 +23,10 @@ void Lives::reset(){
   setLEDs();
 }
 
+void Lives::update(){
+  setLEDs();
+}
+
 void Lives::setLEDs(){
   for(int i = 1; i < 7; i++){
     cont->led(i, (life - (i - 1) * 16.67) / 16.67);

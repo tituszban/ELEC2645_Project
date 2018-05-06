@@ -20,8 +20,12 @@ XWing::XWing(Matrix position, Controller &cont){
   targetPre = 0;
   canChangeTarget = false;
   progress = 0;
+  progressIndicator = 0;
   innerHitboxRadius = 0.6;
   outerHitboxRadius = 1.2;
+  smID1 = -1;
+  smID2 = -1;
+  damaged = false;
 }
 
 bool XWing::detectCollision(Matrix projectile){
@@ -30,6 +34,7 @@ bool XWing::detectCollision(Matrix projectile){
   if(dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn){
     lives.damage((float)rand() / RAND_MAX * (MAX_DAMAGE - MIN_DAMAGE) + MIN_DAMAGE);
     printf("OUCH!\n");
+    damaged = true;
     return true;
   }
   return false;
@@ -39,14 +44,13 @@ void XWing::damage(float dam){
   lives.damage(dam);
 }
 
-void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
+void XWing::update(float dt, Controller &cont, Camera &cam, SoundManager &sm, int empireAction){
   if(empireAction == 1)
     ui.setAlert(1);
 
   speed = min(max(
     speed + ((cont.buttonDown(Y) ? SPEED_INCREMENT : 0.0) + (cont.buttonDown(A) ? -SPEED_INCREMENT : 0.0)) * dt,
     0.0), 1.0);
-  // printf("Speed: %f\n", speed);
   yaw += pow(cont.joystickCoord().x, 5) * -yawSpeed * dt;
   float pitch = -cont.joystickCoord().y * pitchAngle;
   cam.setRotation(pitch, yaw);
@@ -54,6 +58,11 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
   position = position + cam.getFacing() * dt * ((MAX_SPEED - MIN_SPEED) * speed + MIN_SPEED);
   facing = cam.getFacing();
   fireTimer += dt;
+
+  if(smID1 == -1){smID1 = sm.getID();}
+  if(smID2 == -1){smID2 = sm.getID();}
+  // printf("id1: %d, id2: %d\n", smID1, smID2);
+
   if(fireTimer >= fireCooldown && cont.buttonDown(R)){
     fireTimer = 0;
     fireSequence = 0;
@@ -72,6 +81,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
       lasers.push_back(laser);
     }
     cont.lcdSetBrightness(1);
+    sm.setEffect(smID1, 10, 0.4, 800, 600);
   }
   else if(fireTimer > 0.05 && fireSequence == 0){
     fireSequence++;
@@ -93,6 +103,7 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
       lasers.push_back(laser);
     }
     cont.lcdSetBrightness(1);
+    sm.setEffect(smID1, 10, 0.4, 800, 600);
   }
   else if(fireTimer > fireDelay + 0.05 && fireSequence == 2){
     fireSequence++;
@@ -121,10 +132,22 @@ void XWing::update(float dt, Controller &cont, Camera &cam, int empireAction){
 
   ui.setMissionActive(missionActive);
   if(missionActive){
-    if(cont.buttonDown(L))
+    if(cont.buttonDown(L)){
       progress += MISSION_SPEED * dt;
+      float pex = pow(progress, 1.5);
+      if(floor(pex * 300.0f) != progressIndicator){
+        progressIndicator = floor(pex * 300.0f);
+        if(mod(progressIndicator, 8) == 0){
+          sm.setEffect(smID1, 10, 0.2, 500, 500);
+        }
+      }
+    }
   }
-
+  if(damaged){
+    damaged = false;
+    sm.setEffect(smID2, 10, 0.5, 100, 300);
+  }
+  lives.update();
 }
 
 void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
@@ -150,7 +173,6 @@ void XWing::updateTargets(vector<int> targets, vector<Matrix> targetPositions){
     }
     a++;
   }
-
   if(targetExploded){
     target = 0;
     targetPre = 0;
@@ -189,7 +211,7 @@ void XWing::render(Camera &cam, Renderer &renderer){
   int rightIndicator[] = {1, 1, 0, 0, 0, 1};
   ui.setFire(leftIndicator[fireSequence], rightIndicator[fireSequence]);
   ui.missionProgress(floor(10.0f * progress));
-  ui.setDir(floor(progress * 300.0f));
+  ui.setDir(progressIndicator);
 
   Matrix targetPos = targetPositions[mod(target, targets.size())];
   Matrix screenPoint = cam.getScreenPosition(pos2homogPos(targetPos));
