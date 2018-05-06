@@ -50,7 +50,7 @@ int mainGame(Controller &cont){
 
     // UPDATE
     xwing.update(dt, cont, cam, sm, empireAction);
-    empireAction = empire.update(dt, xwing.getPosition(), xwing.getFlatFacing());
+    empireAction = empire.update(dt, xwing.getPosition(), xwing.getFlatFacing(), sm);
 
     // RENDER
     skybox.render(cam, renderer);
@@ -68,6 +68,7 @@ int mainGame(Controller &cont){
 
     int pauseResult = 0;
     if(cont.buttonPressed(START)){
+      cont.toneContinous(0);
       pauseResult = pause(cont, renderer);
       framePrev = std::clock();
     }
@@ -322,6 +323,7 @@ void scene7(Controller &cont){
   Camera cam;
   cam.init();
   Skybox skybox;
+  SoundManager sm;
   cam.setPosition(0, 0, 0);
   cam.setRotation(0, 0);
 
@@ -351,8 +353,8 @@ void scene7(Controller &cont){
     if(timer > 0.8 && timer < 1.4){tf1Steer = -0.5;}
     else{tf1Steer = 0;}
 
-    tf1.update(0.03, tf1Steer, 0, false);
-    tf2.update(0.03, 0, 0, false);
+    tf1.update(0.03, tf1Steer, 0, false, sm);
+    tf2.update(0.03, 0, 0, false, sm);
 
     skybox.render(cam, renderer);
     sh.render(cam, renderer);

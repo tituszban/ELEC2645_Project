@@ -11,7 +11,9 @@ TieFighter::TieFighter(Matrix position, float rotation){
 
 void TieFighter::init(){
   reset();
-
+  smID1 = -1;
+  smID2 = -1;
+  smIDP = -1;
   wingL.setTexture(arrayToTexture(10, 15, wingSprite));
   wingL.setSize(wingWidth, wingHeight);
   wingR.setTexture(arrayToTexture(10, 15, wingSprite));
@@ -81,7 +83,11 @@ bool TieFighter::detectCollision(Matrix projectile){
   return false;
 }
 
-void TieFighter::update(float dt, float steering, float elevation, bool fire){
+void TieFighter::update(float dt, float steering, float elevation, bool fire, SoundManager &sm){
+  if(smID1 == -1){smID1 = sm.getID();}
+  if(smID2 == -1){smID2 = sm.getID();}
+  if(smIDP == -1){smIDP = sm.getID();}
+  // printf("TIE: id1: %d, id2: %d\n", smID1, smID2);
   if(!destroyed){
     float u[] = {0, 1, 0};
     Matrix up = Matrix(1, 3, u);
@@ -91,6 +97,7 @@ void TieFighter::update(float dt, float steering, float elevation, bool fire){
     setPosition(position + (forward * speed + up * elevation * elevationSpeed) * dt);
     fireTimer += dt;
     if(fireTimer >= fireCooldown && fire){
+      sm.setEffect(smID1, 9.5, 0.2, 700, 600);
       fireTimer = 0;
       if(removedLasers.size() > 0){
         removedLasers[0].reset();
@@ -109,6 +116,12 @@ void TieFighter::update(float dt, float steering, float elevation, bool fire){
   }
   else{
     explosion.update(dt);
+    if(!explosion.toBeRemoved){
+      sm.setContTone(smID2, 4.5, 70 + randf() * 30);
+    }
+    else{
+        sm.stopContTone(smID2);
+    }
   }
   unsigned int i = 0;
   while(i < lasers.size()){

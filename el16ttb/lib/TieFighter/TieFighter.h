@@ -11,6 +11,7 @@ using namespace std;
 #include <vector>
 #include <Laser.h>
 #include <Explosion.h>
+#include <SoundManager.h>
 
 
 class TieFighter{
@@ -22,7 +23,7 @@ public:
   void setRotation(float rotation);
   bool detectCollision(Matrix projectile);
   void render(Camera &cam, Renderer &renderer);
-  void update(float dt, float steering, float elevation, bool fire);
+  void update(float dt, float steering, float elevation, bool fire, SoundManager &sm);
   Matrix getPosition();
   float getRotation();
   Matrix getFacing();
@@ -30,6 +31,7 @@ public:
   bool destroyed;
 
   vector<Laser> lasers;
+  int smIDP;
 
 private:
   void init();
@@ -65,6 +67,9 @@ private:
   void update();
 
   vector<Laser> removedLasers;
+
+  int smID1;
+  int smID2;
 };
 
 const int wingSprite [] = {

@@ -33,7 +33,6 @@ bool XWing::detectCollision(Matrix projectile){
   float rn = (float)rand() / RAND_MAX;
   if(dist < innerHitboxRadius || (dist - innerHitboxRadius) / (outerHitboxRadius - innerHitboxRadius) < rn){
     lives.damage((float)rand() / RAND_MAX * (MAX_DAMAGE - MIN_DAMAGE) + MIN_DAMAGE);
-    printf("OUCH!\n");
     damaged = true;
     return true;
   }
@@ -138,14 +137,14 @@ void XWing::update(float dt, Controller &cont, Camera &cam, SoundManager &sm, in
       if(floor(pex * 300.0f) != progressIndicator){
         progressIndicator = floor(pex * 300.0f);
         if(mod(progressIndicator, 8) == 0){
-          sm.setEffect(smID1, 10, 0.2, 500, 500);
+          sm.setEffect(smID1, 9, 0.2, 500, 500);
         }
       }
     }
   }
   if(damaged){
     damaged = false;
-    sm.setEffect(smID2, 10, 0.5, 100, 300);
+    sm.setEffect(smID2, 11, 0.5, 100, 300);
   }
   lives.update();
 }

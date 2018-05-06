@@ -583,6 +583,7 @@ bool TieFighterControlTest(Controller &cont){
   Camera cam;
   cam.init();
   Skybox skybox;
+  SoundManager sm;
 
 
   cam.setPosition(0, 3, 0);
@@ -607,7 +608,7 @@ bool TieFighterControlTest(Controller &cont){
     if(cont.buttonPressed(B)){
       tf.detectCollision(tf.getPosition());
     }
-    tf.update(0.05, steer, elev, cont.buttonPressed(A));
+    tf.update(0.05, steer, elev, cont.buttonPressed(A), sm);
 
     tf.render(cam, renderer);
 
@@ -702,8 +703,8 @@ bool XWingTest(Controller &cont){
 
     }
 
-    tf1.update(0.05, -0.1, 0, false);
-    tf2.update(0.05, 0.03, 0, false);
+    tf1.update(0.05, -0.1, 0, false, sm);
+    tf2.update(0.05, 0.03, 0, false, sm);
     sh.update(0.05, 0, 0.0f);
     targetPositions[1] = tf1.getPosition();
     targetPositions[2] = tf2.getPosition();

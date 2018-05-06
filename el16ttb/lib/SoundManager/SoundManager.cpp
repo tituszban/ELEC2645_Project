@@ -51,7 +51,9 @@ void SoundManager::update(float dt, Controller &cont){
       topID = effects[i].ID;
       topPriority = effects[i].priority;
     }
+    // printf("effects: ID: %d, duration: %f, priority: %f, alive: %d, f: %f\n", effects[i].ID, effects[i].duration, effects[i].priority, effects[i].alive, effects[i].startF);
   }
+  // printf("top id: %d\n", topID);
   if(topID == -1)
   {
     tone = 0;

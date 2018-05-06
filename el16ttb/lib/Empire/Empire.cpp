@@ -35,6 +35,7 @@ Empire::Empire(){
     tfEvadeTarget.push_back(0);
     tfMem.push_back(0);
     tfCooldown.push_back(0);
+    tfXDist.push_back(0);
   }
   shTimer = 0;
   shHeading = Matrix(1, 3);
@@ -125,10 +126,12 @@ void Empire::updateShuttle(float dt, Matrix xwingPos, Matrix xwingFacing){
   sh.update(dt, shSteer, shSpeed);
 }
 
-void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi){
+void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int tfi, SoundManager &sm){
   float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
   float xwingDist = xwingPos.distance(tfs[tfi].getPosition());
+  float relSpeed = (xwingDist - tfXDist[tfi]) / dt;
+  tfXDist[tfi] = xwingDist;
   Matrix xRel = xwingPos - tfs[tfi].getPosition();
   float xRelY = xRel.get(0, 1);
   xRel.set(0, 1, 0);
@@ -153,10 +156,10 @@ void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int
     if(roleCount[4] == 0 && (roleCount[1] + roleCount[2] > 1
       || (tfRoles[tfi] != 1 && tfRoles[tfi] != 2)
       || tfs.size() == 1) && tfCooldown[tfi] <= 0 && attackCooldown <= 0){
-      printf("CHARGE! (%d)\n", tfi);
       tfRoles[tfi] = 4;
     }
   }
+
   float steer = 0;
   float elev = 0;
 
@@ -205,11 +208,7 @@ void Empire::updateTieFighter(float dt, Matrix xwingPos, Matrix xwingFacing, int
 
   bool fire = xRel.dot(tfs[tfi].getFacing()) > 0.8f && xwingDist < 20;
 
-  if(fire){
-    printf("PEW! (%d)\n", tfi);
-  }
-
-  tfs[tfi].update(dt, steer, elev, fire);
+  tfs[tfi].update(dt, steer, elev, fire, sm);
 }
 
 /*
@@ -296,7 +295,7 @@ void Empire::tfRoleManager(){
   }
 }
 
-int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
+int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing, SoundManager &sm)
 {
   float u[] = {0, 1, 0};
   Matrix up = Matrix(1, 3, u);
@@ -314,9 +313,10 @@ int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
       tfEvadeTarget.erase(tfEvadeTarget.begin() + tf);
       tfMem.erase(tfMem.begin() + tf);
       tfCooldown.erase(tfCooldown.begin() + tf);
+      tfXDist.erase(tfXDist.begin() + tf);
     }
     else{
-      updateTieFighter(dt, xwingPos, xwingFacing, tf);
+      updateTieFighter(dt, xwingPos, xwingFacing, tf, sm);
       unsigned int i = 0;
       while(i < tfs[tf].lasers.size()){
         if(tfs[tf].lasers[i].toBeRemoved){
@@ -351,6 +351,7 @@ int Empire::update(float dt, Matrix xwingPos, Matrix xwingFacing)
       tfEvadeTarget.push_back(0);
       tfMem.push_back(0);
       tfCooldown.push_back(0);
+      tfXDist.push_back(0);
       // printf("Everything repopulated\n");
       destroyedTFs.erase(destroyedTFs.begin());
       // printf("Zombie removed\n");
