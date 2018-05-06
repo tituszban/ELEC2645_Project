@@ -180,6 +180,12 @@ void Controller::tone(float frequency, float duration){
     this->pad->tone(frequency, duration);
   }
 }
+void Controller::toneContinous(float frequency){
+  if(!muted){
+    this->pad->toneContinous(frequency);
+  }
+}
+
 float Controller::joystickMag(){
   return this->pad->get_mag();
 }

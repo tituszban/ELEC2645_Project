@@ -14,6 +14,7 @@ Date: 05/03/2018
 #include <GameEngine.h>
 
 // #define FINAL
+// #define TESTING
 
 Controller cont;
 
@@ -49,12 +50,15 @@ int main() {
   cont.muted = false;
   cont.contrast = 0.5;
   cont.lcdContrast(cont.contrast);
-  cont.brightness = 0.5;
+  cont.brightness = 0.8;
   cont.lcdSetBrightness(cont.brightness);
 #ifdef FINAL
   details();
 #endif
   // t.attach(&alive, 0.5);
+#ifdef TESTING
+  SoundManagerTest(cont);
+#endif
 
   while(1){
     switch(mainMenu(cont)){

@@ -36,6 +36,7 @@ public:
   void led(int n, float val);
   float readPot();
   void tone(float frequency, float duration);
+  void toneContinous(float frequency);
   bool muted;
   bool forceMuted;
   float joystickMag();

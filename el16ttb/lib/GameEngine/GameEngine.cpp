@@ -13,6 +13,7 @@ int mainGame(Controller &cont){
   Camera cam;
   cam.init();
   Skybox skybox;
+  SoundManager sm;
   XWing xwing = XWing(Matrix(1, 3), cont);
   Empire empire;
 
@@ -38,7 +39,7 @@ int mainGame(Controller &cont){
 
     // GET FRAME TIME
     std::clock_t now = std::clock();
-    float dt = (now - framePrev) / (float) CLOCKS_PER_SEC * 0.25;
+    float dt = (now - framePrev) / (float) CLOCKS_PER_SEC * SPEED_FACTOR;
     framePrev = now;
 
     // COLLISION DETECTION
@@ -48,7 +49,7 @@ int mainGame(Controller &cont){
     xwing.updateTargets(empire.getTargets(), empire.getTargetPositions());
 
     // UPDATE
-    xwing.update(dt, cont, cam, empireAction);
+    xwing.update(dt, cont, cam, sm, empireAction);
     empireAction = empire.update(dt, xwing.getPosition(), xwing.getFlatFacing());
 
     // RENDER
@@ -59,6 +60,8 @@ int mainGame(Controller &cont){
     // ENDLOOP
     renderer.render(cont);
     cont.lcdRefresh();
+
+    sm.update(dt / SPEED_FACTOR, cont);
 
     cont.muted = (cont.forceMuted && cont.muted) || (!cont.forceMuted && cont.readPot() < 0.2f);
 
@@ -74,11 +77,13 @@ int mainGame(Controller &cont){
       (xWingResult == -1 ? 3 :
       (empire.isGameOver() ? 4 : -1))));
   }
+  cont.toneContinous(0);
   if(gameResult == 2 || gameResult == 3 || gameResult == 4){
     renderer.addUISprite(0, 0, 84, 48, gameResult == 2 ? missionsuccessSprite : (
       gameResult == 3 ? missionfailedxwingSprite : missionfailedshuttleSprite
     ));
   }
+
   renderer.render(cont);
   cont.lcdRefresh();
   if(gameResult != 0 && gameResult != 1){
@@ -202,8 +207,8 @@ int mainMenu(Controller &cont)
       noteIndex++;
       if(SWTheme[noteIndex][0] != DELAY)
         cont.tone(SWTheme[noteIndex][0], (float)SWTheme[noteIndex][1] / 1000);
-      else
-        cont.tone(0, (float)SWTheme[noteIndex][1] / 1000);
+      // else
+      //   cont.tone(0, (float)SWTheme[noteIndex][1] / 1000);
     }
 
     renderer.render(cont);

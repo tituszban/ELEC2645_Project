@@ -138,6 +138,17 @@ void Gamepad::tone(float frequency, float duration)
     _timeout->attach(callback(this, &Gamepad::tone_off), duration );
 }
 
+void Gamepad::toneContinous(float frequency)
+{
+  if(frequency > 0){
+    _buzzer->period(1.0f/frequency);
+    _buzzer->write(0.5);  // 50% duty cycle - square wave
+  }
+  else{
+    tone_off();
+  }
+}
+
 bool Gamepad::check_event(GamepadEvent const id)
 {
     // Check whether event flag is set

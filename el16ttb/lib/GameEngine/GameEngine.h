@@ -23,6 +23,8 @@ using namespace std;
 #define BRIGHT_MIN 0.0
 #define BRIGHT_STEP 0.04
 
+#define SPEED_FACTOR 0.25
+
 #define c 261
 #define d 294
 #define e 329

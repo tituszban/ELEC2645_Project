@@ -18,6 +18,7 @@ using namespace std;
 #include "Laser.h"
 #include "Explosion.h"
 #include "XWing.h"
+#include "SoundManager.h"
 
 #include <ctime>
 
@@ -666,6 +667,7 @@ bool XWingTest(Controller &cont){
   Camera cam;
   cam.init();
   Skybox skybox;
+  SoundManager sm;
   XWing xwing = XWing(Matrix(1, 3), cont);
 
   float tf1Pos[] = {-3, 0, 10};
@@ -708,7 +710,7 @@ bool XWingTest(Controller &cont){
     targetPositions[0] = sh.getPosition();
     xwing.updateTargets(targets, targetPositions);
 
-    xwing.update(0.05, cont, cam, 0);
+    xwing.update(0.05, cont, cam, sm, 0);
 
     skybox.render(cam, renderer);
     xwing.render(cam, renderer);
@@ -720,6 +722,71 @@ bool XWingTest(Controller &cont){
     cont.lcdRefresh();
     wait(0.05);
   }
+  printf("Test completed\n\n");
+  return true;
+}
+
+bool SoundManagerTest(Controller &cont){
+  printf("Start Test!\n\n");
+  SoundManager sm;
+
+  int id1 = sm.getID();
+  int id2 = sm.getID();
+  int id3 = sm.getID();
+  int id4 = sm.getID();
+  int id5 = sm.getID();
+  int id6 = sm.getID();
+
+  float timer = 0;
+  int step = 0;
+  float explosionTimer = 0;
+  while(timer < 7 || !cont.buttonPressed(START)){
+    if(timer > 0 && step == 0){
+      sm.setContTone(id1, 1, 440);
+      step = 1;
+    }
+    else if(timer > 1 && step == 1){
+      sm.setContTone(id2, 2, 523);
+      step = 2;
+    }
+    else if(timer > 2 && step == 2){
+      sm.setEffect(id3, 3, 2, 466, 466);
+      step = 3;
+    }
+    else if(timer > 2.5 && step == 3){
+      sm.setEffect(id4, 4, 1, 391, 523);
+      step = 4;
+    }
+    else if(timer > 5 && step == 4){
+      sm.stopContTone(id2);
+      step = 5;
+    }
+    else if(timer > 6 && step == 5){
+      sm.stopContTone(id1);
+      step = 6;
+    }
+
+    if(cont.buttonPressed(A)){
+      sm.setEffect(id5, 5, 0.3, 800, 600);
+    }
+    if(cont.buttonPressed(B)){
+      explosionTimer = 0;
+    }
+    if(explosionTimer < 2){
+      sm.setContTone(id6, 4.5, 70 + randf() * 30);
+      explosionTimer += 0.05;
+      if(explosionTimer >= 2){
+        sm.stopContTone(id6);
+      }
+    }
+
+    timer += 0.05;
+
+    sm.update(0.05, cont);
+    wait(0.05);
+  }
+
+
   printf("Test completed\n\n");
   return true;
 }

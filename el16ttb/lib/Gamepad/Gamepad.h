@@ -138,6 +138,11 @@ public:
     */
     void tone(float frequency, float duration);
 
+    /** Play tone on piezo continously
+    * @param frequency in Hz
+    */
+    void toneContinous(float frequency);
+
     /**
      * @brief Check whether an event flag has been set and clear it
      * @param id[in] The ID of the event to test
